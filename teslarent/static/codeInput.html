@@ -1,0 +1,9 @@
+<form ng-submit="$event.preventDefault()" name="myForm">
+
+    <label>Code:</label>
+    <input required type="text" ng-model="code" style="width: 250px" />
+    <br /><br />
+
+    <button ng-click="submit()" ng-disabled="code == undefined">Submit</button>
+
+</form>

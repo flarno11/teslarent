@@ -1,0 +1,42 @@
+import uuid
+
+from django.contrib import admin
+
+from teslarent.models import Credentials, Rental, Vehicle
+
+
+@admin.register(Credentials)
+class CredentialsAdmin(admin.ModelAdmin):
+    list_display = ('email', 'current_token', 'refresh_token', 'token_expires_at', 'created_at', 'updated_at', )
+
+
+@admin.register(Vehicle)
+class VehicleAdmin(admin.ModelAdmin):
+    list_display = ('linked', 'id', 'vehicle_id', 'credentials', 'display_name', 'color', 'vin', 'state', 'created_at', 'updated_at', )
+    readonly_fields = list_display
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return True
+
+    def has_change_permission(self, request, obj=None):
+        return True
+
+
+@admin.register(Rental)
+class RentalAdmin(admin.ModelAdmin):
+    list_display = ('vehicle', 'start', 'end', 'code', 'odometer_start', 'odometer_end', 'created_at', 'updated_at', )
+    list_filter = ('start',)
+    readonly_fields = ('odometer_start', 'odometer_end', )
+    ordering = ('start', 'end',)
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(RentalAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields['code'].initial = str(uuid.uuid4())
+
+        if len(Vehicle.objects.all()) == 1:
+            form.base_fields['vehicle'].initial = Vehicle.objects.all()[0]
+
+        return form
