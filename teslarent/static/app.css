@@ -128,7 +128,7 @@ a, a:visited {
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: url( "./lightning.png");
+    background-image: url("./lightning.png");
     background-repeat: no-repeat;
     background-position: center;
     background-size: 30px 30px;
