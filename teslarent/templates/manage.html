@@ -14,6 +14,7 @@
     }
 </style>
 
+
 {% if credentials|length == 0 %}
     <span style="font-size: x-large">
         <br /><br />
@@ -83,6 +84,16 @@
 {% empty %}
     No past rentals.
 {% endfor %}
+
+
+<br /><hr />
+<small>
+{% if debug %}
+    Running in DEBUG mode
+{% else %}
+    Running in PRODUCTION mode
+{% endif %}
+</small>
+
+
 {% endblock %}
-
-
