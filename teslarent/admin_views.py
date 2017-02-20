@@ -1,15 +1,20 @@
-import datetime
+import logging
 import uuid
-
 import pytz
+
 from django.contrib import admin
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http.response import Http404
 from django.shortcuts import redirect, render
 
+from project import settings
 from teslarent.forms import CredentialsForm, RentalForm
 from teslarent.models import *
 from teslarent.teslaapi import teslaapi
+
+
+log_teslaapi = logging.getLogger('teslaapi')
+log = logging.getLogger('manage')
 
 
 def each_context(request):
@@ -24,8 +29,16 @@ def each_context(request):
 @staff_member_required
 def index(request):
     now = datetime.datetime.utcnow()
+
+    log_teslaapi.debug("test teslaapi")
+    log.debug("test manage debug")
+    log.info("test manage info")
+    log.warn("test manage warn")
+    log.error("test manage error")
+
     context = dict(
         each_context(request),
+        debug=bool(settings.DEBUG),
         active_rentals=Rental.objects.filter(start__lte=now, end__gte=now).order_by('start'),
         upcoming_rentals=Rental.objects.filter(start__gt=now).order_by('start'),
         past_rentals=Rental.objects.filter(end__lt=now).order_by('-start'),
