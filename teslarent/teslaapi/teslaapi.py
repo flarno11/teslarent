@@ -129,10 +129,11 @@ def list_vehicles(credentials):
 
 def is_mobile_enabled(vehicle_id, credentials):
     """
-    @type vehicle: Vehicle
-    @return: true|false
+    @type vehicle_id: Int
+    @type credentials: Credentials
+    @return true|false
     """
-    return req('/api/1/vehicles/' + str(vehicle_id) + '/data_request/mobile_enabled', credentials)
+    return req('/api/1/vehicles/' + str(vehicle_id) + '/mobile_enabled', credentials)
 
 
 def get_charge_state(vehicle):
