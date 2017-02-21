@@ -24,13 +24,13 @@
 
 {% else %}
     <h2>Credentials</h2>
-    {% for c in credentials %}{{ c.email }} (<a href="./deleteCredentials/{{ c.id }}">X</a>), {% endfor %}
+    {% for c in credentials %}{{ c }} (<a href="./deleteCredentials/{{ c.id }}">X</a>), {% endfor %}
     (<a href="./addCredentials">add another</a>)<br />
 
     <h2>Vehicle(s)</h2>
     {% for v in vehicles %}
         {% if not v.linked or not v.credentials %}
-            <span style="color: gray">{{ v.display_name }} {{ v.vin }} - inactive</span><br />
+            <span style="color: gray">{{ v }} - inactive</span><br />
         {% else %}
             {{ v.display_name }} {{ v.vin }}<br />
         {% endif %}
@@ -53,6 +53,7 @@
     Start: {{ rental.start }}<br />
     Rental-code: <a href="/#/rental/{{ rental.code }}">{{ rental.code }}</a><br />
     {{ rental.description }}{% if rental.description %}<br />{% endif %}
+    {{ rental.vehicle }}<br />
     <a href="./editRental/{{ rental.id }}">Edit</a>
     <form style="display: inline" action="./deleteRental/{{ rental.id }}" method="post">{% csrf_token %}<button>Delete</button></form>
     <br /><br />
@@ -67,6 +68,7 @@
     Start: {{ rental.start }}<br />
     Rental-code: <a href="/#/rental/{{ rental.code }}">{{ rental.code }}</a><br />
     {{ rental.description }}{% if rental.description %}<br />{% endif %}
+    {{ rental.vehicle }}<br />
     <a href="./editRental/{{ rental.id }}">Edit</a>
     <form style="display: inline" action="./deleteRental/{{ rental.id }}" method="post">{% csrf_token %}<button>Delete</button></form>
     <br /><br />
@@ -79,6 +81,7 @@
 <h2>Past rentals</h2>
 {% for rental in past_rentals %}
     Start: {{ rental.start }}<br />
+    {{ rental.vehicle }}<br />
     Distance driven: {% if rental.distance_driven %}{{ rental.distance_driven }} km {% else %}unknown{% endif %}<br />
     <br />
 {% empty %}
