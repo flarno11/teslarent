@@ -1,9 +1,5 @@
-import datetime
+from django.utils import timezone
 from django.db import models
-from pytz import timezone
-
-
-tz_utc = timezone('UTC')
 
 
 class Credentials(models.Model):
@@ -32,6 +28,7 @@ class Vehicle(models.Model):
     color = models.CharField(max_length=200)
     vin = models.CharField(max_length=17)
     state = models.CharField(max_length=200)
+    mobile_enabled = models.BooleanField()
 
     @property
     def is_active(self):
@@ -39,6 +36,10 @@ class Vehicle(models.Model):
 
     def __str__(self):
         return self.display_name + ' ' + self.vin + ' (' + str(self.credentials) + ')'
+
+    @staticmethod
+    def get_all_active_vehicles():
+        return Vehicle.objects.filter(linked=True, credentials__isnull=False)
 
 
 class Rental(models.Model):
@@ -50,12 +51,13 @@ class Rental(models.Model):
     description = models.TextField(default=None, blank=True, null=True)
     code = models.UUIDField(unique=True)
     odometer_start = models.IntegerField(default=None, blank=True, null=True)
+    odometer_start_updated_at = models.DateTimeField(default=None, blank=True, null=True)
     odometer_end = models.IntegerField(default=None, blank=True, null=True)
+    odometer_end_updated_at = models.DateTimeField(default=None, blank=True, null=True)
 
     @property
     def is_active(self):
-        now = tz_utc.localize(datetime.datetime.utcnow())
-        return self.start <= now < self.end and self.vehicle.is_active
+        return self.start <= timezone.now() < self.end and self.vehicle.is_active
 
     @property
     def distance_driven(self):

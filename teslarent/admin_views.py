@@ -1,6 +1,6 @@
 import logging
 import uuid
-import pytz
+import datetime
 
 from django.contrib import admin
 from django.contrib.admin.views.decorators import staff_member_required
@@ -28,7 +28,7 @@ def each_context(request):
 
 @staff_member_required
 def index(request):
-    now = datetime.datetime.utcnow()
+    now = timezone.now()
 
     log_teslaapi.debug("test teslaapi")
     log.debug("test manage debug")
@@ -36,6 +36,7 @@ def index(request):
     log.warn("test manage warn")
     log.error("test manage error")
 
+    vehicles = Vehicle.objects.all()
     context = dict(
         each_context(request),
         debug=bool(settings.DEBUG),
@@ -43,7 +44,8 @@ def index(request):
         upcoming_rentals=Rental.objects.filter(start__gt=now).order_by('start'),
         past_rentals=Rental.objects.filter(end__lt=now).order_by('-start'),
         credentials=Credentials.objects.all(),
-        vehicles = Vehicle.objects.all(),
+        vehicles=vehicles,
+        has_active_vehicle=any([v.is_active for v in vehicles]),
     )
     return render(request, 'manage.html', context)
 
@@ -87,6 +89,15 @@ def delete_credentials(request, credentials_id):
 
 
 @staff_member_required
+def refresh_credentials(request, credentials_id):
+    if request.method == "POST":
+        c = Credentials.objects.get(id=credentials_id)
+        teslaapi.re
+
+    return redirect('/manage/')
+
+
+@staff_member_required
 def update_vehicles(request):
     if request.method != "POST":
         raise Http404
@@ -97,10 +108,15 @@ def update_vehicles(request):
 
 @staff_member_required
 def add_rental(request):
-    start = datetime.datetime.utcnow().replace(tzinfo=pytz.utc, minute=0, second=0, microsecond=0) + datetime.timedelta(
-        hours=1)
+    vehicles = Vehicle.get_all_active_vehicles()
+    if len(vehicles) == 0:
+        # TODO show error message to user
+        log.warn("Cannot add rental, there is no active vehicle")
+        return redirect('/manage/')
+
+    vehicle = vehicles[0] if len(vehicles) == 1 else None
+    start = timezone.now().replace(minute=0, second=0, microsecond=0) + datetime.timedelta(hours=1)
     end = start + datetime.timedelta(days=1)
-    vehicle = Vehicle.objects.all()[0] if len(Vehicle.objects.all()) == 1 else None
     initial = Rental(start=start, end=end, vehicle=vehicle, code=str(uuid.uuid4()))
     return add_or_edit_rental(request, rental=initial)
 

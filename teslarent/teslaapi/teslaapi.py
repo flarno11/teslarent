@@ -1,8 +1,9 @@
 import datetime
-import pytz
 import requests
 import logging
 import json
+
+from django.utils import timezone
 
 from project import settings
 from teslarent.models import Credentials, Vehicle
@@ -13,15 +14,14 @@ PRODUCTION_HOST = 'https://owner-api.teslamotors.com'
 log = logging.getLogger('teslaapi')
 
 
-class ApiError(RuntimeError):
-    def __init__(self, arg):
-        self.args = arg
+class ApiException(Exception):
+    pass
 
 
 def get_host():
-    if settings.DEBUG:
-        return MOCK_HOST
-    else:
+    #if settings.DEBUG:
+    #    return MOCK_HOST
+    #else:
         return PRODUCTION_HOST
 
 
@@ -49,10 +49,46 @@ def login_and_save_credentials(credentials, password):
         .post(get_host() + '/oauth/token', json=body)\
         .json()
 
-    credentials.current_token = r['access_token']
-    credentials.refresh_token = r['refresh_token']
-    credentials.token_expires_at = datetime.datetime.utcnow().replace(tzinfo=pytz.utc) + datetime.timedelta(seconds=r['expires_in'])
-    credentials.save()
+    if 'access_token' in r and 'refresh_token' in r and 'expires_in' in r:
+        credentials.current_token = r['access_token']
+        credentials.refresh_token = r['refresh_token']
+        credentials.token_expires_at = timezone.now() + datetime.timedelta(seconds=r['expires_in'])
+        credentials.save()
+    else:
+        log.error("refresh token not possible, response=" + str(r))
+        raise ApiException("refresh token not possible, response=" + str(r))
+
+
+def refresh_token(credentials):
+    """
+    @type credentials: Credentials
+    responses:
+     {
+        'access_token': 'xx', 'token_type': 'bearer', 'expires_in': 3888000,
+         'refresh_token': 'xx', 'created_at': 1487705494}
+    }
+    {'error': 'invalid_grant', 'error_description': 'The provided authorization grant is invalid, expired, revoked, does not match the redirection URI used in the authorization request, or was issued to another client.'}
+    """
+
+    body = {
+        "grant_type": "refresh_token",
+        "client_id": settings.TESLA_CLIENT_ID,
+        "client_secret": settings.TESLA_CLIENT_SECRET,
+        "refresh_token": credentials.refresh_token,
+    }
+
+    r = requests\
+        .post(get_host() + '/oauth/token', json=body)\
+        .json()
+
+    if 'access_token' in r and 'refresh_token' in r and 'expires_in' in r:
+        credentials.current_token = r['access_token']
+        credentials.refresh_token = r['refresh_token']
+        credentials.token_expires_at = timezone.now() + datetime.timedelta(seconds=r['expires_in'])
+        credentials.save()
+    else:
+        log.error("refresh token not possible, response=" + str(r))
+        raise ApiException("refresh token not possible, response=" + str(r))
 
 
 def get_json(text):
@@ -64,12 +100,17 @@ def get_json(text):
 
 
 def req(req, credentials):
-    d = requests.get(
-        get_host() + req,
-        headers=get_headers(credentials)
-    ).text
-    log.debug('req=' + req + ', resp=' + d.replace("\n", " "))
-    return get_json(d)['response']
+    response = requests.get(get_host() + req, headers=get_headers(credentials))
+    log.debug('req=' + req + ', status=' + str(response.status_code) + ', resp=' + response.text.replace("\n", " "))
+    if response.status_code != 200:
+        raise ApiException(req + " returned " + str(response.status_code))
+
+    r = get_json(response.text)
+
+    if 'error' in r:
+        raise ApiException(r['error'])
+
+    return r['response']
 
 
 def list_vehicles(credentials):
@@ -83,15 +124,15 @@ def list_vehicles(credentials):
              'color': v['color'],
              'vin': v['vin'],
              'state': v['state'],
-            } for v in d]
+             } for v in d]
 
 
-def is_mobile_enabled(vehicle):
+def is_mobile_enabled(vehicle_id, credentials):
     """
     @type vehicle: Vehicle
     @return: true|false
     """
-    return req('/api/1/vehicles/' + str(vehicle.id) + '/data_request/mobile_enabled', vehicle.credentials)
+    return req('/api/1/vehicles/' + str(vehicle_id) + '/data_request/mobile_enabled', credentials)
 
 
 def get_charge_state(vehicle):
@@ -228,7 +269,7 @@ def set_temperature(vehicle, temperature):
                       + str(temperature) + '&passenger_temp=' + str(temperature),
                       headers=get_headers(vehicle.credentials))
     if r.status_code != 200:
-        raise ApiError("set_temperature failed with " + str(r.status_code) + " " + r.text)
+        raise ApiException("set_temperature failed with " + str(r.status_code) + " " + r.text)
 
 
 def set_hvac_start(vehicle):
@@ -238,7 +279,7 @@ def set_hvac_start(vehicle):
     r = requests.post(get_host() + '/api/1/vehicles/' + str(vehicle.id) + '/command/auto_conditioning_start',
                       headers=get_headers(vehicle.credentials))
     if r.status_code != 200:
-        raise ApiError("auto_conditioning_start failed with " + str(r.status_code) + " " + r.text)
+        raise ApiException("auto_conditioning_start failed with " + str(r.status_code) + " " + r.text)
 
 
 def set_hvac_stop(vehicle):
@@ -248,7 +289,7 @@ def set_hvac_stop(vehicle):
     r = requests.post(get_host() + '/api/1/vehicles/' + str(vehicle.id) + '/command/auto_conditioning_stop',
                       headers=get_headers(vehicle.credentials))
     if r.status_code != 200:
-        raise ApiError("auto_conditioning_stop failed with " + str(r.status_code) + " " + r.text)
+        raise ApiException("auto_conditioning_stop failed with " + str(r.status_code) + " " + r.text)
 
 
 def load_vehicles(credentials):
@@ -290,6 +331,7 @@ def load_vehicles(credentials):
         v_model.color = v['color'] if v['color'] else ''
         v_model.vin = v['vin']
         v_model.state = v['state']
+        v_model.mobile_enabled = is_mobile_enabled(v_model.vehicle_id, credentials)
         v_model.save()
 
 
@@ -298,6 +340,6 @@ def update_all_vehicles():
         load_vehicles(c)
 
     for unlinked_vehicle in Vehicle.objects.filter(credentials=None):
-        log.info("unlinking global vehicle %d", id)
+        log.info("unlinking global vehicle %d", unlinked_vehicle.id)
         unlinked_vehicle.linked = False
         unlinked_vehicle.save()

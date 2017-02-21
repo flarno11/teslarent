@@ -1,4 +1,6 @@
-import pytz
+import datetime
+
+from django.utils import timezone
 from django.test import TestCase
 import requests_mock
 
@@ -7,6 +9,7 @@ from teslarent.teslaapi.teslaapi import *
 
 LOGIN_RESPONSE = '{"access_token": "abc1234", "token_type": "bearer", "expires_in": 7776000, "created_at": 1457385291, "refresh_token": "cba321"}'
 LIST_VEHICLES_RESPONSE = '{"response":[{"color": "white", "display_name": null, "id": 321, "option_codes": "MS01,RENA,TM00,DRLH,PF00,BT85,PBCW,RFPO,WT19,IBMB,IDPB,TR00,SU01,SC01,TP01,AU01,CH00,HP00,PA00,PS00,AD02,X020,X025,X001,X003,X007,X011,X013", "user_id": 123, "vehicle_id": 1234567890, "vin": "5YJSA1CN5CFP01657", "tokens": ["x", "x"], "state": "online"}]}'
+VEHICLE_STATE_RESPONSE = '{"response":{"locked": true, "odometer": 25000}}'
 OLD_VEHICLE_ID = 10001
 CURRENT_VEHICLE_ID = 321
 
@@ -21,7 +24,7 @@ class TeslaApiTestCase(TestCase):
         c = Credentials(email="test@test.com")
         c.current_token = "1234"
         c.refresh_token = "5678"
-        c.token_expires_at = datetime.datetime.utcnow().replace(tzinfo=pytz.utc) + datetime.timedelta(days=10)
+        c.token_expires_at = timezone.now() + datetime.timedelta(days=10)
         c.save()
         return c
 
@@ -43,10 +46,8 @@ class TeslaApiTestCase(TestCase):
             m.post('/oauth/token', text=LOGIN_RESPONSE)
             login_and_save_credentials(c, password="test")
 
-        self.assertGreater(c.token_expires_at,
-                           datetime.datetime.utcnow().replace(tzinfo=pytz.utc) + datetime.timedelta(days=89))
-        self.assertLess(c.token_expires_at,
-                        datetime.datetime.utcnow().replace(tzinfo=pytz.utc) + datetime.timedelta(days=91))
+        self.assertGreater(c.token_expires_at, timezone.now() + datetime.timedelta(days=89))
+        self.assertLess(c.token_expires_at, timezone.now() + datetime.timedelta(days=91))
 
     def test_update_vehicle_initial(self):
         self.create_credentials()
@@ -97,3 +98,4 @@ class TeslaApiTestCase(TestCase):
         vehicles = list(Vehicle.objects.all())
         self.assertEquals(1, len(vehicles))
         self.assertEquals(created_at, vehicles[0].created_at)
+

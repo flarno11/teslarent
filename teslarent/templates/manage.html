@@ -24,7 +24,7 @@
 
 {% else %}
     <h2>Credentials</h2>
-    {% for c in credentials %}{{ c.email }} (<a href="./deleteCredentials?id={{ c.id }}">X</a>), {% endfor %}
+    {% for c in credentials %}{{ c.email }} (<a href="./deleteCredentials/{{ c.id }}">X</a>), {% endfor %}
     (<a href="./addCredentials">add another</a>)<br />
 
     <h2>Vehicle(s)</h2>
@@ -34,18 +34,18 @@
         {% else %}
             {{ v.display_name }} {{ v.vin }}<br />
         {% endif %}
-    {% empty %}
-        There are no vehicles for your Tesla credentials, go get one <a href="https://www.tesla.com/">here</a><br />
     {% endfor %}
+    {% if not has_active_vehicle %}
+        There are no vehicles for your Tesla credentials, go get one <a href="https://www.tesla.com/">here</a><br />
+    {% endif %}
     <form action="./updateVehicles" method="post">{% csrf_token %}
         <button type="submit">Update vehicle list</button>
     </form>
 {% endif %}
 
-
-{% if credentials|length > 0 %}
 <br /><br />
-<a href="./addRental">Add a new rental</a>
+{% if credentials|length > 0 and has_active_vehicle %}
+    <a href="./addRental">Add a new rental</a>
 {% endif %}
 
 <h2>Active Rentals</h2>
@@ -93,6 +93,14 @@
 {% else %}
     Running in PRODUCTION mode
 {% endif %}
+
+<br /><br />
+{% for c in credentials %}
+    <form action="./refreshCredentials/{{ c.id }}" method="post">{% csrf_token %}
+        {{ c.token_expires_at }}
+        <button type="submit">Refresh credentials</button>
+    </form><br />
+{% endfor %}
 </small>
 
 
