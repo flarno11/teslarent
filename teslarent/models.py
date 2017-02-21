@@ -32,7 +32,7 @@ class Vehicle(models.Model):
 
     @property
     def is_active(self):
-        return self.linked and self.credentials is not None
+        return self.linked and self.credentials is not None and self.mobile_enabled
 
     def __str__(self):
         return self.display_name + ' ' + self.vin + ' (' + str(self.credentials) + ')'

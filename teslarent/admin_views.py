@@ -11,10 +11,7 @@ from project import settings
 from teslarent.forms import CredentialsForm, RentalForm
 from teslarent.models import *
 from teslarent.teslaapi import teslaapi
-
-
-log_teslaapi = logging.getLogger('teslaapi')
-log = logging.getLogger('manage')
+from teslarent.teslaapi.teslaapi import ApiException
 
 
 def each_context(request):
@@ -29,12 +26,6 @@ def each_context(request):
 @staff_member_required
 def index(request):
     now = timezone.now()
-
-    log_teslaapi.debug("test teslaapi")
-    log.debug("test manage debug")
-    log.info("test manage info")
-    log.warn("test manage warn")
-    log.error("test manage error")
 
     vehicles = Vehicle.objects.all()
     context = dict(
@@ -92,7 +83,7 @@ def delete_credentials(request, credentials_id):
 def refresh_credentials(request, credentials_id):
     if request.method == "POST":
         c = Credentials.objects.get(id=credentials_id)
-        teslaapi.re
+        teslaapi.refresh_token(c)
 
     return redirect('/manage/')
 
