@@ -19,9 +19,9 @@ class ApiException(Exception):
 
 
 def get_host():
-    #if settings.DEBUG:
-    #    return MOCK_HOST
-    #else:
+    if settings.DEBUG:
+        return MOCK_HOST
+    else:
         return PRODUCTION_HOST
 
 
