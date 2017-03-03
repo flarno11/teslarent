@@ -12,7 +12,7 @@ docker run -d -p 444:443 --link mysql-teslarent:mysql -e DJANGO_ALLOWED_HOST='*'
 
 ### Environment variables
 - make sure DJANGO_DEBUG is NOT set to True
-- DATABASE_URL=postgres db config, e.g. postgres://postgres:password@192.168.100.100:5432/dbname
+- DATABASE_URL=postgres/mysql db config, e.g. postgres://postgres:password@192.168.100.100:5432/dbname
 - DJANGO_ALLOWED_HOST=your_domain
 - DJANGO_SECRET_KEY=random 50 symbol string
 - these variables cannot be set in apache with SetEnv, either set them
@@ -45,9 +45,10 @@ export DJANGO_SETTINGS_MODULE=project.settings_prod
 python manage.py check --deploy
 python manage.py migrate
 python manage.py collectstatic --no-input
-
-python manage.py createsuperuser
 ```
+
+`python manage.py createsuperuser` and follow the instructions
+
 
 #### Upgrade
 ```
@@ -60,9 +61,16 @@ service httpd reload
 ```
 
 ### Setup using Heroku (heroku.com)
-1. Create new app with automatic deployment from this github repo, choose the `release` branch
-2. `heroku run --app your_heroku_app_name python manage.py check --deploy`
-2. `heroku run --app your_heroku_app_name python manage.py migrate`
-3. `heroku run --app your_heroku_app_name python manage.py createsuperuser`
-4. Open https://your_domain/manage/ and login
+- Create new app
+ - add postgres resource
+ - enable automatic deployment from this github repo, choose the `release` branch
+- From the command line
+ - `export APP_NAME=your_heroku_app_name
+ - `heroku config:set --app $APP_NAME DJANGO_SETTINGS_MODULE=project.settings`
+ - do the same for DJANGO_ALLOWED_HOST and DJANGO_SECRET_KEY
+ - `heroku config --app $APP_NAME`
+ - `heroku run --app $APP_NAME python manage.py check --deploy`
+ - `heroku run --app $APP_NAME python manage.py migrate`
+ - `heroku run --app $APP_NAME python manage.py createsuperuser`
+- Open https://your_domain/manage/ in your browser and login
 
