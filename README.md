@@ -2,6 +2,8 @@
 
 # Setup
 
+Choose between Docker, Generic Setup and Heroku
+
 ## Docker
 ```bash
 docker build -t teslarent .
@@ -11,21 +13,21 @@ docker run -d -p 444:443 --link mysql-teslarent:mysql -e DJANGO_ALLOWED_HOST='*'
 ## Production deployment
 
 ### Environment variables
-- make sure DJANGO_DEBUG is NOT set to True
 - DATABASE_URL=postgres/mysql db config, e.g. postgres://postgres:password@192.168.100.100:5432/dbname
 - DJANGO_ALLOWED_HOST=your_domain
 - DJANGO_SECRET_KEY=random 50 symbol string
 - these variables cannot be set in apache with SetEnv, either set them
  as global environment variables or define them in `./project/settings_prod.py`
+- make sure DJANGO_DEBUG is NOT set to True
 
 ### Generic Setup
 
 #### Requirements
 - Python (tested with version 3.5, others should be fine too)
-- Pip
+ - virtualenv, e.g. python3-venv
 - Postgres or MySQL database
-- Https Web Server with wsgi support, e.g. Apache with mod_wsgi (https://docs.djangoproject.com/en/1.10/howto/deployment/wsgi/modwsgi/)
-
+- Https Web Server with wsgi support, e.g. Apache with mod_wsgi
+  (https://docs.djangoproject.com/en/1.10/howto/deployment/wsgi/modwsgi/),
   see apache2_wsgi_sample.conf, adjust python_app_dir and ssl certificates
 
 #### Setup

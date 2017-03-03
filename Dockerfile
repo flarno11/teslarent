@@ -26,7 +26,7 @@ ADD requirements.txt /www/requirements.txt
 RUN cd /www && python3 -m venv venv && . venv/bin/activate && pip install -r requirements.txt
 
 ADD apache2_wsgi_sample.conf /etc/apache2/sites-enabled/python_wsgi.conf
-RUN echo "Port 443" > /etc/apache2/ports.conf
+RUN echo "Listen 443" > /etc/apache2/ports.conf
 ADD . /www
 
 ENTRYPOINT ["/www/docker_entrypoint.sh"]
