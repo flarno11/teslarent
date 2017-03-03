@@ -11,7 +11,8 @@ from project import settings
 from teslarent.forms import CredentialsForm, RentalForm
 from teslarent.models import *
 from teslarent.teslaapi import teslaapi
-from teslarent.teslaapi.teslaapi import ApiException
+
+log = logging.getLogger('manage')
 
 
 def each_context(request):
