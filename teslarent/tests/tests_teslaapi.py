@@ -23,9 +23,7 @@ class TeslaApiTestCase(TestCase):
     @staticmethod
     def create_credentials():
         c = Credentials(email="test@test.com")
-        c.current_token = "1234"
-        c.refresh_token = "5678"
-        c.token_expires_at = timezone.now() + datetime.timedelta(days=10)
+        c.update_token("1234", "5678", 10*24*3600)
         c.save()
         return c
 

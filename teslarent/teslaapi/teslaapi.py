@@ -1,12 +1,11 @@
-import datetime
 import requests
 import logging
 import json
 
-from django.utils import timezone
+from django.conf import settings
 
-from project import settings
 from teslarent.models import Credentials, Vehicle
+from teslarent.utils.crypt import decrypt
 
 MOCK_HOST = 'https://private-anon-c3ea970888-timdorr.apiary-mock.com'
 PRODUCTION_HOST = 'https://owner-api.teslamotors.com'
@@ -27,7 +26,7 @@ def get_host():
 
 def get_headers(credentials):
     return {
-        'Authorization': 'Bearer ' + credentials.current_token
+        'Authorization': 'Bearer ' + decrypt(credentials.current_token, settings.SECRET_KEY, credentials.salt, credentials.iv)
     }
 
 
@@ -50,9 +49,7 @@ def login_and_save_credentials(credentials, password):
         .json()
 
     if 'access_token' in r and 'refresh_token' in r and 'expires_in' in r:
-        credentials.current_token = r['access_token']
-        credentials.refresh_token = r['refresh_token']
-        credentials.token_expires_at = timezone.now() + datetime.timedelta(seconds=r['expires_in'])
+        credentials.update_token(r['access_token'], r['refresh_token'], r['expires_in'])
         credentials.save()
     else:
         log.error("login not possible, response=" + str(r))
@@ -74,7 +71,7 @@ def refresh_token(credentials):
         "grant_type": "refresh_token",
         "client_id": settings.TESLA_CLIENT_ID,
         "client_secret": settings.TESLA_CLIENT_SECRET,
-        "refresh_token": credentials.refresh_token,
+        "refresh_token": decrypt(credentials.refresh_token, settings.SECRET_KEY, credentials.salt, credentials.iv),
     }
 
     r = requests\
@@ -82,9 +79,7 @@ def refresh_token(credentials):
         .json()
 
     if 'access_token' in r and 'refresh_token' in r and 'expires_in' in r:
-        credentials.current_token = r['access_token']
-        credentials.refresh_token = r['refresh_token']
-        credentials.token_expires_at = timezone.now() + datetime.timedelta(seconds=r['expires_in'])
+        credentials.update_token(r['access_token'], r['refresh_token'], r['expires_in'])
         credentials.save()
     else:
         log.error("refresh token not possible, response=" + str(r))

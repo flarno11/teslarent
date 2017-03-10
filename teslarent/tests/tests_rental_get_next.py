@@ -1,18 +1,12 @@
 import datetime
-import uuid
 
-from django.utils import timezone
 from django.test import TestCase
-import requests_mock
 
-from teslarent.management.commands import rental_start_end
 from teslarent.models import *
 from teslarent.tests.tests_rental_update_start_end import RentalStartEndTestCase
-from teslarent.tests.tests_teslaapi import CURRENT_VEHICLE_ID, VEHICLE_STATE_RESPONSE
 
 
 class RentalGetNextCase(TestCase):
-
     def setUp(self):
         pass
 

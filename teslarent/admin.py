@@ -7,7 +7,7 @@ from teslarent.models import Credentials, Rental, Vehicle
 
 @admin.register(Credentials)
 class CredentialsAdmin(admin.ModelAdmin):
-    list_display = ('email', 'current_token', 'refresh_token', 'token_expires_at', 'created_at', 'updated_at', )
+    list_display = ('email', 'current_token', 'refresh_token', 'token_expires_at', 'salt', 'iv', 'created_at', 'updated_at', )
 
 
 @admin.register(Vehicle)

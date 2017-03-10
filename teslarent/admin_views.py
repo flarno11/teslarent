@@ -2,13 +2,13 @@ import logging
 import uuid
 import datetime
 
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http.response import Http404, JsonResponse
 from django.shortcuts import redirect, render
 from jsonview.decorators import json_view
 
-from project import settings
 from teslarent.forms import CredentialsForm, RentalForm
 from teslarent.management.commands.rental_start_end import BackgroundTask
 from teslarent.models import *
