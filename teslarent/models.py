@@ -1,5 +1,6 @@
 from django.utils import timezone
 from django.db import models
+from django.db.models import Q
 
 
 class Credentials(models.Model):
@@ -62,3 +63,14 @@ class Rental(models.Model):
     @property
     def distance_driven(self):
         return self.odometer_end - self.odometer_start
+
+    @staticmethod
+    def get_next_rental_start_or_end_time(date):
+        rentals = list(Rental.objects.filter(Q(start__gt=date) | Q(end__gt=date)).order_by('start', 'end')[:1])
+        if len(rentals) == 0:
+            return None
+        rental = rentals[0]
+        if rental.start > date:
+            return rental.start
+        else:
+            return rental.end

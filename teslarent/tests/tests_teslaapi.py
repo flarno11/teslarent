@@ -10,6 +10,7 @@ from teslarent.teslaapi.teslaapi import *
 LOGIN_RESPONSE = '{"access_token": "abc1234", "token_type": "bearer", "expires_in": 7776000, "created_at": 1457385291, "refresh_token": "cba321"}'
 LIST_VEHICLES_RESPONSE = '{"response":[{"color": "white", "display_name": null, "id": 321, "option_codes": "MS01,RENA,TM00,DRLH,PF00,BT85,PBCW,RFPO,WT19,IBMB,IDPB,TR00,SU01,SC01,TP01,AU01,CH00,HP00,PA00,PS00,AD02,X020,X025,X001,X003,X007,X011,X013", "user_id": 123, "vehicle_id": 1234567890, "vin": "5YJSA1CN5CFP01657", "tokens": ["x", "x"], "state": "online"}]}'
 VEHICLE_STATE_RESPONSE = '{"response":{"locked": true, "odometer": 25000}}'
+MOBILE_ENABLED_RESPONSE = '{"response": true}'
 OLD_VEHICLE_ID = 10001
 CURRENT_VEHICLE_ID = 321
 
@@ -36,6 +37,7 @@ class TeslaApiTestCase(TestCase):
         v.display_name = display_name
         v.credentials = credentials
         v.linked = True
+        v.mobile_enabled = True
         v.save()
         return v
 
@@ -57,6 +59,7 @@ class TeslaApiTestCase(TestCase):
         with requests_mock.mock() as m:
             m.post('/oauth/token', text=LOGIN_RESPONSE)
             m.get('/api/1/vehicles', text=LIST_VEHICLES_RESPONSE)
+            m.get('/api/1/vehicles/' + str(CURRENT_VEHICLE_ID) + '/mobile_enabled', text=MOBILE_ENABLED_RESPONSE)
             update_all_vehicles()
 
         self.assertEquals(1, len(list(Vehicle.objects.all())))
@@ -71,6 +74,7 @@ class TeslaApiTestCase(TestCase):
         with requests_mock.mock() as m:
             m.post('/oauth/token', text=LOGIN_RESPONSE)
             m.get('/api/1/vehicles', text=LIST_VEHICLES_RESPONSE)
+            m.get('/api/1/vehicles/' + str(CURRENT_VEHICLE_ID) + '/mobile_enabled', text=MOBILE_ENABLED_RESPONSE)
             update_all_vehicles()
 
         self.assertEquals(2, len(list(Vehicle.objects.all())))
@@ -92,6 +96,7 @@ class TeslaApiTestCase(TestCase):
         with requests_mock.mock() as m:
             m.post('/oauth/token', text=LOGIN_RESPONSE)
             m.get('/api/1/vehicles', text=LIST_VEHICLES_RESPONSE)
+            m.get('/api/1/vehicles/' + str(CURRENT_VEHICLE_ID) + '/mobile_enabled', text=MOBILE_ENABLED_RESPONSE)
             login_and_save_credentials(c, password="test")
             update_all_vehicles()
 

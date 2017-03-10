@@ -32,6 +32,7 @@ class RentalStartEndTestCase(TestCase):
         v.display_name = ""
         v.credentials = Credentials.objects.all()[0]
         v.linked = True
+        v.mobile_enabled = True
         v.save()
         return v
 

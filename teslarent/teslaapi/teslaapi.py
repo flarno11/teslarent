@@ -55,8 +55,8 @@ def login_and_save_credentials(credentials, password):
         credentials.token_expires_at = timezone.now() + datetime.timedelta(seconds=r['expires_in'])
         credentials.save()
     else:
-        log.error("refresh token not possible, response=" + str(r))
-        raise ApiException("refresh token not possible, response=" + str(r))
+        log.error("login not possible, response=" + str(r))
+        raise ApiException("login not possible, response=" + str(r))
 
 
 def refresh_token(credentials):
@@ -332,7 +332,7 @@ def load_vehicles(credentials):
         v_model.color = v['color'] if v['color'] else ''
         v_model.vin = v['vin']
         v_model.state = v['state']
-        v_model.mobile_enabled = is_mobile_enabled(v_model.vehicle_id, credentials)
+        v_model.mobile_enabled = is_mobile_enabled(v_model.id, credentials)
         v_model.save()
 
 
