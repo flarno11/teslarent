@@ -19,4 +19,6 @@ urlpatterns = [
     url(r'^editRental/(?P<rental_id>\d+)$', admin_views.edit_rental),
     url(r'^deleteRental/(?P<rental_id>\d+)$', admin_views.delete_rental),
     url(r'^updateVehicles$', admin_views.update_vehicles),
+
+    url(r'^ping$', admin_views.ping),
 ]

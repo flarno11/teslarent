@@ -149,6 +149,14 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'DEBUG',
         },
+        'manage': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'backgroundTask': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
     },
 }
 

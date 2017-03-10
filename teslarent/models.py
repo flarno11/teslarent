@@ -1,20 +1,37 @@
+import os
+
+import datetime
+
+from django.conf import settings
 from django.utils import timezone
 from django.db import models
+from django.db.models import Q
+
+from teslarent.utils.crypt import encrypt
 
 
 class Credentials(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     email = models.EmailField(max_length=200, unique=True)
-    current_token = models.CharField(max_length=200)
-    refresh_token = models.CharField(max_length=200)
+    salt = models.CharField(max_length=16, verbose_name="Salt for KDF from secret to encryption key")
+    iv = models.CharField(max_length=32, verbose_name="Initialization Vector for token encryption")
+    current_token = models.CharField(max_length=512)
+    refresh_token = models.CharField(max_length=512)
     token_expires_at = models.DateTimeField()
+
+    class Meta:
+        verbose_name_plural = "Credentials"
 
     def __str__(self):
         return self.email
 
-    class Meta:
-        verbose_name_plural = "Credentials"
+    def update_token(self, access_token, refresh_token, expires_in):
+        self.salt = os.urandom(8).hex()  # 64-bit salt
+        self.iv = os.urandom(16).hex()   # 128-bit IV
+        self.current_token = encrypt(access_token, settings.SECRET_KEY, self.salt, self.iv)
+        self.refresh_token = encrypt(refresh_token, settings.SECRET_KEY, self.salt, self.iv)
+        self.token_expires_at = timezone.now() + datetime.timedelta(seconds=expires_in)
 
 
 class Vehicle(models.Model):
@@ -62,3 +79,14 @@ class Rental(models.Model):
     @property
     def distance_driven(self):
         return self.odometer_end - self.odometer_start
+
+    @staticmethod
+    def get_next_rental_start_or_end_time(date):
+        rentals = list(Rental.objects.filter(Q(start__gt=date) | Q(end__gt=date)).order_by('start', 'end')[:1])
+        if len(rentals) == 0:
+            return None
+        rental = rentals[0]
+        if rental.start > date:
+            return rental.start
+        else:
+            return rental.end

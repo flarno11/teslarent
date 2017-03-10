@@ -2,17 +2,25 @@ import logging
 import uuid
 import datetime
 
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin.views.decorators import staff_member_required
-from django.http.response import Http404
+from django.http.response import Http404, JsonResponse
 from django.shortcuts import redirect, render
+from jsonview.decorators import json_view
 
-from project import settings
 from teslarent.forms import CredentialsForm, RentalForm
+from teslarent.management.commands.rental_start_end import BackgroundTask
 from teslarent.models import *
 from teslarent.teslaapi import teslaapi
 
 log = logging.getLogger('manage')
+
+@json_view
+def ping(request):
+    t = BackgroundTask.Instance()
+    t.ensure_thread_running()
+    return JsonResponse({'initialized_at': t.initialized_at})
 
 
 def each_context(request):
@@ -123,6 +131,7 @@ def delete_rental(request, rental_id):
     r = Rental.objects.get(id=rental_id)
     if request.method == "POST":
         r.delete()
+        BackgroundTask.Instance().ensure_thread_running()
 
     return redirect('/manage/')
 
@@ -132,6 +141,7 @@ def add_or_edit_rental(request, rental):
     if request.method == "POST":
         if form.is_valid():
             form.save()
+            BackgroundTask.Instance().ensure_thread_running()
             return redirect('/manage/')
 
     context = dict(
