@@ -28,7 +28,7 @@ docker run -d -p 444:443 --link mysql-teslarent:mysql -e DJANGO_ALLOWED_HOST='*'
 - Postgres or MySQL database
 - Https Web Server with wsgi support, e.g. Apache with mod_wsgi
   (https://docs.djangoproject.com/en/1.10/howto/deployment/wsgi/modwsgi/),
-  see [apache2_wsgi_sample.conf](./blob/master/apache2_wsgi_sample.conf), adjust python_app_dir and ssl certificates
+  see [apache2_wsgi_sample.conf](https://github.com/flarno11/teslarent/blob/master/apache2_wsgi_sample.conf), adjust python_app_dir and ssl certificates
 
 #### Setup
 - Fetch source code and install requirements

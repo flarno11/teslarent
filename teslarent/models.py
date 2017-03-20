@@ -16,8 +16,8 @@ class Credentials(models.Model):
     email = models.EmailField(max_length=200, unique=True)
     salt = models.CharField(max_length=16, verbose_name="Salt for KDF from secret to encryption key")
     iv = models.CharField(max_length=32, verbose_name="Initialization Vector for token encryption")
-    current_token = models.CharField(max_length=512)
-    refresh_token = models.CharField(max_length=512)
+    current_token = models.CharField(max_length=512)  # currently the tokens seem to be 160 hex bytes (encrypted) long
+    refresh_token = models.CharField(max_length=512)  # currently the tokens seem to be 160 hex bytes (encrypted) long
     token_expires_at = models.DateTimeField()
 
     class Meta:
