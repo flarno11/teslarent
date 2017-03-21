@@ -15,7 +15,7 @@ docker run -d -p 444:443 --link mysql-teslarent:mysql -e DJANGO_ALLOWED_HOST='*'
 ### Environment variables
 - DATABASE_URL=postgres/mysql db config, e.g. postgres://postgres:password@192.168.100.100:5432/dbname
 - DJANGO_ALLOWED_HOST=your_domain
-- DJANGO_SECRET_KEY=random 50 symbol string
+- DJANGO_SECRET_KEY=random 50 symbol string, generate one with `from django.utils.crypto import get_random_string; get_random_string(50, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*(-_=+)')`
 - these variables cannot be set in Apache with SetEnv, either set them
  as global environment variables or define them in `./project/settings_prod.py`
 - make sure DJANGO_DEBUG is NOT set to True
