@@ -1,6 +1,6 @@
 import os
 
-from datetime import datetime
+import datetime
 
 from django.conf import settings
 from django.utils import timezone
@@ -108,7 +108,7 @@ class VehicleData(models.Model):
         return self.data['vehicle_state']['timestamp']
     @property
     def vehicle_state__timestamp_fmt(self):
-        return datetime.utcfromtimestamp(int(self.data['vehicle_state']['timestamp'] / 1000)).replace(tzinfo=timezone.utc)
+        return datetime.datetime.utcfromtimestamp(int(self.data['vehicle_state']['timestamp'] / 1000)).replace(tzinfo=timezone.utc)
     @property
     def vehicle_state__odometer(self):
         return self.data['vehicle_state']['odometer']
@@ -133,7 +133,7 @@ class VehicleData(models.Model):
         return self.data['drive_state']['gps_as_of']
     @property
     def drive_state__gps_as_of_fmt(self):
-        return datetime.utcfromtimestamp(self.data['drive_state']['gps_as_of']).replace(tzinfo=timezone.utc)
+        return datetime.datetime.utcfromtimestamp(self.data['drive_state']['gps_as_of']).replace(tzinfo=timezone.utc)
     @property
     def drive_state__latitude(self):
         return self.data['drive_state']['latitude']
