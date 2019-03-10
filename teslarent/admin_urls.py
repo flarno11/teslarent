@@ -1,9 +1,12 @@
 import datetime
-from django.conf.urls import include, url
+import os
+
+from django.urls import path
 from django.contrib import admin
 
 from teslarent import admin_views
 from teslarent.models import Rental, Credentials
+
 
 urlpatterns = [
     #url(r'^$', admin.site.admin_view(admin.site.app_index), {'app_label': 'teslarent', 'extra_context': {
@@ -11,14 +14,14 @@ urlpatterns = [
     #    'past_rentals': Rental.objects.filter(end__lt=datetime.datetime.now()),
     #    'credentials': Credentials.objects.all(),
     #}}),
-    url(r'^$', admin_views.index),
-    url(r'^addCredentials$', admin_views.add_credentials),
-    url(r'^deleteCredentials/(?P<credentials_id>\d+)$', admin_views.delete_credentials),
-    url(r'^refreshCredentials/(?P<credentials_id>\d+)$', admin_views.refresh_credentials),
-    url(r'^addRental$', admin_views.add_rental),
-    url(r'^editRental/(?P<rental_id>\d+)$', admin_views.edit_rental),
-    url(r'^deleteRental/(?P<rental_id>\d+)$', admin_views.delete_rental),
-    url(r'^updateVehicles$', admin_views.update_vehicles),
+    path('', admin_views.index),
+    path('addCredentials', admin_views.add_credentials),
+    path('deleteCredentials/<int:credentials_id>', admin_views.delete_credentials),
+    path('refreshCredentials/<int:credentials_id>', admin_views.refresh_credentials),
+    path('addRental', admin_views.add_rental),
+    path('editRental/<int:rental_id>', admin_views.edit_rental),
+    path('deleteRental/<int:rental_id>', admin_views.delete_rental),
+    path('updateVehicles', admin_views.update_vehicles),
 
-    url(r'^ping$', admin_views.ping),
+    path('ping', admin_views.ping),
 ]

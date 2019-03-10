@@ -7,7 +7,6 @@ from django.conf import settings
 from teslarent.models import Credentials, Vehicle
 from teslarent.utils.crypt import decrypt
 
-MOCK_HOST = 'https://private-anon-c3ea970888-timdorr.apiary-mock.com'
 PRODUCTION_HOST = 'https://owner-api.teslamotors.com'
 
 log = logging.getLogger('teslaapi')
@@ -18,10 +17,7 @@ class ApiException(Exception):
 
 
 def get_host():
-    if settings.DEBUG:
-        return MOCK_HOST
-    else:
-        return PRODUCTION_HOST
+    return PRODUCTION_HOST
 
 
 def get_headers(credentials):
@@ -45,7 +41,7 @@ def login_and_save_credentials(credentials, password):
 
     log.debug('login on ' + get_host())
     r = requests\
-        .post(get_host() + '/oauth/token', json=body)\
+        .post(get_host() + '/oauth/token?grant_type=password', json=body)\
         .json()
 
     if 'access_token' in r and 'refresh_token' in r and 'expires_in' in r:
@@ -75,7 +71,7 @@ def refresh_token(credentials):
     }
 
     r = requests\
-        .post(get_host() + '/oauth/token', json=body)\
+        .post(get_host() + '/oauth/token?grant_type=refresh_token', json=body)\
         .json()
 
     if 'access_token' in r and 'refresh_token' in r and 'expires_in' in r:
@@ -94,11 +90,11 @@ def get_json(text):
     return json.loads(''.join(d))
 
 
-def req(req, credentials):
-    response = requests.get(get_host() + req, headers=get_headers(credentials))
+def req(req, credentials, method='get'):
+    response = requests.request(method, get_host() + req, headers=get_headers(credentials))
     log.debug('req=' + req + ', status=' + str(response.status_code) + ', resp=' + response.text.replace("\n", " "))
     if response.status_code != 200:
-        raise ApiException(req + " returned " + str(response.status_code))
+        raise ApiException(req + " returned " + str(response.status_code) + " (" + response.text + ")")
 
     r = get_json(response.text)
 
@@ -114,12 +110,24 @@ def list_vehicles(credentials):
     """
     d = req('/api/1/vehicles', credentials)
     return [{'id': v['id'],
+             'id_s': v['id_s'],
              'vehicleId': v['vehicle_id'],
              'displayName': v['display_name'],
+             'optionCodes': v['option_codes'],
              'color': v['color'],
              'vin': v['vin'],
              'state': v['state'],
              } for v in d]
+
+
+def wake_up(vehicle_id, credentials):
+    """
+    @type vehicle_id: Int
+    @type credentials: Credentials
+    @return state: String
+    """
+    d = req('/api/1/vehicles/' + str(vehicle_id) + '/wake_up', credentials, method='post')
+    return d['state']
 
 
 def is_mobile_enabled(vehicle_id, credentials):
@@ -129,6 +137,10 @@ def is_mobile_enabled(vehicle_id, credentials):
     @return true|false
     """
     return req('/api/1/vehicles/' + str(vehicle_id) + '/mobile_enabled', credentials)
+
+
+def get_vehicle_data(vehicle_id, credentials):
+    return req('/api/1/vehicles/' + str(vehicle_id) + '/vehicle_data', credentials)
 
 
 def get_charge_state(vehicle):
@@ -326,8 +338,15 @@ def load_vehicles(credentials):
         v_model.display_name = v['displayName'] if v['displayName'] else ''
         v_model.color = v['color'] if v['color'] else ''
         v_model.vin = v['vin']
-        v_model.state = v['state']
-        v_model.mobile_enabled = is_mobile_enabled(v_model.id, credentials)
+
+        vehicle_state = v['state']
+        if vehicle_state != 'online':
+            vehicle_state = wake_up(v_model.id, credentials)
+
+        if vehicle_state == 'online':  # returns 408 otherwise
+            v_model.mobile_enabled = is_mobile_enabled(v_model.id, credentials)
+
+        v_model.state = vehicle_state
         v_model.save()
 
 

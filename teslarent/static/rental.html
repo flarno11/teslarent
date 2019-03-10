@@ -33,23 +33,23 @@
     <div class="hvac">
         <h2>HVAC</h2>
         <div class="divTemperatureInOut">
-            <span>Inside: {{ climateSettings.insideTemp }} °C</span><br />
-            <span>Outside: {{ climateSettings.outsideTemp }} °C</span><br />
+            <span>Inside: {{ climateState.insideTemp }} °C</span><br />
+            <span>Outside: {{ climateState.outsideTemp }} °C</span><br />
         </div>
         <br />
 
         <div class="divTemperature">
             <button class="btnTemperature" ng-click="hvacSetTemperatureDecrease()">&lt;</button>
-            <span class="temperature">{{ climateSettings.driverTempSetting | number:1 }} °C</span>
+            <span class="temperature">{{ climateState.driverTempSetting | number:1 }} °C</span>
             <button class="btnTemperature" ng-click="hvacSetTemperatureIncrease()">&gt;</button>
         </div>
 
-        <!--Temp: <input type="number" step="0.5" style="width: 70px" ng-model="climateSettings.driverTempSetting" ng-change="hvacSetTemperature()" /> °C<br />
+        <!--Temp: <input type="number" step="0.5" style="width: 70px" ng-model="climateState.driverTempSetting" ng-change="hvacSetTemperature()" /> °C<br />
         -->
 
-        <!--<md-switch ng-model="climateSettings.autoConditioningOn" ng-change="hvacStartStop()">HVAC</md-switch>-->
-        <button ng-click="hvacStartStop()" ng-if="climateSettings.autoConditioningOn">TURN OFF</button>
-        <button ng-click="hvacStartStop()" ng-if="!climateSettings.autoConditioningOn">TURN ON</button>
+        <!--<md-switch ng-model="climateState.autoConditioningOn" ng-change="hvacStartStop()">HVAC</md-switch>-->
+        <button ng-click="hvacStartStop()" ng-if="climateState.autoConditioningOn">TURN OFF</button>
+        <button ng-click="hvacStartStop()" ng-if="!climateState.autoConditioningOn">TURN ON</button>
     </div>
 
     <div class="gps">
@@ -71,6 +71,6 @@
 <h2>Debug</h2>
 {{ vehicleState | json }}
 {{ chargeState | json }}
-{{ climateSettings | json }}
+{{ climateState | json }}
 {{ driveState | json }}
 {{ uiSettings | json }}

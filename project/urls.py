@@ -1,15 +1,14 @@
-from django.conf.urls import include, url
-
 from django.contrib import admin
-import teslarent.admin_urls
+from django.urls import include, path
+
 import teslarent.urls
 
 admin.autodiscover()
 
 
 urlpatterns = [
-    url(r'^$', teslarent.views.index, name='index'),
-    url(r'^rental/', include(teslarent.urls)),
-    url(r'^manage/', include(teslarent.admin_urls)),
-    url(r'^admin/', include(admin.site.urls)),
+    path('', teslarent.views.index, name='index'),
+    path('rental/', include('teslarent.urls')),
+    path('manage/', include('teslarent.admin_urls')),
+    path('admin/', admin.site.urls),
 ]

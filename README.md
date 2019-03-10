@@ -6,14 +6,16 @@ Choose between Docker, Generic Setup and Heroku
 
 ## Docker
 ```bash
+docker run -d -v $PWD/db:/var/lib/postresql -p 5432:5432 --name teslarent-postgres postgres
+
 docker build -t teslarent .
-docker run -d -p 444:443 --link mysql-teslarent:mysql -e DJANGO_ALLOWED_HOST='*' -e DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY --name teslarent teslarent
+docker run -d -p 444:443 --link teslarent-postgres:postgres -e DJANGO_ALLOWED_HOST='*' -e DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY --name teslarent teslarent
 ```
 
 ## Production deployment
 
 ### Environment variables
-- DATABASE_URL=postgres/mysql db config, e.g. postgres://postgres:password@192.168.100.100:5432/dbname
+- DATABASE_URL=postgres db config, e.g. postgres://postgres:password@192.168.100.100:5432/dbname
 - DJANGO_ALLOWED_HOST=your_domain
 - DJANGO_SECRET_KEY=random 50 symbol string, generate one with `from django.utils.crypto import get_random_string; get_random_string(50, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*(-_=+)')`
 - these variables cannot be set in Apache with SetEnv, either set them
@@ -23,11 +25,11 @@ docker run -d -p 444:443 --link mysql-teslarent:mysql -e DJANGO_ALLOWED_HOST='*'
 ### Generic Setup
 
 #### Requirements
-- Python (tested with version 3.5, others should be fine too)
+- Python (tested with version 3.7, others should be fine too)
  - virtualenv, e.g. python3-venv
-- Postgres or MySQL database
+- Postgres database (MySQL doesn't support JSONField for Vehicle Data)
 - Https Web Server with wsgi support, e.g. Apache with mod_wsgi
-  (https://docs.djangoproject.com/en/1.10/howto/deployment/wsgi/modwsgi/),
+  (https://docs.djangoproject.com/en/2.1/howto/deployment/wsgi/modwsgi/),
   see [apache2_wsgi_sample.conf](https://github.com/flarno11/teslarent/blob/master/apache2_wsgi_sample.conf), adjust python_app_dir and ssl certificates
 
 #### Setup

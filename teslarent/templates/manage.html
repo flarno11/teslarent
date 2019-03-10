@@ -32,11 +32,14 @@
         {% if not v.linked or not v.credentials %}
             <span style="color: gray">{{ v }} - inactive</span><br />
         {% else %}
-            {{ v.display_name }} {{ v.vin }}<br />
+            {{ v.display_name }} {{ v.vin }} {{ v.state }} (as of {{ v.updated_at }})<br />
         {% endif %}
     {% endfor %}
-    {% if not has_active_vehicle %}
+    {% if not has_any_vehicle %}
         There are no vehicles for your Tesla credentials, go get one <a href="https://www.tesla.com/">here</a><br />
+    {% endif %}
+    {% if not has_active_vehicle %}
+        There is no online vehicle or mobile access is disabled. Ensure that vehicle is online and mobile access is enabled. Wait 10 seconds and try again.<br />
     {% endif %}
     <form action="./updateVehicles" method="post">{% csrf_token %}
         <button type="submit">Update vehicle list</button>
