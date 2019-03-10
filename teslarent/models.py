@@ -108,7 +108,7 @@ class VehicleData(models.Model):
         return self.data['vehicle_state']['timestamp']
     @property
     def vehicle_state__timestamp_fmt(self):
-        return datetime.utcfromtimestamp(self.data['vehicle_state']['timestamp']).replace(tzinfo=timezone.utc)
+        return datetime.utcfromtimestamp(int(self.data['vehicle_state']['timestamp'] / 1000)).replace(tzinfo=timezone.utc)
     @property
     def vehicle_state__odometer(self):
         return self.data['vehicle_state']['odometer']

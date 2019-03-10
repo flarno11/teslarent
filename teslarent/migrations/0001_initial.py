@@ -66,6 +66,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='VehicleData',
             fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('data', django.contrib.postgres.fields.jsonb.JSONField()),
