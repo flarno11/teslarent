@@ -96,6 +96,7 @@ class VehicleDataAdmin(admin.ModelAdmin):
                     'climate_state__fan_status',
                     'climate_state__is_climate_on',
                     'climate_state__is_preconditioning',
+                    'climate_state__is_auto_conditioning_on',
                     )
 
     exclude = ('data',)

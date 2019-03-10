@@ -273,31 +273,35 @@ def set_temperature(vehicle, temperature):
     """
     @type vehicle: Vehicle
     """
-    r = requests.post(get_host() + '/api/1/vehicles/' + str(vehicle.id) + '/command/set_temps?driver_temp='
-                      + str(temperature) + '&passenger_temp=' + str(temperature),
-                      headers=get_headers(vehicle.credentials))
-    if r.status_code != 200:
-        raise ApiException("set_temperature failed with " + str(r.status_code) + " " + r.text)
+    response = requests.post(get_host() + '/api/1/vehicles/' + str(vehicle.id) + '/command/set_temps',
+                             data={'driver_temp': str(temperature), 'passenger_temp': str(temperature)},
+                             headers=get_headers(vehicle.credentials)
+                             )
+    log.debug('req=' + '/command/set_temps' + ', status=' + str(response.status_code) + ', resp=' + response.text.replace("\n", " "))
+    if response.status_code != 200:
+        raise ApiException("set_temperature failed with " + str(response.status_code) + " " + response.text)
 
 
 def set_hvac_start(vehicle):
     """
     @type vehicle: Vehicle
     """
-    r = requests.post(get_host() + '/api/1/vehicles/' + str(vehicle.id) + '/command/auto_conditioning_start',
-                      headers=get_headers(vehicle.credentials))
-    if r.status_code != 200:
-        raise ApiException("auto_conditioning_start failed with " + str(r.status_code) + " " + r.text)
+    response = requests.post(get_host() + '/api/1/vehicles/' + str(vehicle.id) + '/command/auto_conditioning_start',
+                             headers=get_headers(vehicle.credentials))
+    log.debug('req=' + '/command/auto_conditioning_start' + ', status=' + str(response.status_code) + ', resp=' + response.text.replace("\n", " "))
+    if response.status_code != 200:
+        raise ApiException("auto_conditioning_start failed with " + str(response.status_code) + " " + response.text)
 
 
 def set_hvac_stop(vehicle):
     """
     @type vehicle: Vehicle
     """
-    r = requests.post(get_host() + '/api/1/vehicles/' + str(vehicle.id) + '/command/auto_conditioning_stop',
-                      headers=get_headers(vehicle.credentials))
-    if r.status_code != 200:
-        raise ApiException("auto_conditioning_stop failed with " + str(r.status_code) + " " + r.text)
+    response = requests.post(get_host() + '/api/1/vehicles/' + str(vehicle.id) + '/command/auto_conditioning_stop',
+                             headers=get_headers(vehicle.credentials))
+    log.debug('req=' + '/command/auto_conditioning_stop' + ', status=' + str(response.status_code) + ', resp=' + response.text.replace("\n", " "))
+    if response.status_code != 200:
+        raise ApiException("auto_conditioning_stop failed with " + str(response.status_code) + " " + response.text)
 
 
 def load_vehicles(credentials):
