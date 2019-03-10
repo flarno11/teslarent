@@ -31,6 +31,22 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
+            name='Vehicle',
+            fields=[
+                ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('updated_at', models.DateTimeField(auto_now=True)),
+                ('linked', models.BooleanField(verbose_name='False if the credentials were removed or the vehicle is not listed anymore')),
+                ('id', models.BigIntegerField(primary_key=True, serialize=False)),
+                ('vehicle_id', models.BigIntegerField()),
+                ('display_name', models.CharField(max_length=200)),
+                ('color', models.CharField(max_length=200)),
+                ('vin', models.CharField(max_length=17)),
+                ('state', models.CharField(max_length=200)),
+                ('mobile_enabled', models.BooleanField(null=True)),
+                ('credentials', models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, to='teslarent.Credentials')),
+            ],
+        ),
+        migrations.CreateModel(
             name='Rental',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -45,22 +61,6 @@ class Migration(migrations.Migration):
                 ('odometer_start_updated_at', models.DateTimeField(blank=True, default=None, null=True)),
                 ('odometer_end', models.IntegerField(blank=True, default=None, null=True)),
                 ('odometer_end_updated_at', models.DateTimeField(blank=True, default=None, null=True)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='Vehicle',
-            fields=[
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('linked', models.BooleanField(verbose_name='False if the credentials were removed or the vehicle is not listed anymore')),
-                ('id', models.BigIntegerField(primary_key=True, serialize=False)),
-                ('vehicle_id', models.BigIntegerField()),
-                ('display_name', models.CharField(max_length=200)),
-                ('color', models.CharField(max_length=200)),
-                ('vin', models.CharField(max_length=17)),
-                ('state', models.CharField(max_length=200)),
-                ('mobile_enabled', models.BooleanField(null=True)),
-                ('credentials', models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, to='teslarent.Credentials')),
             ],
         ),
         migrations.CreateModel(
