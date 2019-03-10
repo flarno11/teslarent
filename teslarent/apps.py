@@ -7,6 +7,7 @@ class TeslaRentConfig(AppConfig):
     name = 'teslarent'
     verbose_name = "Tesla Rent"
 
+    # TODO not used and not needed anymore? runserver also trigger wsgi.py
     def ready(self):
         # prevent running from tests and other commands
         # if len(sys.argv) == 1 and (sys.argv[0] == 'mod_wsgi' or sys.argv[0] == 'runserver'):

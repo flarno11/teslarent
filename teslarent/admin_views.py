@@ -18,9 +18,10 @@ log = logging.getLogger('manage')
 
 @json_view
 def ping(request):
-    t = BackgroundTask.Instance()
-    t.ensure_thread_running()
-    return JsonResponse({'initialized_at': t.initialized_at})
+    #t = BackgroundTask.Instance()
+    #t.ensure_thread_running()
+    #return JsonResponse({'initialized_at': t.initialized_at})
+    return JsonResponse({'initialized_at': None})
 
 
 def each_context(request):
@@ -45,6 +46,7 @@ def index(request):
         past_rentals=Rental.objects.filter(end__lt=now).order_by('-start'),
         credentials=Credentials.objects.all(),
         vehicles=vehicles,
+        has_any_vehicle=len(vehicles) > 0,
         has_active_vehicle=any([v.is_active for v in vehicles]),
     )
     return render(request, 'manage.html', context)

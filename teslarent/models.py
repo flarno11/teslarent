@@ -1,11 +1,12 @@
 import os
 
-import datetime
+from datetime import datetime
 
 from django.conf import settings
 from django.utils import timezone
 from django.db import models
 from django.db.models import Q
+from django.contrib.postgres.fields import JSONField
 
 from teslarent.utils.crypt import encrypt
 
@@ -45,7 +46,7 @@ class Vehicle(models.Model):
     color = models.CharField(max_length=200)
     vin = models.CharField(max_length=17)
     state = models.CharField(max_length=200)
-    mobile_enabled = models.BooleanField()
+    mobile_enabled = models.BooleanField(null=True)
 
     @property
     def is_active(self):
@@ -62,7 +63,7 @@ class Vehicle(models.Model):
 class Rental(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    vehicle = models.ForeignKey(Vehicle)
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
     start = models.DateTimeField()
     end = models.DateTimeField()
     description = models.TextField(default=None, blank=True, null=True)
@@ -90,3 +91,111 @@ class Rental(models.Model):
             return rental.start
         else:
             return rental.end
+
+
+class VehicleData(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
+    data = JSONField()
+
+    @property
+    def state(self):
+        return self.data['state']
+
+    @property
+    def vehicle_state__timestamp(self):
+        return self.data['vehicle_state']['timestamp']
+    @property
+    def vehicle_state__timestamp_fmt(self):
+        return datetime.utcfromtimestamp(self.data['vehicle_state']['timestamp']).replace(tzinfo=timezone.utc)
+    @property
+    def vehicle_state__odometer(self):
+        return self.data['vehicle_state']['odometer']
+    @property
+    def vehicle_state__locked(self):
+        return self.data['vehicle_state']['locked']
+    @property
+    def vehicle_state__valet_mode(self):
+        return self.data['vehicle_state']['valet_mode']
+    @property
+    def vehicle_state__software_update__status(self):
+        return self.data['vehicle_state']['software_update']['status']
+
+    @property
+    def drive_state__power(self):
+        return self.data['drive_state']['power']
+    @property
+    def drive_state__speed(self):
+        return self.data['drive_state']['speed']
+    @property
+    def drive_state__gps_as_of(self):
+        return self.data['drive_state']['gps_as_of']
+    @property
+    def drive_state__gps_as_of_fmt(self):
+        return datetime.utcfromtimestamp(self.data['drive_state']['gps_as_of']).replace(tzinfo=timezone.utc)
+    @property
+    def drive_state__latitude(self):
+        return self.data['drive_state']['latitude']
+    @property
+    def drive_state__longitude(self):
+        return self.data['drive_state']['longitude']
+    @property
+    def drive_state__heading(self):
+        return self.data['drive_state']['heading']
+
+    @property
+    def charge_state__battery_level(self):
+        return self.data['charge_state']['battery_level']
+    @property
+    def charge_state__usable_battery_level(self):
+        return self.data['charge_state']['usable_battery_level']
+    @property
+    def charge_state__battery_range(self):
+        return self.data['charge_state']['battery_range']
+    @property
+    def charge_state__est_battery_range(self):
+        return self.data['charge_state']['est_battery_range']
+    @property
+    def charge_state__battery_heater_on(self):
+        return self.data['charge_state']['battery_heater_on']
+    @property
+    def charge_state__charge_rate(self):
+        return self.data['charge_state']['charge_rate']
+    @property
+    def charge_state__charger_power(self):
+        return self.data['charge_state']['charger_power']
+    @property
+    def charge_state__charger_voltage(self):
+        return self.data['charge_state']['charger_voltage']
+    @property
+    def charge_state__charging_state(self):
+        return self.data['charge_state']['charging_state']
+    @property
+    def charge_state__time_to_full_charge(self):
+        return self.data['charge_state']['time_to_full_charge']
+
+    @property
+    def climate_state__inside_temp(self):
+        return self.data['climate_state']['inside_temp']
+    @property
+    def climate_state__outside_temp(self):
+        return self.data['climate_state']['outside_temp']
+    @property
+    def climate_state__battery_heater(self):
+        return self.data['climate_state']['battery_heater']
+    @property
+    def climate_state__driver_temp_setting(self):
+        return self.data['climate_state']['driver_temp_setting']
+    @property
+    def climate_state__passenger_temp_setting(self):
+        return self.data['climate_state']['passenger_temp_setting']
+    @property
+    def climate_state__fan_status(self):
+        return self.data['climate_state']['fan_status']
+    @property
+    def climate_state__is_climate_on(self):
+        return self.data['climate_state']['is_climate_on']
+    @property
+    def climate_state__is_preconditioning(self):
+        return self.data['climate_state']['is_preconditioning']

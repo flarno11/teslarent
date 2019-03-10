@@ -63,10 +63,10 @@ angular.module("myApp", ['ngRoute', ]) //'ngMaterial',
                 $scope.chargeState = chargeState;
 
                 var driveState = response.data.driveState;
-                driveState.gpsAsOf = moment(response.data.driveState.gpsAsOf).toDate();
+                driveState.gpsAsOf = moment(driveState.gpsAsOf).toDate();
                 $scope.driveState = driveState;
 
-                setClimateSettings(response.data.climateSettings);
+                setClimateState(response.data.climateState);
                 $scope.uiSettings = response.data.uiSettings;
             }
 
@@ -76,23 +76,23 @@ angular.module("myApp", ['ngRoute', ]) //'ngMaterial',
         });
     };
 
-    function setClimateSettings(climateSettings) {
-        climateSettings.driverTempSetting = Math.round(climateSettings.driverTempSetting*2)/2;
-        $scope.climateSettings = climateSettings;
+    function setClimateState(climateState) {
+        climateState.driverTempSetting = Math.round(climateState.driverTempSetting*2)/2;
+        $scope.climateState = climateState;
     }
 
     $scope.hvacSetTemperatureDecrease = function() {
-        $scope.climateSettings.driverTempSetting -= 0.5;
+        $scope.climateState.driverTempSetting -= 0.5;
         $scope.hvacSetTemperature();
     }
     $scope.hvacSetTemperatureIncrease = function() {
-        $scope.climateSettings.driverTempSetting += 0.5;
+        $scope.climateState.driverTempSetting += 0.5;
         $scope.hvacSetTemperature();
     }
 
     $scope.hvacSetTemperature = function() {
-        $http.post('/rental/api/' + code + '/hvac/temperature/' + (10 * $scope.climateSettings.driverTempSetting)).then(function successCallback(response) {
-            setClimateSettings(response.data.climateSettings);
+        $http.post('/rental/api/' + code + '/hvac/temperature/' + (10 * $scope.climateState.driverTempSetting)).then(function successCallback(response) {
+            setClimateState(response.data.climateState);
           }, function errorCallback(response) {
             $log.error(response);
         });
@@ -100,9 +100,9 @@ angular.module("myApp", ['ngRoute', ]) //'ngMaterial',
 
     $scope.hvacStartStop = function() {
         // md-switch triggers first onchange before updating the model -> invert model current value
-        var startStop = !$scope.climateSettings.isAutoConditioning ? 'hvacStart' : 'hvacStop';
+        var startStop = !$scope.climateState.isAutoConditioning ? 'hvacStart' : 'hvacStop';
         $http.post('/rental/api/' + code + '/' + startStop).then(function successCallback(response) {
-            setClimateSettings(response.data.climateSettings);
+            setClimateState(response.data.climateState);
           }, function errorCallback(response) {
             $log.error(response);
         });
