@@ -354,6 +354,11 @@ def load_vehicles(credentials):
         v_model.save()
 
 
+def print_vehicles():
+    for c in Credentials.objects.all():
+        print(list_vehicles(c))
+
+
 def update_all_vehicles():
     for c in Credentials.objects.all():
         load_vehicles(c)
