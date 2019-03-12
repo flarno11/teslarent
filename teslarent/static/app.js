@@ -100,7 +100,7 @@ angular.module("myApp", ['ngRoute', ]) //'ngMaterial',
 
     $scope.hvacStartStop = function() {
         // md-switch triggers first onchange before updating the model -> invert model current value
-        var startStop = !$scope.climateState.isAutoConditioning ? 'hvacStart' : 'hvacStop';
+        var startStop = !$scope.climateState.autoConditioningOn ? 'hvacStart' : 'hvacStop';
         $http.post('/rental/api/' + code + '/' + startStop).then(function successCallback(response) {
             setClimateState(response.data.climateState);
           }, function errorCallback(response) {

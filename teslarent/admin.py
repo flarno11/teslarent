@@ -83,6 +83,7 @@ class VehicleDataAdmin(admin.ModelAdmin):
                     'charge_state__battery_level',
                     'charge_state__usable_battery_level',
                     'charge_state__battery_range',
+                    'charge_state__est_battery_range',
                     'charge_state__charge_rate',
                     'charge_state__charger_power',
                     'charge_state__charger_voltage',
@@ -96,6 +97,7 @@ class VehicleDataAdmin(admin.ModelAdmin):
                     'climate_state__fan_status',
                     'climate_state__is_climate_on',
                     'climate_state__is_preconditioning',
+                    'climate_state__is_auto_conditioning_on',
                     )
 
     exclude = ('data',)

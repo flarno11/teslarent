@@ -199,3 +199,6 @@ class VehicleData(models.Model):
     @property
     def climate_state__is_preconditioning(self):
         return self.data['climate_state']['is_preconditioning']
+    @property
+    def climate_state__is_auto_conditioning_on(self):
+        return self.data['climate_state']['is_auto_conditioning_on']

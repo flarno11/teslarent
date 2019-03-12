@@ -4,6 +4,7 @@ from jsonview.decorators import json_view
 
 from teslarent.models import Rental, VehicleData
 from teslarent.teslaapi import teslaapi
+from teslarent.teslaapi.teslaapi import get_vehicle_data
 
 
 def index(request):
@@ -23,6 +24,15 @@ def get_rental(uuid, validate_active):
         raise Http404
 
     return rental
+
+
+def get_climate_state(vehicle_data):
+    return {
+        'insideTemp': vehicle_data.climate_state__inside_temp,
+        'outsideTemp': vehicle_data.climate_state__outside_temp,
+        'driverTempSetting': vehicle_data.climate_state__driver_temp_setting,
+        'autoConditioningOn': vehicle_data.climate_state__is_auto_conditioning_on,
+    }
 
 
 @json_view
@@ -60,18 +70,21 @@ def info(request, uuid):
                 'locked': latest_vehicle_data.vehicle_state__locked,
                 'odometer': latest_vehicle_data.vehicle_state__odometer,
             },
-            'climateState': {
-                'insideTemp': latest_vehicle_data.climate_state__inside_temp,
-                'outsideTemp': latest_vehicle_data.climate_state__outside_temp,
-                'driverTempSetting': latest_vehicle_data.climate_state__driver_temp_setting,
-                'autoConditioningOn': latest_vehicle_data.climate_state__driver_temp_setting,
-            },
+            'climateState': get_climate_state(latest_vehicle_data),
             'uiSettings': {},
         })
     else:
         return JsonResponse({
             'rental': rental_info,
         })
+
+
+def fetch_and_save_vehicle_state(vehicle):
+    vehicle_data = VehicleData()
+    vehicle_data.vehicle = vehicle
+    vehicle_data.data = get_vehicle_data(vehicle.id, vehicle.credentials)
+    vehicle_data.save()
+    return vehicle_data
 
 
 @json_view
@@ -81,8 +94,9 @@ def hvac_start(request, uuid):
 
     rental = get_rental(uuid, validate_active=True)
     teslaapi.set_hvac_start(rental.vehicle)
+    vehicle_data = fetch_and_save_vehicle_state(rental.vehicle)
     return JsonResponse({
-        'climateState': teslaapi.get_climate_settings(rental.vehicle),
+        'climateState': get_climate_state(vehicle_data),
     })
 
 
@@ -93,8 +107,9 @@ def hvac_stop(request, uuid):
 
     rental = get_rental(uuid, validate_active=True)
     teslaapi.set_hvac_stop(rental.vehicle)
+    vehicle_data = fetch_and_save_vehicle_state(rental.vehicle)
     return JsonResponse({
-        'climateState': teslaapi.get_climate_settings(rental.vehicle),
+        'climateState': get_climate_state(vehicle_data),
     })
 
 
@@ -105,6 +120,7 @@ def hvac_set_temperature(request, uuid, temperature):
 
     rental = get_rental(uuid, validate_active=True)
     teslaapi.set_temperature(rental.vehicle, int(temperature)/10)
+    vehicle_data = fetch_and_save_vehicle_state(rental.vehicle)
     return JsonResponse({
-        'climateState': teslaapi.get_climate_settings(rental.vehicle),
+        'climateState': get_climate_state(vehicle_data),
     })
