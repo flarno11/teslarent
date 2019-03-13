@@ -65,7 +65,8 @@ class RentalAdmin(admin.ModelAdmin):
 
 @admin.register(VehicleData)
 class VehicleDataAdmin(admin.ModelAdmin):
-    list_display = ('vehicle',
+    list_display = ('created_at',
+                    'vehicle',
                     'state',
                     'vehicle_state__timestamp_fmt',
                     'vehicle_state__timestamp',
