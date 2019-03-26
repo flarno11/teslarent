@@ -5,3 +5,5 @@ venv/
 project/staticfiles
 settings_prod.py
 db
+deploy.sh
+
