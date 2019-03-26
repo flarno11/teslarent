@@ -108,16 +108,7 @@ def list_vehicles(credentials):
     """
     @type credentials: Credentials
     """
-    d = req('/api/1/vehicles', credentials)
-    return [{'id': v['id'],
-             'id_s': v['id_s'],
-             'vehicleId': v['vehicle_id'],
-             'displayName': v['display_name'],
-             'optionCodes': v['option_codes'],
-             'color': v['color'],
-             'vin': v['vin'],
-             'state': v['state'],
-             } for v in d]
+    return req('/api/1/vehicles', credentials)
 
 
 def wake_up(vehicle_id, credentials):

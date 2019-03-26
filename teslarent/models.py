@@ -100,105 +100,118 @@ class VehicleData(models.Model):
     data = JSONField()
 
     @property
+    def is_km(self):
+        return self.data['gui_settings']['gui_distance_units'] == 'km/hr' if 'gui_settings' in self.data else None
+    @property
+    def factor_mi_to_km(self):
+        return 1.609344 if self.is_km else 1.0
+
+    @property
     def state(self):
         return self.data['state']
 
     @property
+    def is_offline(self):
+        return self.state == 'offline'
+
+
+    @property
     def vehicle_state__timestamp(self):
-        return self.data['vehicle_state']['timestamp']
+        return self.data['vehicle_state']['timestamp'] if 'vehicle_state' in self.data else None
     @property
     def vehicle_state__timestamp_fmt(self):
-        return datetime.datetime.utcfromtimestamp(int(self.data['vehicle_state']['timestamp'] / 1000)).replace(tzinfo=timezone.utc)
+        return datetime.datetime.utcfromtimestamp(int(self.data['vehicle_state']['timestamp'] / 1000)).replace(tzinfo=timezone.utc) if 'vehicle_state' in self.data else None
     @property
     def vehicle_state__odometer(self):
-        return self.data['vehicle_state']['odometer']
+        return self.data['vehicle_state']['odometer']*self.factor_mi_to_km if 'vehicle_state' in self.data else None
     @property
     def vehicle_state__locked(self):
-        return self.data['vehicle_state']['locked']
+        return self.data['vehicle_state']['locked'] if 'vehicle_state' in self.data else None
     @property
     def vehicle_state__valet_mode(self):
-        return self.data['vehicle_state']['valet_mode']
+        return self.data['vehicle_state']['valet_mode'] if 'vehicle_state' in self.data else None
     @property
     def vehicle_state__software_update__status(self):
-        return self.data['vehicle_state']['software_update']['status']
+        return self.data['vehicle_state']['software_update']['status'] if 'vehicle_state' in self.data else None
 
     @property
     def drive_state__power(self):
-        return self.data['drive_state']['power']
+        return self.data['drive_state']['power'] if 'drive_state' in self.data else None
     @property
     def drive_state__speed(self):
-        return self.data['drive_state']['speed']
+        if 'drive_state' in self.data and self.data['drive_state']['speed']:
+            return self.data['drive_state']['speed']*self.factor_mi_to_km
     @property
     def drive_state__gps_as_of(self):
-        return self.data['drive_state']['gps_as_of']
+        return self.data['drive_state']['gps_as_of'] if 'drive_state' in self.data else None
     @property
     def drive_state__gps_as_of_fmt(self):
-        return datetime.datetime.utcfromtimestamp(self.data['drive_state']['gps_as_of']).replace(tzinfo=timezone.utc)
+        return datetime.datetime.utcfromtimestamp(self.data['drive_state']['gps_as_of']).replace(tzinfo=timezone.utc) if 'drive_state' in self.data else None
     @property
     def drive_state__latitude(self):
-        return self.data['drive_state']['latitude']
+        return self.data['drive_state']['latitude'] if 'drive_state' in self.data else None
     @property
     def drive_state__longitude(self):
-        return self.data['drive_state']['longitude']
+        return self.data['drive_state']['longitude'] if 'drive_state' in self.data else None
     @property
     def drive_state__heading(self):
-        return self.data['drive_state']['heading']
+        return self.data['drive_state']['heading'] if 'drive_state' in self.data else None
 
     @property
     def charge_state__battery_level(self):
-        return self.data['charge_state']['battery_level']
+        return self.data['charge_state']['battery_level'] if 'charge_state' in self.data else None
     @property
     def charge_state__usable_battery_level(self):
-        return self.data['charge_state']['usable_battery_level']
+        return self.data['charge_state']['usable_battery_level'] if 'charge_state' in self.data else None
     @property
     def charge_state__battery_range(self):
-        return self.data['charge_state']['battery_range']
+        return self.data['charge_state']['battery_range']*self.factor_mi_to_km if 'charge_state' in self.data else None
     @property
     def charge_state__est_battery_range(self):
-        return self.data['charge_state']['est_battery_range']
+        return self.data['charge_state']['est_battery_range']*self.factor_mi_to_km if 'charge_state' in self.data else None
     @property
     def charge_state__battery_heater_on(self):
-        return self.data['charge_state']['battery_heater_on']
+        return self.data['charge_state']['battery_heater_on'] if 'charge_state' in self.data else None
     @property
     def charge_state__charge_rate(self):
-        return self.data['charge_state']['charge_rate']
+        return self.data['charge_state']['charge_rate'] if 'charge_state' in self.data else None
     @property
     def charge_state__charger_power(self):
-        return self.data['charge_state']['charger_power']
+        return self.data['charge_state']['charger_power'] if 'charge_state' in self.data else None
     @property
     def charge_state__charger_voltage(self):
-        return self.data['charge_state']['charger_voltage']
+        return self.data['charge_state']['charger_voltage'] if 'charge_state' in self.data else None
     @property
     def charge_state__charging_state(self):
-        return self.data['charge_state']['charging_state']
+        return self.data['charge_state']['charging_state'] if 'charge_state' in self.data else None
     @property
     def charge_state__time_to_full_charge(self):
-        return self.data['charge_state']['time_to_full_charge']
+        return self.data['charge_state']['time_to_full_charge'] if 'charge_state' in self.data else None
 
     @property
     def climate_state__inside_temp(self):
-        return self.data['climate_state']['inside_temp']
+        return self.data['climate_state']['inside_temp'] if 'climate_state' in self.data else None
     @property
     def climate_state__outside_temp(self):
-        return self.data['climate_state']['outside_temp']
+        return self.data['climate_state']['outside_temp'] if 'climate_state' in self.data else None
     @property
     def climate_state__battery_heater(self):
-        return self.data['climate_state']['battery_heater']
+        return self.data['climate_state']['battery_heater'] if 'climate_state' in self.data else None
     @property
     def climate_state__driver_temp_setting(self):
-        return self.data['climate_state']['driver_temp_setting']
+        return self.data['climate_state']['driver_temp_setting'] if 'climate_state' in self.data else None
     @property
     def climate_state__passenger_temp_setting(self):
-        return self.data['climate_state']['passenger_temp_setting']
+        return self.data['climate_state']['passenger_temp_setting'] if 'climate_state' in self.data else None
     @property
     def climate_state__fan_status(self):
-        return self.data['climate_state']['fan_status']
+        return self.data['climate_state']['fan_status'] if 'climate_state' in self.data else None
     @property
     def climate_state__is_climate_on(self):
-        return self.data['climate_state']['is_climate_on']
+        return self.data['climate_state']['is_climate_on'] if 'climate_state' in self.data else None
     @property
     def climate_state__is_preconditioning(self):
-        return self.data['climate_state']['is_preconditioning']
+        return self.data['climate_state']['is_preconditioning'] if 'climate_state' in self.data else None
     @property
     def climate_state__is_auto_conditioning_on(self):
-        return self.data['climate_state']['is_auto_conditioning_on']
+        return self.data['climate_state']['is_auto_conditioning_on'] if 'climate_state' in self.data else None

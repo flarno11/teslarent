@@ -5,6 +5,7 @@ import datetime
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin.views.decorators import staff_member_required
+from django.http import HttpResponse
 from django.http.response import Http404, JsonResponse
 from django.shortcuts import redirect, render
 from jsonview.decorators import json_view
@@ -31,6 +32,24 @@ def each_context(request):
         'site_header': "Tesla Rental Admin",
         'has_permission': admin.site.has_permission(request),
     }
+
+
+def metrics(request):
+    content = []
+
+    vehicles = Vehicle.objects.all()
+    for vehicle in vehicles:
+        latest_vehicle_data = VehicleData.objects.filter(vehicle=vehicle).order_by('-created_at')[0]
+
+        content.append('vehicle_updated_at{vehicle="' + str(vehicle.id) + '"} ' + str(latest_vehicle_data.created_at.timestamp()))
+
+        if latest_vehicle_data.is_offline:
+            content.append('vehicle_offline{vehicle="' + str(vehicle.id) + '"} 1')
+        else:
+            content.append('vehicle_offline{vehicle="' + str(vehicle.id) + '"} 0')
+
+    content.append('')
+    return HttpResponse("\n".join(content), content_type='text/plain')
 
 
 @staff_member_required
@@ -152,3 +171,29 @@ def add_or_edit_rental(request, rental):
     )
     return render(request, 'edit_rental.html', context)
 
+
+@staff_member_required
+def charge_stats(request, vehicle_id):
+    context = dict(
+        each_context(request),
+        vehicle_id=vehicle_id,
+    )
+    return render(request, 'charge_stats.html', context)
+
+
+@staff_member_required
+def charge_stats_data(request, vehicle_id, offset, limit):
+    results = []
+    previous_battery_level = None
+    for d in VehicleData.objects\
+            .filter(vehicle_id=vehicle_id)\
+            .filter(data__charge_state__battery_level__isnull=False)\
+            .order_by('created_at')[offset:offset + limit]:
+        if not previous_battery_level or d.charge_state__battery_level != previous_battery_level:
+            results.append({
+                'createdAt': d.created_at,
+                'batteryLevel': d.charge_state__battery_level,
+                'odometer': d.vehicle_state__odometer,
+            })
+            previous_battery_level = d.charge_state__battery_level
+    return JsonResponse({'items': results})

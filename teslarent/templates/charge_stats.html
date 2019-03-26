@@ -1,0 +1,65 @@
+{% extends "admin/index.html" %}
+{% load i18n %}
+
+{% block content_title %}{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    .dashboard #content {
+        margin-left: 10px;
+        margin-right: 10px;
+        width: unset;
+    }
+
+    #content-related {
+        margin-right: 0px;
+    }
+
+    #chart_div {
+        height: 300px;
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="chart_div"></div>
+<br class="clear">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+
+  google.charts.load('current', {'packages':['annotationchart']});
+  google.charts.setOnLoadCallback(drawChart);
+
+  function drawChart() {
+    $.getJSON( "../chargeStatsData/{{ vehicle_id }}/0/1000", function( chargeData ) {
+        var data = new google.visualization.DataTable();
+        data.addColumn('date', 'Date');
+        data.addColumn('number', 'Battery level');
+
+        $.each( chargeData.items, function( key, val ) {
+            console.log(moment(val.createdAt).toDate(), val.batteryLevel);
+            data.addRow([moment(val.createdAt).toDate(), val.batteryLevel]);
+        });
+
+        var chart = new google.visualization.AnnotationChart(document.getElementById('chart_div'));
+
+        var options = {
+          displayAnnotations: true,
+          min: 0,
+          max: 100
+        };
+
+        chart.draw(data, options);
+    });
+  }
+</script>
+
+
+{% endblock %}
+
+
