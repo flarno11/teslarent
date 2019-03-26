@@ -6,7 +6,7 @@ Choose between Docker, Generic Setup and Heroku
 
 ## Docker
 ```bash
-docker run -d -v $PWD/db:/var/lib/postresql -p 5432:5432 --name teslarent-postgres postgres
+docker run -d -v $PWD/db:/var/lib/postgresql/data -p 5432:5432 --name teslarent-postgres postgres
 
 docker build -t teslarent .
 docker run -d -p 444:443 --link teslarent-postgres:postgres -e DJANGO_ALLOWED_HOST='*' -e DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY --name teslarent teslarent

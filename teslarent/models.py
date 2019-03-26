@@ -111,6 +111,11 @@ class VehicleData(models.Model):
         return self.data['state']
 
     @property
+    def is_offline(self):
+        return self.state == 'offline'
+
+
+    @property
     def vehicle_state__timestamp(self):
         return self.data['vehicle_state']['timestamp'] if 'vehicle_state' in self.data else None
     @property

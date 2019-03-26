@@ -32,7 +32,7 @@
         {% if not v.linked or not v.credentials %}
             <span style="color: gray">{{ v }} - inactive</span><br />
         {% else %}
-            {{ v.display_name }} {{ v.vin }} {{ v.state }} (as of {{ v.updated_at }})<br />
+            {{ v.display_name }} {{ v.vin }} {{ v.state }} (as of {{ v.updated_at }}, <a href="./chargeStats/{{ v.id }}">Charge Stats</a>)<br />
         {% endif %}
     {% endfor %}
     {% if not has_any_vehicle %}
