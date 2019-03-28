@@ -24,6 +24,8 @@ urlpatterns = [
     path('updateVehicles', admin_views.update_vehicles),
     path('chargeStats/<int:vehicle_id>', admin_views.charge_stats),
     path('chargeStatsData/<int:vehicle_id>/<int:offset>/<int:limit>', admin_views.charge_stats_data),
+    path('dailyStatsData/<int:vehicle_id>/<int:offset>/<int:limit>', admin_views.daily_stats_data),
+    path('rawData/<int:vehicle_id>/<int:offset>/<int:limit>', admin_views.raw_data),
 
     path('ping', admin_views.ping),
 ]

@@ -48,29 +48,32 @@ def info(request, uuid):
     }
 
     if rental.is_active:
-        latest_vehicle_data = VehicleData.objects.filter(vehicle=rental.vehicle).order_by('-created_at')[0]
+        d = VehicleData.objects\
+            .filter(vehicle=rental.vehicle) \
+            .filter(data__charge_state__isnull=False) \
+            .order_by('-created_at')[0]
 
         return JsonResponse({
             'rental': rental_info,
             'chargeState': {
-                'chargingState': latest_vehicle_data.charge_state__charging_state,
-                'chargerPower': latest_vehicle_data.charge_state__charger_power,
-                'batteryLevel': latest_vehicle_data.charge_state__usable_battery_level,
-                'estBatteryRange': latest_vehicle_data.charge_state__est_battery_range,
-                'timeToFullCharge': latest_vehicle_data.charge_state__time_to_full_charge,
+                'chargingState': d.charge_state__charging_state,
+                'chargerPower': d.charge_state__charger_power,
+                'batteryLevel': d.charge_state__usable_battery_level,
+                'estBatteryRange': int(d.charge_state__est_battery_range),
+                'timeToFullCharge': d.charge_state__time_to_full_charge,
             },
             'driveState': {
-                'gpsAsOf': latest_vehicle_data.drive_state__gps_as_of_fmt,
-                'longitude': latest_vehicle_data.drive_state__longitude,
-                'latitude': latest_vehicle_data.drive_state__latitude,
-                'speed': latest_vehicle_data.drive_state__speed,
+                'gpsAsOf': d.drive_state__gps_as_of_fmt,
+                'longitude': d.drive_state__longitude,
+                'latitude': d.drive_state__latitude,
+                'speed': d.drive_state__speed if d.drive_state__speed else 0,
             },
             'vehicleState': {
-                'timestamp': latest_vehicle_data.vehicle_state__timestamp,
-                'locked': latest_vehicle_data.vehicle_state__locked,
-                'odometer': latest_vehicle_data.vehicle_state__odometer,
+                'timestamp': d.vehicle_state__timestamp,
+                'locked': d.vehicle_state__locked,
+                'odometer': int(d.vehicle_state__odometer),
             },
-            'climateState': get_climate_state(latest_vehicle_data),
+            'climateState': get_climate_state(d),
             'uiSettings': {},
         })
     else:

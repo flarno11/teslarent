@@ -39,19 +39,26 @@
     $.getJSON( "../chargeStatsData/{{ vehicle_id }}/0/1000", function( chargeData ) {
         var data = new google.visualization.DataTable();
         data.addColumn('date', 'Date');
-        data.addColumn('number', 'Battery level');
+        data.addColumn('number', 'Battery level [%]');
+        data.addColumn('number', 'Battery level [kWh]');
+        data.addColumn('number', 'Distance [km]');
+        data.addColumn('number', 'Speed [km/h]')
+        data.addColumn('number', 'Efficiency [Wh/km]');
 
         $.each( chargeData.items, function( key, val ) {
-            console.log(moment(val.createdAt).toDate(), val.batteryLevel);
-            data.addRow([moment(val.createdAt).toDate(), val.batteryLevel]);
+            data.addRow([moment(val.createdAt).toDate(), val.batteryLevel, val.batteryLevelKWh, val.distance, val.speedAvg, val.efficiency]);
         });
 
         var chart = new google.visualization.AnnotationChart(document.getElementById('chart_div'));
 
         var options = {
           displayAnnotations: true,
-          min: 0,
-          max: 100
+          //min: 0,
+          //max: 100
+          chart: {
+            vAxes: { 0: { minValue: 0, maxValue: 100 }, 1: { minValue: 0, maxValue: 400 } },
+            series: { 0: { targetAxisIndex: 0 }, 1: { targetAxisIndex: 0 }, 2: { targetAxisIndex: 0 }, 3: { targetAxisIndex: 0 }, 4: { targetAxisIndex: 1 } }
+          }
         };
 
         chart.draw(data, options);

@@ -329,8 +329,8 @@ def load_vehicles(credentials):
             v_model.credentials = credentials
 
         v_model.linked = True
-        v_model.vehicle_id = v['vehicleId']
-        v_model.display_name = v['displayName'] if v['displayName'] else ''
+        v_model.vehicle_id = v['vehicle_id']
+        v_model.display_name = v['display_name'] if v['display_name'] else ''
         v_model.color = v['color'] if v['color'] else ''
         v_model.vin = v['vin']
 
