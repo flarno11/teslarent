@@ -114,6 +114,13 @@ class VehicleData(models.Model):
     def is_offline(self):
         return self.state == 'offline'
 
+    @property
+    def battery_soc_kwh(self):
+        # 285.63km added battery range corresponds to 41.713kWh charged, 41.713/285.63 = 0.146038581381508
+        # 255.87km added battery range corresponds to 37.255kWh charged, 37.255/255.87 = 0.145601281900965
+        # 254.85km added battery range corresponds to 39.351kWh charged, 39.351/254.85 = 0.154408475573867
+        return self.charge_state__battery_range * 0.146
+
 
     @property
     def vehicle_state__timestamp(self):
@@ -169,6 +176,9 @@ class VehicleData(models.Model):
     @property
     def charge_state__est_battery_range(self):
         return self.data['charge_state']['est_battery_range']*self.factor_mi_to_km if 'charge_state' in self.data else None
+    @property
+    def charge_state__ideal_battery_range(self):
+        return self.data['charge_state']['ideal_battery_range']*self.factor_mi_to_km if 'charge_state' in self.data else None
     @property
     def charge_state__battery_heater_on(self):
         return self.data['charge_state']['battery_heater_on'] if 'charge_state' in self.data else None
