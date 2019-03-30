@@ -16,7 +16,7 @@
         margin-right: 0px;
     }
 
-    #chart_div {
+    #chart {
         height: 300px;
     }
 
@@ -24,7 +24,20 @@
 {% endblock %}
 
 {% block content %}
-<div id="chart_div"></div>
+<div id="chart"></div>
+<br /><br />
+<table id="dailyStats">
+    <tr>
+        <td>Date</td>
+        <td>Start Odo</td>
+        <td>End Odo</td>
+        <td>Distance [km]</td>
+        <td>Energe used [kWh]</td>
+        <td>Energe charged [kWh]</td>
+        <td>Efficiency [Wh/km]</td>
+    </tr>
+</table>
+
 <br class="clear">
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -49,7 +62,7 @@
             data.addRow([moment(val.createdAt).toDate(), val.batteryLevel, val.batteryLevelKWh, val.distance, val.speedAvg, val.efficiency]);
         });
 
-        var chart = new google.visualization.AnnotationChart(document.getElementById('chart_div'));
+        var chart = new google.visualization.AnnotationChart(document.getElementById('chart'));
 
         var options = {
           displayAnnotations: true,
@@ -64,6 +77,13 @@
         chart.draw(data, options);
     });
   }
+
+  $.getJSON( "../dailyStatsData/{{ vehicle_id }}/0/1000", function( data ) {
+    $.each(data.items, function(key, val) {
+        console.log(val);
+        $('#dailyStats').append("<tr><td>" + val.date + "</td><td>" + val.startOdo + "</td><td>" + val.endOdo + "</td><td>" + val.distance + "</td><td>" + val.usedKWh + "</td><td>" + val.chargedKWh + "</td><td>" + (val.efficiency != null ? val.efficiency : '') + "</td></tr>");
+    });
+  });
 </script>
 
 

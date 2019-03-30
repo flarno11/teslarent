@@ -240,13 +240,15 @@ def daily_stats_data(request, vehicle_id, offset, limit):
             newer_d = d
 
         if d.created_at.date() != current_day:
+            distance = start_d.vehicle_state__odometer - d.vehicle_state__odometer
             results.append({
                 'date': current_day,
                 'startOdo': round(d.vehicle_state__odometer, 2),
                 'endOdo': round(start_d.vehicle_state__odometer, 2),
-                'distance': round(start_d.vehicle_state__odometer - d.vehicle_state__odometer, 2),
+                'distance': round(distance, 2),
                 'chargedKWh': round(charged_kwh, 2),
-                'usedKWh': round(used_kwh, 2)
+                'usedKWh': round(used_kwh, 2),
+                'efficiency': round(used_kwh * 1000 / distance, 2) if distance > 1 else None,
             })
             start_d = d
             charged_kwh = 0
