@@ -20,10 +20,17 @@ class Command(BaseCommand):
                             dest='wakeup',
                             default=False,
                             help='Wake up vehicle if asleep')
+        parser.add_argument('--vehicleid',
+                            dest='vehicle_id',
+                            default=None,
+                            help='Only update selected vehicle')
 
     def handle(self, *args, **options):
         vehicles = Vehicle.objects.filter(linked=True)
         for vehicle in vehicles:
+            if 'vehicle_id' in options and options['vehicle_id'] and vehicle.id != options['vehicle_id']:
+                continue
+
             vehicle_data = VehicleData()
             vehicle_data.vehicle = vehicle
 
