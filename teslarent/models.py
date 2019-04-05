@@ -111,6 +111,10 @@ class VehicleData(models.Model):
         return self.data['state']
 
     @property
+    def is_online(self):
+        return self.state == 'online'
+
+    @property
     def is_offline(self):
         return self.state == 'offline'
 
