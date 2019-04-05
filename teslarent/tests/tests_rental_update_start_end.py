@@ -7,7 +7,7 @@ import requests_mock
 
 from teslarent.management.commands import rental_start_end
 from teslarent.models import *
-from teslarent.tests.tests_teslaapi import CURRENT_VEHICLE_ID, VEHICLE_STATE_RESPONSE
+from teslarent.tests.tests_teslaapi import CURRENT_VEHICLE_ID, VEHICLE_DATA_RESPONSE
 
 
 class RentalStartEndTestCase(TestCase):
@@ -56,7 +56,7 @@ class RentalStartEndTestCase(TestCase):
         self.assertIsNone(r.odometer_end_updated_at)
 
         with requests_mock.mock() as m:
-            m.get('/api/1/vehicles/' + str(CURRENT_VEHICLE_ID) + '/data_request/vehicle_state', text=VEHICLE_STATE_RESPONSE)
+            m.get('/api/1/vehicles/' + str(CURRENT_VEHICLE_ID) + '/vehicle_data', text=VEHICLE_DATA_RESPONSE)
 
             rental_start_end.Command().update_rentals(start)
             r = Rental.objects.all()[0]
