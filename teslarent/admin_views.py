@@ -20,12 +20,12 @@ from teslarent.teslaapi import teslaapi
 
 log = logging.getLogger('manage')
 
+
 @json_view
 def ping(request):
-    #t = BackgroundTask.Instance()
-    #t.ensure_thread_running()
-    #return JsonResponse({'initialized_at': t.initialized_at})
-    return JsonResponse({'initialized_at': None})
+    t = BackgroundTask.Instance()
+    t.ensure_thread_running()
+    return JsonResponse({'initialized_at': t.initialized_at})
 
 
 def each_context(request):

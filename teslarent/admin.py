@@ -50,7 +50,7 @@ class VehicleAdmin(admin.ModelAdmin):
 class RentalAdmin(admin.ModelAdmin):
     list_display = ('vehicle', 'start', 'end', 'code', 'odometer_start', 'odometer_end', 'created_at', 'updated_at', )
     list_filter = ('start',)
-    readonly_fields = ('odometer_start', 'odometer_end', )
+    #readonly_fields = ('odometer_start', 'odometer_end', )
     ordering = ('start', 'end',)
 
     def get_form(self, request, obj=None, **kwargs):
