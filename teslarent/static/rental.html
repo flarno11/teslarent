@@ -16,8 +16,8 @@
 
 <div ng-if="rental.isActive">
     <div class="charging">
-        <h2 ng-if="chargeState.chargingState == 'Complete'">Charging Complete</h2>
-        <h2 ng-if="chargeState.chargingState != 'Complete'">{{ chargeState.chargingState }}</h2>
+        <h2>Charging</h2>
+        State: {{ chargeState.chargingState }}
         <h3>{{ chargeState.timeToFullChargeHours }} hr {{ chargeState.timeToFullChargeMins | number:0 }} min remaining</h3>
         <br />
 
