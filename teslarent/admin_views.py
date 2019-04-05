@@ -51,6 +51,10 @@ def metrics(request):
         else:
             content.append('vehicle_offline{vehicle="' + str(vehicle.id) + '"} 0')
 
+    t = BackgroundTask.Instance()
+    t.ensure_thread_running()
+    content.append('background_task_initialized_at ' + str(t.initialized_at.timestamp()))
+
     content.append('')
     return HttpResponse("\n".join(content), content_type='text/plain')
 

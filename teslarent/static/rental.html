@@ -64,14 +64,15 @@
         </div>
 
         <br />
-        <a class="btn" href="https://www.google.com/maps/?q={{ driveState.longitude }}, {{ driveState.latitude }}">Open in Google Maps</a>
+        <a class="btn" href="https://www.google.com/maps/?q={{ driveState.latitude }},{{ driveState.longitude }}">Open in Google Maps</a>
     </div>
 </div>
 
-
+<div ng-if="debugMode">
 <h2>Debug</h2>
 {{ vehicleState | json }}
 {{ chargeState | json }}
 {{ climateState | json }}
 {{ driveState | json }}
 {{ uiSettings | json }}
+</div>
