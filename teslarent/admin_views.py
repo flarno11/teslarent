@@ -28,9 +28,9 @@ def ping(request):
     return JsonResponse({'initialized_at': t.initialized_at})
 
 
-def each_context(request):
+def each_context(request, title="Title"):
     return {
-        'title': "Title",
+        'title': title,
         'site_title': "Tesla Rental Admin",
         'site_header': "Tesla Rental Admin",
         'has_permission': admin.site.has_permission(request),
@@ -65,7 +65,7 @@ def index(request):
 
     vehicles = Vehicle.objects.all()
     context = dict(
-        each_context(request),
+        each_context(request, title="Manage Rentals"),
         debug=bool(settings.DEBUG),
         active_rentals=Rental.objects.filter(start__lte=now, end__gte=now).order_by('start'),
         upcoming_rentals=Rental.objects.filter(start__gt=now).order_by('start'),
@@ -97,7 +97,7 @@ def add_credentials(request):
         form = CredentialsForm()
 
     context = dict(
-        each_context(request),
+        each_context(request, title="Add Credentials"),
         form=form,
     )
     return render(request, 'add_credentials.html', context)
@@ -110,7 +110,7 @@ def delete_credentials(request, credentials_id):
         c.delete()
         return redirect('/manage/')
     context = dict(
-        each_context(request),
+        each_context(request, title="Delete Credentials"),
         credentials=c,
     )
     return render(request, 'delete_credentials.html', context)
@@ -173,7 +173,7 @@ def add_or_edit_rental(request, rental):
             return redirect('/manage/')
 
     context = dict(
-        each_context(request),
+        each_context(request, title="Add/edit Rental"),
         form=form,
     )
     return render(request, 'edit_rental.html', context)
@@ -182,7 +182,7 @@ def add_or_edit_rental(request, rental):
 @staff_member_required
 def charge_stats(request, vehicle_id):
     context = dict(
-        each_context(request),
+        each_context(request, title="Stats"),
         vehicle_id=vehicle_id,
     )
     return render(request, 'charge_stats.html', context)
