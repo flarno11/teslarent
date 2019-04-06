@@ -3,6 +3,7 @@ import logging
 from django.core.management import call_command
 from django.http.response import Http404, HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, render_to_response
+from django.utils import timezone
 from jsonview.decorators import json_view
 
 from teslarent.models import Rental, VehicleData
@@ -48,21 +49,26 @@ def info(request, uuid):
         'end': rental.end,
         'isActive': rental.is_active,
         'odometerStart': rental.odometer_start,
+        'odometerEnd': rental.odometer_end,
         'superChargerUsageKWh': 0,  # TODO
         'superChargerUsageIdle': 0,
     }
 
     if rental.is_active:
-        d = VehicleData.objects\
+        d = VehicleData.objects \
             .filter(vehicle=rental.vehicle) \
             .filter(data__charge_state__isnull=False) \
             .order_by('-created_at')[0]
+
+        age = (timezone.now() - d.created_at).total_seconds()
+        state = 'asleep' if age > 15*60 else 'online'
 
         return JsonResponse({
             'rental': rental_info,
             'chargeState': {
                 'chargingState': d.charge_state__charging_state,
                 'chargerPower': d.charge_state__charger_power,
+                'chargeRate': int(round(d.charge_state__charge_rate, 2)),
                 'batteryLevel': d.charge_state__usable_battery_level,
                 'batteryRange': int(d.charge_state__battery_range),
                 'timeToFullCharge': d.charge_state__time_to_full_charge,
@@ -77,6 +83,7 @@ def info(request, uuid):
                 'timestamp': d.vehicle_state__timestamp_fmt,
                 'locked': d.vehicle_state__locked,
                 'odometer': int(round(d.vehicle_state__odometer, 0)),
+                'state': state,
             },
             'climateState': get_climate_state(d),
             'uiSettings': {},

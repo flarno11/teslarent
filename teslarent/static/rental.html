@@ -1,11 +1,21 @@
 
 <div class="rental">
-    Start: {{ rental.start | date:'medium' }}<br />
-    End: {{ rental.end | date:'medium' }}<br />
+    Rental Start: {{ rental.start | date:'medium' }}<br />
+    <div ng-if="rental.odometerStart != null">Mileage: {{ rental.odometerStart }} km<br /></div>
     <br />
-    Odo at rental start: {{ rental.odometerStart }}km<br />
-    <span ng-if="rental.isActive">Odo current: {{ vehicleState.odometer }}km (as of {{ vehicleState.timestamp | date:'medium' }})</span><br />
-    <span ng-if="!rental.isActive">Odo at rental end: {{ vehicleState.odometerEnd }}km</span><br />
+
+    <div ng-if="rental.isActive">
+        Mileage as of {{ vehicleState.timestamp | date:'medium' }}:<br />
+        {{ vehicleState.odometer }} km, driven so far: {{ vehicleState.odometer - rental.odometerStart }} km<br />
+        <br />
+    </div>
+
+    Rental End: {{ rental.end | date:'medium' }}<br />
+    <div ng-if="rental.odometerEnd != null">
+        Mileage: {{ rental.odometerEnd }} km<br /><br />
+        Distance: {{ rental.odometerEnd - rental.odometerStart }} km<br />
+    </div>
+    <br />
 
     SuperCharger usage: {{ rental.superChargerUsageKWh }} kWh<br />
     Idle fee usage: {{ rental.superChargerUsageIdle }}$<br />
@@ -16,19 +26,30 @@
 
 <div ng-if="rental.isActive">
     <div class="charging">
-        <h2>Charging</h2>
-        State: {{ chargeState.chargingState }}
-        <h3>{{ chargeState.timeToFullChargeHours }} hr {{ chargeState.timeToFullChargeMins | number:0 }} min remaining</h3>
-        <br />
+        <div ng-if="vehicleState.state == 'asleep'">
+            <h2>Asleep</h2>
+        </div>
+        <div ng-if="vehicleState.state != 'asleep' && chargeState.chargingState == 'Disconnected'">
+            <div ng-if="driveState.speed != 0">
+                <h2>Driving</h2>
+                {{ driveState.speed }} km/h<br />
+            </div>
+            <h2 ng-if="driveState.speed == 0">Parked</h2>
+        </div>
+        <div ng-if="vehicleState.state != 'asleep' && chargeState.chargingState != 'Disconnected'">
+            <h2>{{ chargeState.chargingState }}</h2>
 
-        {{ chargeState.batteryRange | number:0 }} km / {{ chargeState.batteryLevel }}%
+            <h3 ng-if="chargeState.chargingState == 'Charging'">{{ chargeState.timeToFullChargeHours }} hr {{ chargeState.timeToFullChargeMins | number:0 }} min remaining</h3>
+            Charging speed: {{ chargeState.chargeRate }} km/h, {{ chargeState.chargerPower }} kW<br />
+        </div>
 
+        <div style="margin-bottom: 5px">
+            Range: {{ chargeState.batteryRange | number:0 }} km, {{ chargeState.batteryLevel }}%
+        </div>
         <div class="battery">
             <div class="level" ng-style="{width: chargeState.batteryLevel + '%'}"></div>
             <div ng-class="{plugged: chargeState.chargingState == 'Charging'}"></div>
         </div>
-
-        {{ chargeState.chargerPower }} kW<br />
     </div>
 
     <div class="hvac">
@@ -70,9 +91,17 @@
 
 <div ng-if="debugMode">
 <h2>Debug</h2>
-{{ vehicleState | json }}
-{{ chargeState | json }}
-{{ climateState | json }}
-{{ driveState | json }}
-{{ uiSettings | json }}
+    <pre>
+rental: {{ rental | json }}
+
+vehicleState: {{ vehicleState | json }}
+
+chargeState: {{ chargeState | json }}
+
+climateState: {{ climateState | json }}
+
+driveState: {{ driveState | json }}
+
+uiSettings: {{ uiSettings | json }}
+    </pre>
 </div>
