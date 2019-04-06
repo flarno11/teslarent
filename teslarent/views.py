@@ -107,6 +107,7 @@ def hvac_start(request, uuid):
     if request.method != "POST":
         raise Http404
 
+    log.debug('hvac_start uuid=%s' % (str(uuid)))
     rental = get_rental(uuid, validate_active=True)
     ensure_vehicle_is_awake(rental.vehicle)
     teslaapi.set_hvac_start(rental.vehicle)
@@ -121,6 +122,7 @@ def hvac_stop(request, uuid):
     if request.method != "POST":
         raise Http404
 
+    log.debug('hvac_stop uuid=%s' % (str(uuid)))
     rental = get_rental(uuid, validate_active=True)
     ensure_vehicle_is_awake(rental.vehicle)
     teslaapi.set_hvac_stop(rental.vehicle)
@@ -135,6 +137,7 @@ def hvac_set_temperature(request, uuid, temperature):
     if request.method != "POST":
         raise Http404
 
+    log.debug('hvac_set_temperature uuid=%s' % (str(uuid)))
     rental = get_rental(uuid, validate_active=True)
     ensure_vehicle_is_awake(rental.vehicle)
     teslaapi.set_temperature(rental.vehicle, int(temperature)/10)
