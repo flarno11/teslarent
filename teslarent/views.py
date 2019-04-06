@@ -74,7 +74,7 @@ def info(request, uuid):
                 'speed': d.drive_state__speed if d.drive_state__speed else 0,
             },
             'vehicleState': {
-                'timestamp': d.vehicle_state__timestamp,
+                'timestamp': d.vehicle_state__timestamp_fmt,
                 'locked': d.vehicle_state__locked,
                 'odometer': int(d.vehicle_state__odometer),
             },

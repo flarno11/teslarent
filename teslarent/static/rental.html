@@ -4,7 +4,7 @@
     End: {{ rental.end | date:'medium' }}<br />
     <br />
     Odo at rental start: {{ rental.odometerStart }}km<br />
-    <span ng-if="rental.isActive">Odo current: {{ vehicleState.odometer }}km</span><br />
+    <span ng-if="rental.isActive">Odo current: {{ vehicleState.odometer }}km (as of {{ vehicleState.timestamp | date:'medium' }})</span><br />
     <span ng-if="!rental.isActive">Odo at rental end: {{ vehicleState.odometerEnd }}km</span><br />
 
     SuperCharger usage: {{ rental.superChargerUsageKWh }} kWh<br />
@@ -58,7 +58,7 @@
 
         <div>
             GPS: {{ driveState.longitude }}, {{ driveState.latitude }}<br />
-            (from: {{ driveState.gpsAsOf | date:'medium' }})<br />
+            (as of: {{ driveState.gpsAsOf | date:'medium' }})<br />
             Vehicle locked: {{ vehicleState.locked }}<br />
             Speed: {{ driveState.speed }} km/h<br />
         </div>

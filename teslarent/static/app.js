@@ -49,7 +49,6 @@ angular.module("myApp", ['ngRoute', ]) //'ngMaterial',
     $log.debug($routeParams, $scope.debugMode);
 
     function loadInfo() {
-        $log.debug("loading info...");
         $http.get('/rental/api/' + code).then(function successCallback(response) {
             var rental = response.data.rental;
             //rental.start = moment(rental.start);
@@ -57,7 +56,9 @@ angular.module("myApp", ['ngRoute', ]) //'ngMaterial',
             $scope.rental = rental;
 
             if ($scope.rental.isActive) {
-                $scope.vehicleState = response.data.vehicleState;
+                var vehicleState = response.data.vehicleState;
+                vehicleState.timestamp = moment(vehicleState.timestamp).toDate();
+                $scope.vehicleState = vehicleState;
 
                 var chargeState = response.data.chargeState;
                 chargeState.timeToFullChargeHours = Math.floor(chargeState.timeToFullCharge);
@@ -71,8 +72,6 @@ angular.module("myApp", ['ngRoute', ]) //'ngMaterial',
                 setClimateState(response.data.climateState);
                 $scope.uiSettings = response.data.uiSettings;
             }
-
-            $log.debug("loading info... done");
           }, function errorCallback(response) {
             $log.error(response);
         });
