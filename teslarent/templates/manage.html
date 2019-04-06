@@ -5,6 +5,7 @@
 <h1 id="site-name"><a href="/manage/">{{ site_header }}</a></h1>
 {% endblock%}
 
+{# hide displaying the title as h1 in admin/base.html #}
 {% block content_title %}{% endblock %}
 
 {% block content %}
@@ -53,7 +54,7 @@
 
 <h2>Active Rentals</h2>
 {% for rental in active_rentals %}
-    Start: {{ rental.start }}<br />
+    {{ rental.start }} - {{ rental.end }}<br />
     Rental-code: <a href="/#/rental/{{ rental.code }}">{{ rental.code }}</a><br />
     {{ rental.description }}{% if rental.description %}<br />{% endif %}
     {{ rental.vehicle }}<br />
@@ -68,7 +69,7 @@
 
 <h2>Upcoming Rentals</h2>
 {% for rental in upcoming_rentals %}
-    Start: {{ rental.start }}<br />
+    {{ rental.start }} - {{ rental.end }}<br />
     Rental-code: <a href="/#/rental/{{ rental.code }}">{{ rental.code }}</a><br />
     {{ rental.description }}{% if rental.description %}<br />{% endif %}
     {{ rental.vehicle }}<br />
@@ -83,8 +84,12 @@
 
 <h2>Past rentals</h2>
 {% for rental in past_rentals %}
-    Start: {{ rental.start }}<br />
+    {{ rental.start }} - {{ rental.end }}<br />
+    Rental-code: <a href="/#/rental/{{ rental.code }}">{{ rental.code }}</a><br />
+    {{ rental.description }}{% if rental.description %}<br />{% endif %}
     {{ rental.vehicle }}<br />
+    <a href="./editRental/{{ rental.id }}">Edit</a>
+    <br />
     Distance driven: {% if rental.distance_driven %}{{ rental.distance_driven }} km {% else %}unknown{% endif %}<br />
     <br />
 {% empty %}
