@@ -21,7 +21,7 @@
         <h3>{{ chargeState.timeToFullChargeHours }} hr {{ chargeState.timeToFullChargeMins | number:0 }} min remaining</h3>
         <br />
 
-        {{ chargeState.estBatteryRange | number:0 }} km / {{ chargeState.batteryLevel }}%
+        {{ chargeState.batteryRange | number:0 }} km / {{ chargeState.batteryLevel }}%
 
         <div class="battery">
             <div class="level" ng-style="{width: chargeState.batteryLevel + '%'}"></div>

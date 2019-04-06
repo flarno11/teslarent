@@ -64,7 +64,7 @@ def info(request, uuid):
                 'chargingState': d.charge_state__charging_state,
                 'chargerPower': d.charge_state__charger_power,
                 'batteryLevel': d.charge_state__usable_battery_level,
-                'estBatteryRange': int(d.charge_state__est_battery_range),
+                'batteryRange': int(d.charge_state__battery_range),
                 'timeToFullCharge': d.charge_state__time_to_full_charge,
             },
             'driveState': {
