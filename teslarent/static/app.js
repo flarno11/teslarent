@@ -46,7 +46,6 @@ angular.module("myApp", ['ngRoute', ]) //'ngMaterial',
 .controller('rentalController', function($scope, $http, $log, $location, $routeParams, $interval) {
     var code = $routeParams['code'];
     $scope.debugMode = 'debug' in $routeParams;
-    $log.debug($routeParams, $scope.debugMode);
 
     function loadInfo() {
         $http.get('/rental/api/' + code).then(function successCallback(response) {

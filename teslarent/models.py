@@ -79,7 +79,10 @@ class Rental(models.Model):
 
     @property
     def distance_driven(self):
-        return self.odometer_end - self.odometer_start
+        if self.odometer_end and self.odometer_start:
+            return self.odometer_end - self.odometer_start
+        else:
+            return None
 
     @staticmethod
     def get_next_rental_start_or_end_time(date):
@@ -94,6 +97,9 @@ class Rental(models.Model):
 
 
 class VehicleData(models.Model):
+    class Meta:
+        verbose_name_plural = "Vehicle Data"
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)
@@ -123,7 +129,7 @@ class VehicleData(models.Model):
         # 285.63km added battery range corresponds to 41.713kWh charged, 41.713/285.63 = 0.146038581381508
         # 255.87km added battery range corresponds to 37.255kWh charged, 37.255/255.87 = 0.145601281900965
         # 254.85km added battery range corresponds to 39.351kWh charged, 39.351/254.85 = 0.154408475573867
-        return self.charge_state__battery_range * 0.146
+        return self.charge_state__battery_range * 0.16
 
 
     @property
@@ -188,10 +194,13 @@ class VehicleData(models.Model):
         return self.data['charge_state']['battery_heater_on'] if 'charge_state' in self.data else None
     @property
     def charge_state__charge_rate(self):
-        return self.data['charge_state']['charge_rate'] if 'charge_state' in self.data else None
+        return self.data['charge_state']['charge_rate']*self.factor_mi_to_km if 'charge_state' in self.data else None
     @property
     def charge_state__charger_power(self):
         return self.data['charge_state']['charger_power'] if 'charge_state' in self.data else None
+    @property
+    def charge_state__charge_energy_added(self):
+        return self.data['charge_state']['charge_energy_added'] if 'charge_state' in self.data else None
     @property
     def charge_state__charger_voltage(self):
         return self.data['charge_state']['charger_voltage'] if 'charge_state' in self.data else None
