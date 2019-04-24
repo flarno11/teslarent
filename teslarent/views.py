@@ -37,7 +37,7 @@ def get_climate_state(vehicle_data):
         'insideTemp': vehicle_data.climate_state__inside_temp,
         'outsideTemp': vehicle_data.climate_state__outside_temp,
         'driverTempSetting': vehicle_data.climate_state__driver_temp_setting,
-        'autoConditioningOn': vehicle_data.climate_state__is_auto_conditioning_on,
+        'autoConditioningOn': vehicle_data.climate_state__is_climate_on,
     }
 
 
