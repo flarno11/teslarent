@@ -17,9 +17,11 @@
     </div>
     <br />
 
+    <div ng-if="debugMode">
     SuperCharger usage: {{ rental.superChargerUsageKWh }} kWh<br />
     Idle fee usage: {{ rental.superChargerUsageIdle }}$<br />
     (not yet available through API)<br />
+    </div>
 
     <span ng-if="!rental.isActive"><br />Info and controls are only available when the rental is active.</span>
 </div>
@@ -37,7 +39,8 @@
             <h2 ng-if="driveState.speed == 0">Parked</h2>
         </div>
         <div ng-if="vehicleState.state != 'asleep' && chargeState.chargingState != 'Disconnected'">
-            <h2>{{ chargeState.chargingState }}</h2>
+            <h2 ng-if="chargeState.chargingState == 'Complete'">Charging Complete</h2>
+            <h2 ng-if="chargeState.chargingState != 'Complete'">{{ chargeState.chargingState }}</h2>
 
             <h3 ng-if="chargeState.chargingState == 'Charging'">{{ chargeState.timeToFullChargeHours }} hr {{ chargeState.timeToFullChargeMins | number:0 }} min remaining</h3>
             Charging speed: {{ chargeState.chargeRate }} km/h, {{ chargeState.chargerPower }} kW<br />

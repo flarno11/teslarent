@@ -152,6 +152,25 @@ class VehicleData(models.Model):
         return self.data['vehicle_state']['software_update']['status'] if 'vehicle_state' in self.data else None
 
     @property
+    def vehicle_state__trunk_front_open(self):
+        return self.data['vehicle_state']['ft'] != '0' if 'vehicle_state' in self.data else None
+    @property
+    def vehicle_state__trunk_rear_open(self):
+        return self.data['vehicle_state']['rt'] != '0' if 'vehicle_state' in self.data else None
+    @property
+    def vehicle_state__door_front_left_open(self):
+        return self.data['vehicle_state']['df'] != '0' if 'vehicle_state' in self.data else None
+    @property
+    def vehicle_state__door_rear_left_open(self):
+        return self.data['vehicle_state']['dr'] != '0' if 'vehicle_state' in self.data else None
+    @property
+    def vehicle_state__door_front_right_open(self):
+        return self.data['vehicle_state']['pf'] != '0' if 'vehicle_state' in self.data else None
+    @property
+    def vehicle_state__door_rear_right_open(self):
+        return self.data['vehicle_state']['pr'] != '0' if 'vehicle_state' in self.data else None
+
+    @property
     def drive_state__power(self):
         return self.data['drive_state']['power'] if 'drive_state' in self.data else None
     @property

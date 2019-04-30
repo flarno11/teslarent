@@ -40,16 +40,22 @@ def each_context(request, title="Title"):
 def metrics(request):
     content = []
 
-    vehicles = Vehicle.objects.all()
-    for vehicle in vehicles:
+    for vehicle in Vehicle.objects.all():
         latest_vehicle_data = VehicleData.objects.filter(vehicle=vehicle).order_by('-created_at')[0]
 
         content.append('vehicle_updated_at{vehicle="' + str(vehicle.id) + '"} ' + str(latest_vehicle_data.created_at.timestamp()))
+        content.append('vehicle_offline{vehicle="' + str(vehicle.id) + '"} ' + ('1' if latest_vehicle_data.is_offline else '0'))
 
-        if latest_vehicle_data.is_offline:
-            content.append('vehicle_offline{vehicle="' + str(vehicle.id) + '"} 1')
+        latest_vehicle_data_locked = VehicleData.objects.filter(vehicle=vehicle).filter(data__vehicle_state__locked=True).order_by('-created_at')[0]
+        latest_vehicle_data_unlocked = VehicleData.objects.filter(vehicle=vehicle).filter(data__vehicle_state__locked=False).order_by('-created_at')[0]
+
+        if latest_vehicle_data_unlocked.created_at > latest_vehicle_data_locked.created_at:
+            content.append('vehicle_locked{vehicle="' + str(vehicle.id) + '"} ' + str(latest_vehicle_data_locked.timestamp()))
         else:
-            content.append('vehicle_offline{vehicle="' + str(vehicle.id) + '"} 0')
+            content.append('vehicle_locked{vehicle="' + str(vehicle.id) + '"} ' + str(timezone.now()))
+
+    for credential in Credentials.objects.all():
+        content.append('token_expires_at{id="' + str(credential.email) + '"} ' + str(credential.token_expires_at.timestamp()))
 
     t = BackgroundTask.Instance()
     t.ensure_thread_running()
@@ -191,27 +197,26 @@ def charge_stats(request, vehicle_id):
 @staff_member_required
 def charge_stats_data(request, vehicle_id, offset, limit):
     results = []
-    prev_d = None
+    next_d = None
     for d in VehicleData.objects\
             .filter(vehicle_id=vehicle_id)\
             .filter(data__charge_state__battery_level__isnull=False)\
-            .order_by('created_at')[offset:offset + limit]:
-        if not prev_d:
-            prev_d = d
+            .order_by('-created_at')[offset:offset + limit]:
+        if not next_d:
+            next_d = d
             continue
 
-        #if d.charge_state__battery_level != prev_d.charge_state__battery_level:
-        distance = d.vehicle_state__odometer - prev_d.vehicle_state__odometer
-        battery_soc_kwh_diff = prev_d.battery_soc_kwh - d.battery_soc_kwh
+        distance = next_d.vehicle_state__odometer - d.vehicle_state__odometer
+        battery_soc_kwh_diff = d.battery_soc_kwh - next_d.battery_soc_kwh
         results.append({
             'createdAt': d.created_at,
             'batteryLevel': d.charge_state__battery_level,
             'batteryLevelKWh': d.battery_soc_kwh,
             'distance': distance,
-            'speedAvg': distance / ((d.created_at - prev_d.created_at).total_seconds() / 3600),
+            'speedAvg': distance / ((next_d.created_at - d.created_at).total_seconds() / 3600),
             'efficiency': battery_soc_kwh_diff * 1000 / distance if distance > 1 and battery_soc_kwh_diff > 0 else 0,
         })
-        prev_d = d
+        next_d = d
     return JsonResponse({'items': results})
 
 
