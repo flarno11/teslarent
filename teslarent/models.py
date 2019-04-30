@@ -109,6 +109,12 @@ class VehicleData(models.Model):
     def is_km(self):
         return self.data['gui_settings']['gui_distance_units'] == 'km/hr' if 'gui_settings' in self.data else None
     @property
+    def distance_unit(self):
+        if 'gui_settings' in self.data:
+            return 'km' if self.data['gui_settings']['gui_distance_units'] == 'km/hr' else 'mi'
+        else:
+            return None
+    @property
     def factor_mi_to_km(self):
         return 1.609344 if self.is_km else 1.0
 
@@ -150,6 +156,25 @@ class VehicleData(models.Model):
     @property
     def vehicle_state__software_update__status(self):
         return self.data['vehicle_state']['software_update']['status'] if 'vehicle_state' in self.data else None
+
+    @property
+    def vehicle_state__trunk_front_open(self):
+        return self.data['vehicle_state']['ft'] != '0' if 'vehicle_state' in self.data else None
+    @property
+    def vehicle_state__trunk_rear_open(self):
+        return self.data['vehicle_state']['rt'] != '0' if 'vehicle_state' in self.data else None
+    @property
+    def vehicle_state__door_front_left_open(self):
+        return self.data['vehicle_state']['df'] != '0' if 'vehicle_state' in self.data else None
+    @property
+    def vehicle_state__door_rear_left_open(self):
+        return self.data['vehicle_state']['dr'] != '0' if 'vehicle_state' in self.data else None
+    @property
+    def vehicle_state__door_front_right_open(self):
+        return self.data['vehicle_state']['pf'] != '0' if 'vehicle_state' in self.data else None
+    @property
+    def vehicle_state__door_rear_right_open(self):
+        return self.data['vehicle_state']['pr'] != '0' if 'vehicle_state' in self.data else None
 
     @property
     def drive_state__power(self):

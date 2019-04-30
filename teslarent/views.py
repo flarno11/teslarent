@@ -84,6 +84,16 @@ def info(request, uuid):
                 'locked': d.vehicle_state__locked,
                 'odometer': int(round(d.vehicle_state__odometer, 0)),
                 'state': state,
+                'trunksOpen': {
+                    'front': d.vehicle_state__trunk_front_open,
+                    'rear': d.vehicle_state__trunk_rear_open,
+                },
+                'doorsOpen': {
+                    'frontLeft': d.vehicle_state__door_front_left_open,
+                    'frontRight': d.vehicle_state__door_front_right_open,
+                    'rearLeft': d.vehicle_state__door_rear_left_open,
+                    'rearRight': d.vehicle_state__door_rear_right_open,
+                }
             },
             'climateState': get_climate_state(d),
             'uiSettings': {},
