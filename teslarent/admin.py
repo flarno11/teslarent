@@ -76,6 +76,7 @@ class VehicleDataAdmin(admin.ModelAdmin):
                     'vehicle_state__software_update__status',
                     'drive_state__power',
                     'drive_state__speed',
+                    'drive_state__shift_state',
                     'drive_state__gps_as_of_fmt',
                     'drive_state__gps_as_of',
                     'drive_state__latitude',
@@ -105,6 +106,10 @@ class VehicleDataAdmin(admin.ModelAdmin):
 
     exclude = ('data',)
     readonly_fields = ('data_fmt', ) + list_display
+
+    def get_queryset(self, request):
+        qs = super(VehicleDataAdmin, self).get_queryset(request)
+        return qs.filter(data__state='online')
 
     def data_fmt(self, obj):
         return mark_safe('<pre>' + json.dumps(obj.data, indent=4) + '</pre>')

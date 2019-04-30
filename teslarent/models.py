@@ -159,22 +159,22 @@ class VehicleData(models.Model):
 
     @property
     def vehicle_state__trunk_front_open(self):
-        return self.data['vehicle_state']['ft'] != '0' if 'vehicle_state' in self.data else None
+        return self.data['vehicle_state']['ft'] != 0 if 'vehicle_state' in self.data else None
     @property
     def vehicle_state__trunk_rear_open(self):
-        return self.data['vehicle_state']['rt'] != '0' if 'vehicle_state' in self.data else None
+        return self.data['vehicle_state']['rt'] != 0 if 'vehicle_state' in self.data else None
     @property
     def vehicle_state__door_front_left_open(self):
-        return self.data['vehicle_state']['df'] != '0' if 'vehicle_state' in self.data else None
+        return self.data['vehicle_state']['df'] != 0 if 'vehicle_state' in self.data else None
     @property
     def vehicle_state__door_rear_left_open(self):
-        return self.data['vehicle_state']['dr'] != '0' if 'vehicle_state' in self.data else None
+        return self.data['vehicle_state']['dr'] != 0 if 'vehicle_state' in self.data else None
     @property
     def vehicle_state__door_front_right_open(self):
-        return self.data['vehicle_state']['pf'] != '0' if 'vehicle_state' in self.data else None
+        return self.data['vehicle_state']['pf'] != 0 if 'vehicle_state' in self.data else None
     @property
     def vehicle_state__door_rear_right_open(self):
-        return self.data['vehicle_state']['pr'] != '0' if 'vehicle_state' in self.data else None
+        return self.data['vehicle_state']['pr'] != 0 if 'vehicle_state' in self.data else None
 
     @property
     def drive_state__power(self):
@@ -183,6 +183,9 @@ class VehicleData(models.Model):
     def drive_state__speed(self):
         if 'drive_state' in self.data and self.data['drive_state']['speed']:
             return self.data['drive_state']['speed']*self.factor_mi_to_km
+    @property
+    def drive_state__shift_state(self):
+        return self.data['drive_state']['shift_state'] if 'drive_state' in self.data else None
     @property
     def drive_state__gps_as_of(self):
         return self.data['drive_state']['gps_as_of'] if 'drive_state' in self.data else None

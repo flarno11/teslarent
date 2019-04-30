@@ -74,6 +74,7 @@ def info(request, uuid):
                 'timeToFullCharge': d.charge_state__time_to_full_charge,
             },
             'driveState': {
+                'shiftState': d.drive_state__shift_state,
                 'gpsAsOf': d.drive_state__gps_as_of_fmt,
                 'longitude': d.drive_state__longitude,
                 'latitude': d.drive_state__latitude,
