@@ -22,6 +22,8 @@ urlpatterns = [
     path('editRental/<int:rental_id>', admin_views.edit_rental),
     path('deleteRental/<int:rental_id>', admin_views.delete_rental),
     path('updateVehicles', admin_views.update_vehicles),
+    path('lockVehicle/<int:vehicle_id>', admin_views.lock_vehicle),
+    path('unlockVehicle/<int:vehicle_id>', admin_views.unlock_vehicle),
     path('chargeStats/<int:vehicle_id>', admin_views.charge_stats),
     path('chargeStatsData/<int:vehicle_id>/<int:offset>/<int:limit>', admin_views.charge_stats_data),
     path('dailyStatsData/<int:vehicle_id>/<int:offset>/<int:limit>', admin_views.daily_stats_data),

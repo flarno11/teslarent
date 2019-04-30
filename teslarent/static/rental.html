@@ -32,11 +32,22 @@
             <h2>Asleep</h2>
         </div>
         <div ng-if="vehicleState.state != 'asleep' && chargeState.chargingState == 'Disconnected'">
-            <div ng-if="driveState.speed != 0">
+            <div ng-if="driveState.shiftState">
                 <h2>Driving</h2>
-                {{ driveState.speed }} km/h<br />
+                {{ driveState.speed }} km/h<br /><br />
             </div>
-            <h2 ng-if="driveState.speed == 0">Parked</h2>
+            <div ng-if="!driveState.shiftState">
+                <h2>Parked</h2>
+                <span ng-if="vehicleState.locked">Vehicle locked</span>
+                <span ng-if="!vehicleState.locked">
+                    Vehicle unlocked
+                    <span ng-if="vehicleState.openDoorsOrTrunks.length > 0">
+                        <br />
+                        (<span ng-repeat="item in vehicleState.openDoorsOrTrunks">{{ item }} open{{$last ? '' : ', '}}</span>)
+                    </span>
+                </span>
+                <br /><br />
+            </div>
         </div>
         <div ng-if="vehicleState.state != 'asleep' && chargeState.chargingState != 'Disconnected'">
             <h2 ng-if="chargeState.chargingState == 'Complete'">Charging Complete</h2>
@@ -83,12 +94,10 @@
         <div>
             GPS: {{ driveState.longitude }}, {{ driveState.latitude }}<br />
             (as of: {{ driveState.gpsAsOf | date:'medium' }})<br />
-            Vehicle locked: {{ vehicleState.locked }}<br />
-            Speed: {{ driveState.speed }} km/h<br />
         </div>
 
         <br />
-        <a class="btn" href="https://www.google.com/maps/?q={{ driveState.latitude }},{{ driveState.longitude }}">Open in Google Maps</a>
+        <a class="btn" href="https://www.google.com/maps/place/{{ driveState.latitude }},{{ driveState.longitude }}">Open in Google Maps</a>
     </div>
 </div>
 

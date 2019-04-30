@@ -57,6 +57,7 @@ angular.module("myApp", ['ngRoute', ]) //'ngMaterial',
             if ($scope.rental.isActive) {
                 var vehicleState = response.data.vehicleState;
                 vehicleState.timestamp = moment(vehicleState.timestamp).toDate();
+                vehicleState.openDoorsOrTrunks = getOpenDoorsOrTrunks(vehicleState);
                 $scope.vehicleState = vehicleState;
 
                 var chargeState = response.data.chargeState;
@@ -75,6 +76,29 @@ angular.module("myApp", ['ngRoute', ]) //'ngMaterial',
             $log.error(response);
         });
     };
+
+    function getOpenDoorsOrTrunks(vehicleState) {
+        var items = [];
+        if (vehicleState.trunksOpen.front) {
+            items.push("Frunk");
+        }
+        if (vehicleState.trunksOpen.rear) {
+            items.push("Trunk");
+        }
+        if (vehicleState.doorsOpen.frontLeft) {
+            items.push("Door front left");
+        }
+        if (vehicleState.doorsOpen.frontRight) {
+            items.push("Door front right");
+        }
+        if (vehicleState.doorsOpen.rearLeft) {
+            items.push("Door rear left");
+        }
+        if (vehicleState.doorsOpen.rearRight) {
+            items.push("Door rear right");
+        }
+        return items;
+    }
 
     function setClimateState(climateState) {
         climateState.driverTempSetting = Math.round(climateState.driverTempSetting*2)/2;
