@@ -5,6 +5,8 @@
 
 {% block content %}
 
+Current time on the server (to adjust for timezone): {% now "Y-m-d H:i:s O" %}<br /><br />
+
 <form method="POST" class="post-form">{% csrf_token %}
     <table>
     {{ form.as_table }}

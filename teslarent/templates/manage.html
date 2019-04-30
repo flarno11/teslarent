@@ -29,8 +29,19 @@
 
 {% else %}
     <h2>Credentials</h2>
-    {% for c in credentials %}{{ c }} (<a href="./deleteCredentials/{{ c.id }}">X</a>), {% endfor %}
-    (<a href="./addCredentials">add another</a>)<br />
+    {% for c in credentials %}
+        {{ c }}, token expiration: {{ c.token_expires_at }}
+        (
+        <form style="display: inline;" action="./deleteCredentials/{{ c.id }}" method="get">{% csrf_token %}
+            <button type="submit">Delete credentials</button>
+        </form>,
+        <form style="display: inline;" action="./refreshCredentials/{{ c.id }}" method="post">{% csrf_token %}
+            <button type="submit">Refresh credentials</button>
+        </form>
+        )
+        <br />
+    {% endfor %}
+    <a href="./addCredentials">add another</a><br />
 
     <h2>Vehicle(s)</h2>
     {% for v in vehicles %}
@@ -115,14 +126,8 @@
 {% else %}
     Running in PRODUCTION mode
 {% endif %}
-
-<br /><br />
-{% for c in credentials %}
-    <form action="./refreshCredentials/{{ c.id }}" method="post">{% csrf_token %}
-        {{ c.token_expires_at }}
-        <button type="submit">Refresh credentials</button>
-    </form><br />
-{% endfor %}
+<br />
+{% now "DATETIME_FORMAT" %} {% now "O" %}
 </small>
 
 
