@@ -1,3 +1,4 @@
+import base64
 import logging
 import uuid
 import datetime
@@ -5,7 +6,7 @@ import datetime
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin.views.decorators import staff_member_required
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.http.response import Http404, JsonResponse
 from django.shortcuts import redirect, render
 from jsonview.decorators import json_view
@@ -37,7 +38,20 @@ def each_context(request, title="Title"):
     }
 
 
+def check_basic_auth(request):
+    if 'HTTP_AUTHORIZATION' in request.META:
+        auth = request.META['HTTP_AUTHORIZATION'].split()
+        if len(auth) == 2 and auth[0].lower() == "basic":
+            return base64.b64decode(auth[1]).decode('utf-8').split(':')
+    return None, None
+
+
 def metrics(request):
+    if settings.METRICS_SECRET:
+        username, password = check_basic_auth(request)
+        if not username or not password or password != settings.METRICS_SECRET:
+            return HttpResponseForbidden()
+
     content = []
 
     for vehicle in Vehicle.objects.all():
@@ -54,7 +68,7 @@ def metrics(request):
         if latest_vehicle_data_unlocked.created_at > latest_vehicle_data_locked.created_at:
             content.append('vehicle_locked{vehicle="' + str(vehicle.id) + '"} ' + str(latest_vehicle_data_locked.timestamp()))
         else:
-            content.append('vehicle_locked{vehicle="' + str(vehicle.id) + '"} ' + str(timezone.now()))
+            content.append('vehicle_locked{vehicle="' + str(vehicle.id) + '"} ' + str(timezone.now().timestamp()))
 
     for credential in Credentials.objects.all():
         content.append('token_expires_at{id="' + str(credential.email) + '"} ' + str(credential.token_expires_at.timestamp()))
