@@ -109,6 +109,12 @@ class VehicleData(models.Model):
     def is_km(self):
         return self.data['gui_settings']['gui_distance_units'] == 'km/hr' if 'gui_settings' in self.data else None
     @property
+    def distance_unit(self):
+        if 'gui_settings' in self.data:
+            return 'km' if self.data['gui_settings']['gui_distance_units'] == 'km/hr' else 'mi'
+        else:
+            return None
+    @property
     def factor_mi_to_km(self):
         return 1.609344 if self.is_km else 1.0
 
