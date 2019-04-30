@@ -15,7 +15,7 @@
     }
 
     .dashboard #content {
-        width: 800px;
+        width: 1000px;
     }
 </style>
 
@@ -37,7 +37,14 @@
         {% if not v.linked or not v.credentials %}
             <span style="color: gray">{{ v }} - inactive</span><br />
         {% else %}
-            {{ v.display_name }} {{ v.vin }} {{ v.d.state }}, {% if v.d.vehicle_state__locked %}locked{% else %}unlocked{% endif %}, {{ v.d.vehicle_state__odometer|floatformat:"0" }}{{ v.d.distance_unit }}, Battery: {{ v.d.charge_state__usable_battery_level }}% / {{ v.d.charge_state__battery_range|floatformat:"0" }} {{ v.d.distance_unit }} (as of {{ v.d.created_at }}, <a href="./chargeStats/{{ v.id }}">Charge Stats</a>)<br />
+            {{ v.display_name }} {{ v.vin }} {% if v.d.vehicle_state__locked %}locked{% else %}unlocked{% endif %},
+            {{ v.d.vehicle_state__odometer|floatformat:"0" }}{{ v.d.distance_unit }},
+            Battery: {{ v.d.charge_state__usable_battery_level }}% / {{ v.d.charge_state__battery_range|floatformat:"0" }} {{ v.d.distance_unit }}
+            (as of {{ v.d.created_at }},
+            <a href="./chargeStats/{{ v.id }}">Charge Stats</a>,
+            <form style="display: inline;" action="./lockVehicle/{{ v.id }}" method="post">{% csrf_token %}<button type="submit">Lock vehicle</button></form>,
+            <form style="display: inline;" action="./unlockVehicle/{{ v.id }}" method="post">{% csrf_token %}<button type="submit">Unlock vehicle</button></form>
+            )<br />
         {% endif %}
     {% endfor %}
     {% if not has_any_vehicle %}

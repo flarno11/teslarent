@@ -2,7 +2,6 @@ import logging
 
 from django.core.management import call_command
 from django.http.response import Http404, HttpResponse, JsonResponse
-from django.shortcuts import render, get_object_or_404, render_to_response
 from django.utils import timezone
 from jsonview.decorators import json_view
 
@@ -125,7 +124,7 @@ def hvac_start(request, uuid):
     if request.method != "POST":
         raise Http404
 
-    log.debug('hvac_start uuid=%s' % (str(uuid)))
+    log.warning('hvac_start uuid=%s' % (str(uuid)))
     rental = get_rental(uuid, validate_active=True)
     ensure_vehicle_is_awake(rental.vehicle)
     teslaapi.set_hvac_start(rental.vehicle)
@@ -140,7 +139,7 @@ def hvac_stop(request, uuid):
     if request.method != "POST":
         raise Http404
 
-    log.debug('hvac_stop uuid=%s' % (str(uuid)))
+    log.warning('hvac_stop uuid=%s' % (str(uuid)))
     rental = get_rental(uuid, validate_active=True)
     ensure_vehicle_is_awake(rental.vehicle)
     teslaapi.set_hvac_stop(rental.vehicle)
@@ -155,7 +154,7 @@ def hvac_set_temperature(request, uuid, temperature):
     if request.method != "POST":
         raise Http404
 
-    log.debug('hvac_set_temperature uuid=%s' % (str(uuid)))
+    log.warning('hvac_set_temperature uuid=%s' % (str(uuid)))
     rental = get_rental(uuid, validate_active=True)
     ensure_vehicle_is_awake(rental.vehicle)
     teslaapi.set_temperature(rental.vehicle, int(temperature)/10)

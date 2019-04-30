@@ -295,6 +295,28 @@ def set_hvac_stop(vehicle):
         raise ApiException("auto_conditioning_stop failed with " + str(response.status_code) + " " + response.text)
 
 
+def lock_vehicle(vehicle):
+    """
+    @type vehicle: Vehicle
+    """
+    response = requests.post(get_host() + '/api/1/vehicles/' + str(vehicle.id) + '/command/door_lock',
+                             headers=get_headers(vehicle.credentials))
+    log.debug('req=' + '/command/door_lock' + ', status=' + str(response.status_code) + ', resp=' + response.text.replace("\n", " "))
+    if response.status_code != 200:
+        raise ApiException("door_lock failed with " + str(response.status_code) + " " + response.text)
+
+
+def unlock_vehicle(vehicle):
+    """
+    @type vehicle: Vehicle
+    """
+    response = requests.post(get_host() + '/api/1/vehicles/' + str(vehicle.id) + '/command/door_unlock',
+                             headers=get_headers(vehicle.credentials))
+    log.debug('req=' + '/command/door_unlock' + ', status=' + str(response.status_code) + ', resp=' + response.text.replace("\n", " "))
+    if response.status_code != 200:
+        raise ApiException("door_unlock failed with " + str(response.status_code) + " " + response.text)
+
+
 def load_vehicles(credentials):
     """
     @type credentials: Credentials

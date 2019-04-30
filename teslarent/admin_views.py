@@ -12,6 +12,9 @@ from django.shortcuts import redirect, render
 from jsonview.decorators import json_view
 
 from json import encoder
+
+from teslarent.views import ensure_vehicle_is_awake, fetch_and_save_vehicle_state
+
 encoder.FLOAT_REPR = lambda o: format(o, '.2f')  # monkey patching https://stackoverflow.com/questions/1447287/format-floats-with-standard-json-module
 
 from teslarent.forms import CredentialsForm, RentalForm
@@ -157,7 +160,34 @@ def update_vehicles(request):
     if request.method != "POST":
         raise Http404
 
+    log.warning('update_vehicles')
     teslaapi.update_all_vehicles()
+    return redirect('/manage/')
+
+
+@staff_member_required
+def lock_vehicle(request, vehicle_id):
+    if request.method != "POST":
+        raise Http404
+
+    log.warning('lock_vehicle vehicle=%s' % (str(vehicle_id)))
+    vehicle = Vehicle.objects.get(id=vehicle_id)
+    ensure_vehicle_is_awake(vehicle)
+    teslaapi.lock_vehicle(vehicle)
+    fetch_and_save_vehicle_state(vehicle)
+    return redirect('/manage/')
+
+
+@staff_member_required
+def unlock_vehicle(request, vehicle_id):
+    if request.method != "POST":
+        raise Http404
+
+    log.warning('unlock_vehicle vehicle=%s' % (str(vehicle_id)))
+    vehicle = Vehicle.objects.get(id=vehicle_id)
+    ensure_vehicle_is_awake(vehicle)
+    teslaapi.unlock_vehicle(vehicle)
+    fetch_and_save_vehicle_state(vehicle)
     return redirect('/manage/')
 
 
@@ -166,7 +196,7 @@ def add_rental(request):
     vehicles = Vehicle.get_all_active_vehicles()
     if len(vehicles) == 0:
         # TODO show error message to user
-        log.warn("Cannot add rental, there is no active vehicle")
+        log.warning("Cannot add rental, there is no active vehicle")
         return redirect('/manage/')
 
     vehicle = vehicles[0] if len(vehicles) == 1 else None
