@@ -21,7 +21,7 @@ if DEBUG:
 else:
     ALLOWED_HOSTS = [os.environ.get('DJANGO_ALLOWED_HOST', None)]
     CSRF_COOKIE_SECURE = True
-    CSRF_COOKIE_HTTPONLY = True  # your JavaScript will need to pull the value from a hidden CSRF token form input on the page instead of from the cookie
+    #CSRF_COOKIE_HTTPONLY = True  # we need it in Javascript
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SECURE_HSTS_SECONDS = 3600  # TODO: update to 31536000

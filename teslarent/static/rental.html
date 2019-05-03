@@ -6,16 +6,15 @@
 
     <div ng-if="rental.isActive">
         Mileage as of {{ vehicleState.timestamp | date:'medium' }}:<br />
-        {{ vehicleState.odometer }} km, driven so far: {{ vehicleState.odometer - rental.odometerStart }} km<br />
-        <br />
+        {{ vehicleState.odometer }} km<span ng-if="rental.odometerStart != null">, driven so far: {{ vehicleState.odometer - rental.odometerStart }} km</span>
+        <br /><br />
     </div>
 
     Rental End: {{ rental.end | date:'medium' }}<br />
     <div ng-if="rental.odometerEnd != null">
         Mileage: {{ rental.odometerEnd }} km<br /><br />
-        Distance: {{ rental.odometerEnd - rental.odometerStart }} km<br />
+        Distance driven: {{ rental.odometerEnd - rental.odometerStart }} km<br /><br />
     </div>
-    <br />
 
     <div ng-if="debugMode">
     SuperCharger usage: {{ rental.superChargerUsageKWh }} kWh<br />
@@ -32,27 +31,21 @@
             <h2>Asleep</h2>
         </div>
         <div ng-if="vehicleState.state != 'asleep' && chargeState.chargingState == 'Disconnected'">
-            <div ng-if="driveState.shiftState">
+            <div ng-if="driveState.shiftState && driveState.shiftState != 'P'">
                 <h2>Driving</h2>
                 {{ driveState.speed }} km/h<br /><br />
             </div>
-            <div ng-if="!driveState.shiftState">
+            <div ng-if="!driveState.shiftState || driveState.shiftState == 'P'">
                 <h2>Parked</h2>
-                <span ng-if="vehicleState.locked">Vehicle locked</span>
-                <span ng-if="!vehicleState.locked">
-                    Vehicle unlocked
-                    <span ng-if="vehicleState.openDoorsOrTrunks.length > 0">
-                        <br />
-                        (<span ng-repeat="item in vehicleState.openDoorsOrTrunks">{{ item }} open{{$last ? '' : ', '}}</span>)
-                    </span>
-                </span>
-                <br /><br />
+                <div vehicle-lock-state vehicle-state="vehicleState"></div>
+                <br />
             </div>
         </div>
         <div ng-if="vehicleState.state != 'asleep' && chargeState.chargingState != 'Disconnected'">
             <h2 ng-if="chargeState.chargingState == 'Complete'">Charging Complete</h2>
             <h2 ng-if="chargeState.chargingState != 'Complete'">{{ chargeState.chargingState }}</h2>
-
+            <div vehicle-lock-state vehicle-state="vehicleState"></div>
+            <br /><br />
             <h3 ng-if="chargeState.chargingState == 'Charging'">{{ chargeState.timeToFullChargeHours }} hr {{ chargeState.timeToFullChargeMins | number:0 }} min remaining</h3>
             Charging speed: {{ chargeState.chargeRate }} km/h, {{ chargeState.chargerPower }} kW<br />
         </div>
@@ -84,8 +77,12 @@
         -->
 
         <!--<md-switch ng-model="climateState.autoConditioningOn" ng-change="hvacStartStop()">HVAC</md-switch>-->
-        <button ng-click="hvacStartStop()" ng-if="climateState.autoConditioningOn">TURN OFF</button>
-        <button ng-click="hvacStartStop()" ng-if="!climateState.autoConditioningOn">TURN ON</button>
+        <div style="position: relative">
+            <button ng-click="hvacStartStop()" ng-if="climateState.autoConditioningOn">TURN OFF</button>
+            <button ng-click="hvacStartStop()" ng-if="!climateState.autoConditioningOn">TURN ON</button>
+            <img ng-if="hvacLoading" class="imgLoader" src="/static/loader.gif" />
+            <img ng-if="hvacError" class="imgLoader imgLoaderError" src="/static/loader.gif" />
+        </div>
     </div>
 
     <div class="gps">

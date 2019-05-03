@@ -1,8 +1,10 @@
 import logging
+import datetime
 
 from django.core.management import call_command
 from django.http.response import Http404, HttpResponse, JsonResponse
 from django.utils import timezone
+from django.views.decorators.csrf import ensure_csrf_cookie
 from jsonview.decorators import json_view
 
 from teslarent.models import Rental, VehicleData
@@ -12,6 +14,7 @@ from teslarent.teslaapi.teslaapi import get_vehicle_data
 log = logging.getLogger('backgroundTask')
 
 
+@ensure_csrf_cookie
 def index(request):
     with open('teslarent/static/index.html', 'r') as f:
         return HttpResponse(f.read())
@@ -41,6 +44,7 @@ def get_climate_state(vehicle_data):
 
 
 @json_view
+@ensure_csrf_cookie
 def info(request, uuid):
     rental = get_rental(uuid, validate_active=False)
     rental_info = {
@@ -105,10 +109,14 @@ def info(request, uuid):
 
 
 def ensure_vehicle_is_awake(vehicle):
-    latest_vehicle_data = VehicleData.objects.filter(vehicle=vehicle).order_by('-created_at')[0]
-    if not latest_vehicle_data.is_online:
-        log.info('vehicle not online, trying to wakeup vehicle_id %s' % (str(latest_vehicle_data.vehicle.id)))
-        call_command('fetch_vehicles_data', wakeup=True, vehicle_id=latest_vehicle_data.vehicle.id)
+    fifteen_minutes_ago = timezone.now() - datetime.timedelta(minutes=15)
+    latest_vehicle_datas = VehicleData.objects\
+        .filter(vehicle=vehicle)\
+        .filter(created_at__gte=fifteen_minutes_ago)\
+        .order_by('-created_at')
+    if len(latest_vehicle_datas) == 0 or not latest_vehicle_datas[0].is_online:
+        log.info('vehicle not online, trying to wakeup vehicle_id %s' % (str(vehicle.id)))
+        call_command('fetch_vehicles_data', wakeup=True, vehicle_id=vehicle.id)
 
 
 def fetch_and_save_vehicle_state(vehicle):

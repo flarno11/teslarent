@@ -31,6 +31,16 @@ angular.module("myApp", ['ngRoute', ]) //'ngMaterial',
     ;
 })
 
+.directive('vehicleLockState', function($q, $log, $http) {
+    return {
+        restrict : "A",
+        templateUrl: '/static/vehicle_lock_state.html',
+        scope: {
+            vehicleState: '=',
+        },
+    }
+})
+
 .controller('navController', function($scope, $location, $log) {
 })
 
@@ -46,8 +56,13 @@ angular.module("myApp", ['ngRoute', ]) //'ngMaterial',
 .controller('rentalController', function($scope, $http, $log, $location, $routeParams, $interval) {
     var code = $routeParams['code'];
     $scope.debugMode = 'debug' in $routeParams;
+    $scope.hvacLoading = false;
+    $scope.hvacError = false;
 
     function loadInfo() {
+        if ($scope.hvacLoading) {
+            return;
+        }
         $http.get('/rental/api/' + code).then(function successCallback(response) {
             var rental = response.data.rental;
             //rental.start = moment(rental.start);
@@ -115,31 +130,43 @@ angular.module("myApp", ['ngRoute', ]) //'ngMaterial',
     }
 
     $scope.hvacSetTemperature = function() {
+        $scope.hvacLoading = true;
         $http.post('/rental/api/' + code + '/hvac/temperature/' + (10 * $scope.climateState.driverTempSetting)).then(function successCallback(response) {
             setClimateState(response.data.climateState);
+            $scope.hvacLoading = false;
+            $scope.hvacError = false;
           }, function errorCallback(response) {
             $log.error(response);
+            $scope.hvacLoading = false;
+            $scope.hvacError = true;
         });
     };
 
     $scope.hvacStartStop = function() {
         // md-switch triggers first onchange before updating the model -> invert model current value
         var startStop = !$scope.climateState.autoConditioningOn ? 'hvacStart' : 'hvacStop';
+        $scope.hvacLoading = true;
         $http.post('/rental/api/' + code + '/' + startStop).then(function successCallback(response) {
             setClimateState(response.data.climateState);
+            $scope.hvacLoading = false;
+            $scope.hvacError = false;
           }, function errorCallback(response) {
             $log.error(response);
+            $scope.hvacLoading = false;
+            $scope.hvacError = true;
         });
     };
 
-    var intervalUpdate = $interval(function() {
-        loadInfo();
-    }, 10 * 1000);
+    function startUpdate() {
+        $scope.intervalUpdate = $interval(function() {
+            loadInfo();
+        }, 10 * 1000);
+    };
 
     $scope.stopUpdate = function() {
-        if (angular.isDefined(intervalUpdate)) {
-            $interval.cancel(intervalUpdate);
-            intervalUpdate = undefined;
+        if (angular.isDefined($scope.intervalUpdate)) {
+            $interval.cancel($scope.intervalUpdate);
+            $scope.intervalUpdate = undefined;
         }
     };
 
@@ -147,6 +174,7 @@ angular.module("myApp", ['ngRoute', ]) //'ngMaterial',
       $scope.stopUpdate();
     });
 
+    startUpdate();
     loadInfo();
 })
 
