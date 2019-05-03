@@ -1,0 +1,8 @@
+<span ng-if="vehicleState.locked">Vehicle locked</span>
+<span ng-if="!vehicleState.locked">
+    Vehicle unlocked
+    <span ng-if="vehicleState.openDoorsOrTrunks.length > 0">
+        <br />
+        (<span ng-repeat="item in vehicleState.openDoorsOrTrunks">{{ item }} open{{$last ? '' : ', '}}</span>)
+    </span>
+</span>

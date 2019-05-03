@@ -39,11 +39,12 @@ class Command(BaseCommand):
                 .order_by('-created_at')
             if not options['wakeup'] and len(recent_vehicle_data) > 0:
                 all_stopped = all([d.drive_state__speed is None for d in recent_vehicle_data])
+                all_locked = all([d.vehicle_state__locked is None for d in recent_vehicle_data])
                 all_online = all([d.is_online for d in recent_vehicle_data])
                 all_disconnected_or_finished_charging = all([d.charge_state__charging_state != 'Charging' for d in recent_vehicle_data])
-                log.debug("len={} all_stopped={} all_online={} all_disconnected_or_finished_charging={}"\
-                          .format(len(recent_vehicle_data), all_stopped, all_online, all_disconnected_or_finished_charging))
-                if all_stopped and all_online and all_disconnected_or_finished_charging:
+                log.debug("len={} all_stopped={} all_locked={} all_online={} all_disconnected_or_finished_charging={}"\
+                          .format(len(recent_vehicle_data), all_stopped, all_locked, all_online, all_disconnected_or_finished_charging))
+                if all_stopped and all_locked and all_online and all_disconnected_or_finished_charging:
                     continue
 
             vehicle_data = VehicleData()
