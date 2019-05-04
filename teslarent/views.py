@@ -162,7 +162,7 @@ def hvac_set_temperature(request, uuid, temperature):
     if request.method != "POST":
         raise Http404
 
-    log.warning('hvac_set_temperature uuid=%s' % (str(uuid)))
+    log.warning('hvac_set_temperature temp=%s uuid=%s' % (str(temperature), str(uuid)))
     rental = get_rental(uuid, validate_active=True)
     ensure_vehicle_is_awake(rental.vehicle)
     teslaapi.set_temperature(rental.vehicle, int(temperature)/10)
