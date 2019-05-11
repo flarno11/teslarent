@@ -153,6 +153,12 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'DEBUG',
         },
+        # show stacktraces:
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
         # 'django.db.backends': {
         #     'level': 'DEBUG',
         #     'handlers': ['console'],
