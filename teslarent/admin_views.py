@@ -69,7 +69,7 @@ def metrics(request):
         latest_vehicle_data_unlocked = VehicleData.objects.filter(vehicle=vehicle).filter(data__vehicle_state__locked=False).order_by('-created_at')[0]
 
         if latest_vehicle_data_unlocked.created_at > latest_vehicle_data_locked.created_at:
-            content.append('vehicle_locked{vehicle="' + str(vehicle.id) + '"} ' + str(latest_vehicle_data_locked.timestamp()))
+            content.append('vehicle_locked{vehicle="' + str(vehicle.id) + '"} ' + str(latest_vehicle_data_locked.created_at.timestamp()))
         else:
             content.append('vehicle_locked{vehicle="' + str(vehicle.id) + '"} ' + str(timezone.now().timestamp()))
 
