@@ -92,7 +92,7 @@ def index(request):
     for vehicle in vehicles:
         vehicle.d = VehicleData.objects.filter(vehicle=vehicle)\
             .filter(data__charge_state__battery_level__isnull=False)\
-            .order_by('-created_at')[0]
+            .order_by('-created_at').first()
 
     context = dict(
         each_context(request, title="Manage Rentals"),
