@@ -29,6 +29,8 @@
     <div class="charging">
         <div ng-if="vehicleState.state == 'asleep'">
             <h2>Asleep</h2>
+            <div vehicle-actions vehicle-state="vehicleState"></div>
+            <br />
         </div>
         <div ng-if="vehicleState.state != 'asleep' && chargeState.chargingState == 'Disconnected'">
             <div ng-if="driveState.shiftState && driveState.shiftState != 'P'">

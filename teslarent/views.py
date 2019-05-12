@@ -223,5 +223,5 @@ def navigation_request(request, uuid):
 
     address = str(received_json_data['lat']) + ',' + str(received_json_data['long'])
     ensure_vehicle_is_awake(rental.vehicle)
-    #teslaapi.navigation_request(rental.vehicle, address=address)
+    teslaapi.navigation_request(rental.vehicle, address=address)
     return JsonResponse({'address': address})

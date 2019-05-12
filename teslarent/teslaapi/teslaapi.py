@@ -91,8 +91,8 @@ def get_json(text):
     return json.loads(''.join(d))
 
 
-def req(path, credentials, method='get', body=None):
-    response = requests.request(method, get_host() + path, headers=get_headers(credentials), json=body)
+def req(path, credentials, method='get', data=None):
+    response = requests.request(method, get_host() + path, headers=get_headers(credentials), json=data)
     log.debug('req=' + path + ', status=' + str(response.status_code) + ', resp=' + response.text.replace("\n", " "))
     if response.status_code != 200:
         raise ApiException(path + " returned " + str(response.status_code) + " (" + response.text + ")")
@@ -156,14 +156,19 @@ def set_hvac_stop(vehicle):
 def set_hvac_seat_heater(vehicle, seat, level):
     """
     :param Vehicle vehicle
-    :param int seat: The desired seat to heat. (0-5)
+    :param int seat: The desired seat to heat. (front: 0,1; rear: 2,4,5; no 3)
     :param int level: The desired level for the heater. (0-3)
+
+    response if hvac is not on: status=200, resp={"response":{"reason":"cabin comfort remote settings not enabled","result":false}}
     """
     req('/api/1/vehicles/' + str(vehicle.id) + '/command/remote_seat_heater_request', vehicle.credentials, method='post',
         data={'heater': int(seat), 'level': int(level)})
 
 
 def set_hvac_steering_wheel_heater_on(vehicle):
+    """
+    response: status=200, resp={"response":{"reason":"cabin comfort remote settings not enabled","result":false}}
+    """
     req('/api/1/vehicles/' + str(vehicle.id) + '/command/remote_steering_wheel_heater_request', vehicle.credentials, method='post',
         data={'on': True})
 
@@ -187,7 +192,7 @@ def open_frunk(vehicle):
 
 
 def open_trunk(vehicle):
-    d = get_vehicle_data(vehicle)
+    d = get_vehicle_data(vehicle.id, vehicle.credentials)
     if d['vehicle_state']['rt'] != 0:
         log.info('trunk already open')
         return
@@ -197,7 +202,7 @@ def open_trunk(vehicle):
 
 
 def close_trunk(vehicle):
-    d = get_vehicle_data(vehicle)
+    d = get_vehicle_data(vehicle.id, vehicle.credentials)
     if d['vehicle_state']['rt'] == 0:
         log.info('trunk already closed')
         return
@@ -211,7 +216,8 @@ def set_charge_limit(vehicle, limit):
     :param Vehicle vehicle
     :param int limit: percent value
     """
-    req('/api/1/vehicles/' + str(vehicle.id) + '/command/set_charge_limit?percent=' + str(int(limit)), vehicle.credentials, method='post')
+    req('/api/1/vehicles/' + str(vehicle.id) + '/command/set_charge_limit', vehicle.credentials, method='post',
+        data={'percent': int(limit)})
 
 
 def charge_port_door_open(vehicle):
@@ -223,6 +229,9 @@ def charge_port_door_close(vehicle):
 
 
 def charge_start(vehicle):
+    """
+    response: status=200, resp={"response":{"reason":"charging","result":false}}
+    """
     req('/api/1/vehicles/' + str(vehicle.id) + '/command/charge_start', vehicle.credentials, method='post')
 
 
@@ -252,14 +261,16 @@ def enable_valet_mode(vehicle, pin):
     :param Vehicle vehicle
     :param int pin: 4 digit pin code
     """
-    req('/api/1/vehicles/' + str(vehicle.id) + '/command/set_valet_mode?on=true&password=' + str(int(pin)), vehicle.credentials, method='post')
+    req('/api/1/vehicles/' + str(vehicle.id) + '/command/set_valet_mode', vehicle.credentials, method='post',
+        data={'on': True, 'password': int(pin)})
 
 
 def disable_valet_mode(vehicle):
     """
     :param Vehicle vehicle
     """
-    req('/api/1/vehicles/' + str(vehicle.id) + '/command/set_valet_mode?on=false', vehicle.credentials, method='post')
+    req('/api/1/vehicles/' + str(vehicle.id) + '/command/set_valet_mode', vehicle.credentials, method='post',
+        data={'on': False})
 
 
 def enable_speed_limit(vehicle, limit_mph, pin):
