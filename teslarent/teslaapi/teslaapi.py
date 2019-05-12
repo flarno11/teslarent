@@ -3,6 +3,7 @@ import logging
 import json
 
 from django.conf import settings
+from django.utils import timezone
 
 from teslarent.models import Credentials, Vehicle
 from teslarent.utils.crypt import decrypt
@@ -90,11 +91,11 @@ def get_json(text):
     return json.loads(''.join(d))
 
 
-def req(req, credentials, method='get'):
-    response = requests.request(method, get_host() + req, headers=get_headers(credentials))
-    log.debug('req=' + req + ', status=' + str(response.status_code) + ', resp=' + response.text.replace("\n", " "))
+def req(path, credentials, method='get', body=None):
+    response = requests.request(method, get_host() + path, headers=get_headers(credentials), json=body)
+    log.debug('req=' + path + ', status=' + str(response.status_code) + ', resp=' + response.text.replace("\n", " "))
     if response.status_code != 200:
-        raise ApiException(req + " returned " + str(response.status_code) + " (" + response.text + ")")
+        raise ApiException(path + " returned " + str(response.status_code) + " (" + response.text + ")")
 
     r = get_json(response.text)
 
@@ -105,9 +106,6 @@ def req(req, credentials, method='get'):
 
 
 def list_vehicles(credentials):
-    """
-    @type credentials: Credentials
-    """
     return req('/api/1/vehicles', credentials)
 
 
@@ -134,192 +132,171 @@ def get_vehicle_data(vehicle_id, credentials):
     return req('/api/1/vehicles/' + str(vehicle_id) + '/vehicle_data', credentials)
 
 
-def get_charge_state(vehicle):
-    """
-    @type vehicle: Vehicle
-    @return: "{
-        "charging_state": "Complete",  // "Charging", "Complete" ?
-        "charge_to_max_range": false,  // current std/max-range setting
-        "max_range_charge_counter": 0,
-        "fast_charger_present": false, // connected to Supercharger?
-        "battery_range": 239.02,       // rated miles
-        "est_battery_range": 155.79,   // range estimated from recent driving
-        "ideal_battery_range": 275.09, // ideal miles
-        "battery_level": 91,           // integer charge percentage
-        "battery_current": -0.6,       // current flowing into battery
-        "charge_starting_range": null,
-        "charge_starting_soc": null,
-        "charger_voltage": 0,          // only has value while charging
-        "charger_pilot_current": 40,   // max current allowed by charger & adapter
-        "charger_actual_current": 0,   // current actually being drawn
-        "charger_power": 0,            // kW (rounded down) of charger
-        "time_to_full_charge": null,   // valid only while charging
-        "charge_rate": -1.0,           // float mi/hr charging or -1 if not charging
-        "charge_port_door_open": true
-      }"
-    """
-    d = req('/api/1/vehicles/' + str(vehicle.id) + '/data_request/charge_state', vehicle.credentials)
-    return {
-        'chargingState': d['charging_state'],
-        'chargerPower': d['charger_power'],
-        'batteryLevel': d['battery_level'],
-        'estBatteryRange': d['est_battery_range'],
-        'timeToFullCharge': d['time_to_full_charge'] if 'time_to_full_charge' in d and d['time_to_full_charge'] else 0.0,
-    }
-
-
-def get_climate_settings(vehicle):
-    """
-    @type vehicle: Vehicle
-    @return: "{
-        "inside_temp": 17.0,          // degC inside car
-        "outside_temp": 9.5,          // degC outside car or null
-        "driver_temp_setting": 22.6,  // degC of driver temperature setpoint
-        "passenger_temp_setting": 22.6, // degC of passenger temperature setpoint
-        "is_auto_conditioning_on": false, // apparently even if on
-        "is_front_defroster_on": null, // null or boolean as integer?
-        "is_rear_defroster_on": false,
-        "fan_status": 0               // fan speed 0-6 or null
-      }"
-    """
-    d = req('/api/1/vehicles/' + str(vehicle.id) + '/data_request/climate_state', vehicle.credentials)
-    return {
-        'insideTemp': d['inside_temp'],
-        'outsideTemp': d['outside_temp'],
-        'driverTempSetting': d['driver_temp_setting'],
-        'autoConditioningOn': d['is_auto_conditioning_on'],
-    }
-
-
-def get_drive_state(vehicle):
-    """
-    @type vehicle: Vehicle
-    @return: "{
-        "shift_state": null,          //
-        "speed": null,                //
-        "latitude": 33.794839,        // degrees N of equator
-        "longitude": -84.401593,      // degrees W of the prime meridian
-        "heading": 4,                 // integer compass heading, 0-359
-        "gps_as_of": 1359863204       // Unix timestamp of GPS fix
-      }"
-    """
-    d = req('/api/1/vehicles/' + str(vehicle.id) + '/data_request/drive_state', vehicle.credentials)
-    return {
-        'latitude': d['latitude'],
-        'longitude': d['longitude'],
-        'gpsAsOf': d['gps_as_of'],
-        'speed': d['speed'],
-        'heading': d['heading'],
-        'shiftState': d['shift_state'],
-    }
-
-
-def get_gui_settings(vehicle):
-    """
-    @type vehicle: Vehicle
-    @return: "{
-        "gui_distance_units": "mi/hr",
-        "gui_temperature_units": "F",
-        "gui_charge_rate_units": "mi/hr",
-        "gui_24_hour_time": false,
-        "gui_range_display": "Rated"
-      }"
-    """
-    d = req('/api/1/vehicles/' + str(vehicle.id) + '/data_request/gui_settings', vehicle.credentials)
-    return {
-        'temperatureUnits': d['gui_temperature_units']
-    }
-
-
-def get_vehicle_state(vehicle):
-    """
-    @type vehicle: Vehicle
-    @return: "{
-        "df": false,                  // driver's side front door open
-        "dr": false,                  // driver's side rear door open
-        "pf": false,                  // passenger's side front door open
-        "pr": false,                  // passenger's side rear door open
-        "ft": false,                  // front trunk is open
-        "rt": false,                  // rear trunk is open
-        "car_verson": "1.19.42",      // car firmware version
-        "locked": true,               // car is locked
-        "sun_roof_installed": false,  // panoramic roof is installed
-        "sun_roof_state": "unknown",
-        "sun_roof_percent_open": 0,   // null if not installed
-        "dark_rims": false,           // gray rims installed
-        "wheel_type": "Base19",       // wheel type installed
-        "has_spoiler": false,         // spoiler is installed
-        "roof_color": "Colored",      // "None" for panoramic roof
-        "perf_config": "Base"
-      }"
-    """
-    d = req('/api/1/vehicles/' + str(vehicle.id) + '/data_request/vehicle_state', vehicle.credentials)
-    return {
-        'odometer': d['odometer'] if 'odometer' in d else None,
-        'locked': d['locked'],
-    }
+def get_nearby_charging_sites(vehicle):
+    return req('/api/1/vehicles/' + str(vehicle.id) + '/nearby_charging_sites', vehicle.credentials)
 
 
 def set_temperature(vehicle, temperature):
     """
-    @type vehicle: Vehicle
+    :param Vehicle vehicle
+    :param int temperature
     """
-    response = requests.post(get_host() + '/api/1/vehicles/' + str(vehicle.id) + '/command/set_temps',
-                             data={'driver_temp': str(temperature), 'passenger_temp': str(temperature)},
-                             headers=get_headers(vehicle.credentials)
-                             )
-    log.debug('req=' + '/command/set_temps' + ', status=' + str(response.status_code) + ', resp=' + response.text.replace("\n", " "))
-    if response.status_code != 200:
-        raise ApiException("set_temperature failed with " + str(response.status_code) + " " + response.text)
+    req('/api/1/vehicles/' + str(vehicle.id) + '/command/set_temps', vehicle.credentials, method='post',
+        data={'driver_temp': str(temperature), 'passenger_temp': str(temperature)})
 
 
 def set_hvac_start(vehicle):
-    """
-    @type vehicle: Vehicle
-    """
-    response = requests.post(get_host() + '/api/1/vehicles/' + str(vehicle.id) + '/command/auto_conditioning_start',
-                             headers=get_headers(vehicle.credentials))
-    log.debug('req=' + '/command/auto_conditioning_start' + ', status=' + str(response.status_code) + ', resp=' + response.text.replace("\n", " "))
-    if response.status_code != 200:
-        raise ApiException("auto_conditioning_start failed with " + str(response.status_code) + " " + response.text)
+    req('/api/1/vehicles/' + str(vehicle.id) + '/command/auto_conditioning_start', vehicle.credentials, method='post')
 
 
 def set_hvac_stop(vehicle):
+    req('/api/1/vehicles/' + str(vehicle.id) + '/command/auto_conditioning_stop', vehicle.credentials, method='post')
+
+
+def set_hvac_seat_heater(vehicle, seat, level):
     """
-    @type vehicle: Vehicle
+    :param Vehicle vehicle
+    :param int seat: The desired seat to heat. (0-5)
+    :param int level: The desired level for the heater. (0-3)
     """
-    response = requests.post(get_host() + '/api/1/vehicles/' + str(vehicle.id) + '/command/auto_conditioning_stop',
-                             headers=get_headers(vehicle.credentials))
-    log.debug('req=' + '/command/auto_conditioning_stop' + ', status=' + str(response.status_code) + ', resp=' + response.text.replace("\n", " "))
-    if response.status_code != 200:
-        raise ApiException("auto_conditioning_stop failed with " + str(response.status_code) + " " + response.text)
+    req('/api/1/vehicles/' + str(vehicle.id) + '/command/remote_seat_heater_request', vehicle.credentials, method='post',
+        data={'heater': int(seat), 'level': int(level)})
+
+
+def set_hvac_steering_wheel_heater_on(vehicle):
+    req('/api/1/vehicles/' + str(vehicle.id) + '/command/remote_steering_wheel_heater_request', vehicle.credentials, method='post',
+        data={'on': True})
+
+
+def set_hvac_steering_wheel_heater_off(vehicle):
+    req('/api/1/vehicles/' + str(vehicle.id) + '/command/remote_steering_wheel_heater_request', vehicle.credentials, method='post',
+        data={'off': True})
 
 
 def lock_vehicle(vehicle):
-    """
-    @type vehicle: Vehicle
-    """
-    response = requests.post(get_host() + '/api/1/vehicles/' + str(vehicle.id) + '/command/door_lock',
-                             headers=get_headers(vehicle.credentials))
-    log.debug('req=' + '/command/door_lock' + ', status=' + str(response.status_code) + ', resp=' + response.text.replace("\n", " "))
-    if response.status_code != 200:
-        raise ApiException("door_lock failed with " + str(response.status_code) + " " + response.text)
+    req('/api/1/vehicles/' + str(vehicle.id) + '/command/door_lock', vehicle.credentials, method='post')
 
 
 def unlock_vehicle(vehicle):
+    req('/api/1/vehicles/' + str(vehicle.id) + '/command/door_unlock', vehicle.credentials, method='post')
+
+
+def open_frunk(vehicle):
+    req('/api/1/vehicles/' + str(vehicle.id) + '/command/actuate_trunk', vehicle.credentials, method='post',
+        data={'which_trunk': 'front'})
+
+
+def open_trunk(vehicle):
+    d = get_vehicle_data(vehicle)
+    if d['vehicle_state']['rt'] != 0:
+        log.info('trunk already open')
+        return
+
+    req('/api/1/vehicles/' + str(vehicle.id) + '/command/actuate_trunk', vehicle.credentials, method='post',
+        data={'which_trunk': 'rear'})
+
+
+def close_trunk(vehicle):
+    d = get_vehicle_data(vehicle)
+    if d['vehicle_state']['rt'] == 0:
+        log.info('trunk already closed')
+        return
+
+    req('/api/1/vehicles/' + str(vehicle.id) + '/command/actuate_trunk', vehicle.credentials, method='post',
+        data={'which_trunk': 'rear'})
+
+
+def set_charge_limit(vehicle, limit):
     """
-    @type vehicle: Vehicle
+    :param Vehicle vehicle
+    :param int limit: percent value
     """
-    response = requests.post(get_host() + '/api/1/vehicles/' + str(vehicle.id) + '/command/door_unlock',
-                             headers=get_headers(vehicle.credentials))
-    log.debug('req=' + '/command/door_unlock' + ', status=' + str(response.status_code) + ', resp=' + response.text.replace("\n", " "))
-    if response.status_code != 200:
-        raise ApiException("door_unlock failed with " + str(response.status_code) + " " + response.text)
+    req('/api/1/vehicles/' + str(vehicle.id) + '/command/set_charge_limit?percent=' + str(int(limit)), vehicle.credentials, method='post')
+
+
+def charge_port_door_open(vehicle):
+    req('/api/1/vehicles/' + str(vehicle.id) + '/command/charge_port_door_open', vehicle.credentials, method='post')
+
+
+def charge_port_door_close(vehicle):
+    req('/api/1/vehicles/' + str(vehicle.id) + '/command/charge_port_door_close', vehicle.credentials, method='post')
+
+
+def charge_start(vehicle):
+    req('/api/1/vehicles/' + str(vehicle.id) + '/command/charge_start', vehicle.credentials, method='post')
+
+
+def charge_stop(vehicle):
+    req('/api/1/vehicles/' + str(vehicle.id) + '/command/charge_stop', vehicle.credentials, method='post')
+
+
+def navigation_request(vehicle, address, locale='en-US'):
+    """
+    :param Vehicle vehicle
+    :param str address: The address to set as the navigation destination.
+    :param str locale: The locale for the navigation request.
+    """
+    req('/api/1/vehicles/' + str(vehicle.id) + '/command/navigation_request', vehicle.credentials, method='post',
+        data={
+            'type': 'share_ext_content_raw',
+            'timestamp_ms': timezone.now().timestamp(),
+            'locale': locale,
+            'value': {
+                'android.intent.extra.TEXT': address
+            }
+        })
+
+
+def enable_valet_mode(vehicle, pin):
+    """
+    :param Vehicle vehicle
+    :param int pin: 4 digit pin code
+    """
+    req('/api/1/vehicles/' + str(vehicle.id) + '/command/set_valet_mode?on=true&password=' + str(int(pin)), vehicle.credentials, method='post')
+
+
+def disable_valet_mode(vehicle):
+    """
+    :param Vehicle vehicle
+    """
+    req('/api/1/vehicles/' + str(vehicle.id) + '/command/set_valet_mode?on=false', vehicle.credentials, method='post')
+
+
+def enable_speed_limit(vehicle, limit_mph, pin):
+    """
+    :param Vehicle vehicle
+    :param int limit: The speed limit in MPH. Must be between 50-90.
+    :param int pin: 4 digit pin code
+    """
+    req('/api/1/vehicles/' + str(vehicle.id) + '/command/speed_limit_set_limit', vehicle.credentials, method='post',
+        data={'limit_mph': str(int(limit_mph))})
+    req('/api/1/vehicles/' + str(vehicle.id) + '/command/speed_limit_activate', vehicle.credentials, method='post',
+        data={'pin': str(int(pin))})
+
+
+def disable_speed_limit(vehicle):
+    req('/api/1/vehicles/' + str(vehicle.id) + '/command/speed_limit_deactivate', vehicle.credentials, method='post')
+
+
+def fetch_logs(credentials):
+    """
+    :param Credential credentials
+    :return: {"response":"ok"}
+    """
+    return req('/api/1/logs', credentials, method='post')
+
+
+def fetch_diagnostics(credentials):
+    """
+    :param Credential credentials
+    :return: {"response":{"eligible":false}}
+    """
+    return req('/api/1/diagnostics', credentials)
 
 
 def load_vehicles(credentials):
     """
-    @type credentials: Credentials
+    :param Credential credentials
     """
 
     existing_vehicles = {v.id: v for v in Vehicle.objects.filter(credentials=credentials)}

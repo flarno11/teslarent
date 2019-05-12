@@ -150,3 +150,15 @@ a, a:visited {
 .imgLoaderError {
     background-color: red;
 }
+
+.charger {
+    text-align: left;
+    margin-bottom: 8px;
+    margin-left: 30px;
+}
+.directions {
+    width: 20px;
+    height: 20px;
+    position: absolute:
+    margin-left: 5px;
+}

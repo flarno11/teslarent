@@ -33,18 +33,22 @@
         <div ng-if="vehicleState.state != 'asleep' && chargeState.chargingState == 'Disconnected'">
             <div ng-if="driveState.shiftState && driveState.shiftState != 'P'">
                 <h2>Driving</h2>
-                {{ driveState.speed }} km/h<br /><br />
+                {{ driveState.speed }} km/h
+                <br />
             </div>
             <div ng-if="!driveState.shiftState || driveState.shiftState == 'P'">
                 <h2>Parked</h2>
                 <div vehicle-lock-state vehicle-state="vehicleState"></div>
                 <br />
             </div>
+            <div vehicle-actions vehicle-state="vehicleState"></div>
+            <br />
         </div>
         <div ng-if="vehicleState.state != 'asleep' && chargeState.chargingState != 'Disconnected'">
             <h2 ng-if="chargeState.chargingState == 'Complete'">Charging Complete</h2>
             <h2 ng-if="chargeState.chargingState != 'Complete'">{{ chargeState.chargingState }}</h2>
             <div vehicle-lock-state vehicle-state="vehicleState"></div>
+            <div vehicle-actions vehicle-state="vehicleState"></div>
             <br /><br />
             <h3 ng-if="chargeState.chargingState == 'Charging'">{{ chargeState.timeToFullChargeHours }} hr {{ chargeState.timeToFullChargeMins | number:0 }} min remaining</h3>
             Charging speed: {{ chargeState.chargeRate }} km/h, {{ chargeState.chargerPower }} kW<br />
@@ -56,6 +60,15 @@
         <div class="battery">
             <div class="level" ng-style="{width: chargeState.batteryLevel + '%'}"></div>
             <div ng-class="{plugged: chargeState.chargingState == 'Charging'}"></div>
+        </div>
+        <a href="javascript:void(0)" ng-if="!nearbyChargingVisible" ng-click="showNearByChargingStations()" style="font-size: smaller;">Show nearby<br />charging stations</a>
+        <a href="javascript:void(0)" ng-if="nearbyChargingVisible" ng-click="hideNearByChargingStations()" style="font-size: smaller;">Hide nearby<br />charging stations</a>
+        <br />
+        <div ng-if="nearbyChargingVisible">
+            <h3>Nearby Superchargers</h3>
+            <div class="charger" ng-repeat="charger in nearbyChargers.superchargers"nearby-charger charger="charger" navigation-request-callback="getNavigationRequest()"></div>
+            <h3>Nearby Destination Charging</h3>
+            <div class="charger" ng-repeat="charger in nearbyChargers.destination_charging" nearby-charger charger="charger" navigation-request-callback="getNavigationRequest()"></div>
         </div>
     </div>
 

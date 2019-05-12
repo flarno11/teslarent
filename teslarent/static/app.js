@@ -40,6 +40,38 @@ angular.module("myApp", ['ngRoute', ]) //'ngMaterial',
         },
     }
 })
+.directive('vehicleActions', function($q, $log, $http) {
+    return {
+        restrict : "A",
+        templateUrl: '/static/vehicle_actions.html',
+        scope: {
+            vehicleState: '=',
+        },
+    }
+})
+.directive('nearbyCharger', function($q, $log, $http) {
+    return {
+        restrict : "A",
+        templateUrl: '/static/nearby_charger.html',
+        scope: {
+            charger: '=',
+            navigationRequestCallback: '&'
+        },
+        link: function($scope, $elem, $attr) {
+            $scope.responseMessage = "";
+
+            $scope.navigationRequest = function(charger) {
+                var url = $scope.navigationRequestCallback({});
+                $http.post(url, charger.location).then(function successCallback(response) {
+                    $scope.responseMessage = "Navigation request sent.";
+                  }, function errorCallback(response) {
+                    $log.error(response);
+                    $scope.responseMessage = "Error sending navigation request";
+                });
+            };
+        },
+    }
+})
 
 .controller('navController', function($scope, $location, $log) {
 })
@@ -70,10 +102,7 @@ angular.module("myApp", ['ngRoute', ]) //'ngMaterial',
             $scope.rental = rental;
 
             if ($scope.rental.isActive) {
-                var vehicleState = response.data.vehicleState;
-                vehicleState.timestamp = moment(vehicleState.timestamp).toDate();
-                vehicleState.openDoorsOrTrunks = getOpenDoorsOrTrunks(vehicleState);
-                $scope.vehicleState = vehicleState;
+                setVehicleState(response.data.vehicleState);
 
                 var chargeState = response.data.chargeState;
                 chargeState.timeToFullChargeHours = Math.floor(chargeState.timeToFullCharge);
@@ -115,9 +144,36 @@ angular.module("myApp", ['ngRoute', ]) //'ngMaterial',
         return items;
     }
 
+    function setVehicleState(vehicleState) {
+        vehicleState.timestamp = moment(vehicleState.timestamp).toDate();
+        vehicleState.openDoorsOrTrunks = getOpenDoorsOrTrunks(vehicleState);
+        $scope.vehicleState = vehicleState;
+    }
+
     function setClimateState(climateState) {
         climateState.driverTempSetting = Math.round(climateState.driverTempSetting*2)/2;
         $scope.climateState = climateState;
+    }
+
+    $scope.vehicleOpenFrunk = function() {
+        $scope.hvacLoading = true;
+        $http.post('/rental/api/' + code + '/vehicleOpenFrunk').then(function successCallback(response) {
+            setVehicleState(response.data.vehicleState);
+            $scope.hvacLoading = false;
+          }, function errorCallback(response) {
+            $log.error(response);
+            $scope.hvacLoading = false;
+        });
+    }
+    $scope.vehicleLock = function() {
+        $scope.hvacLoading = true;
+        $http.post('/rental/api/' + code + '/vehicleLock').then(function successCallback(response) {
+            setVehicleState(response.data.vehicleState);
+            $scope.hvacLoading = false;
+          }, function errorCallback(response) {
+            $log.error(response);
+            $scope.hvacLoading = false;
+        });
     }
 
     $scope.hvacSetTemperatureDecrease = function() {
@@ -155,6 +211,21 @@ angular.module("myApp", ['ngRoute', ]) //'ngMaterial',
             $scope.hvacLoading = false;
             $scope.hvacError = true;
         });
+    };
+
+    $scope.showNearByChargingStations = function() {
+        $scope.nearbyChargingVisible = true;
+        $http.get('/rental/api/' + code + '/nearbyCharging').then(function successCallback(response) {
+            $scope.nearbyChargers = response.data;
+          }, function errorCallback(response) {
+            $log.error(response);
+        });
+    };
+    $scope.hideNearByChargingStations = function() {
+        $scope.nearbyChargingVisible = false;
+    };
+    $scope.getNavigationRequest = function() {
+        return '/rental/api/' + code + '/navigationRequest';
     };
 
     function startUpdate() {
