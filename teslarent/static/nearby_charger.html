@@ -1,6 +1,11 @@
 {{ charger.name }},
-<span ng-if="charger.available_stalls"><br />{{ charger.available_stalls }} / {{ charger.total_stalls }} available,</span>
-<span>{{ charger.distance_miles*1.609344 | number:0 }} km</span>
-<span ng-if="charger.site_closed">Site closed</span>
+<span ng-if="charger.available_stalls"><br />{{ charger.available_stalls }} / {{ charger.total_stalls }} <span translate>available</span>,</span>
+<span>{{ charger.distance_miles*1.609344 | number:0 }} <span translate>km</span></span>
+<span ng-if="charger.site_closed" translate>Site closed</span>
 <a ng-if="!charger.site_closed" href="javascript:void(0)" ng-click="navigationRequest(charger)"><img class="directions" src="/static/directions2.svg" /></a>
-<span ng-if="responseMessage != ''"><br /><b>{{ responseMessage }}</b></span>
+<span ng-if="responseResult != ''">
+    <br /><b>
+    <span ng-if="responseResult == 'success'" translate>Navigation request sent.</span>
+    <span ng-if="responseResult == 'error'" translate>Error sending navigation request.</span>
+    </b>
+</span>

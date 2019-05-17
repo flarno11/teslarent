@@ -47,11 +47,23 @@ a, a:visited {
     color: rgba(255,255,255,0.8);
 }
 
-.logo {
+.divLogo {
     position: absolute;
     top: 20px;
     right: 20px;
+}
+.imgLogo {
     width: 65px;
+}
+
+.div-lang-selector {
+}
+.div-lang-selector a {
+    text-decoration: none;
+    cursor: pointer;
+}
+.inactive-lang {
+    text-decoration: underline !important;
 }
 
 .car {

@@ -1,19 +1,19 @@
 
 <div class="rental">
-    Rental Start: {{ rental.start | date:'medium' }}<br />
-    <div ng-if="rental.odometerStart != null">Mileage: {{ rental.odometerStart }} km<br /></div>
+    <span translate>Rental Start</span>: {{ rental.start | date: dateTimeFormat }}<br />
+    <div ng-if="rental.odometerStart != null"><span translate>Mileage</span>: {{ rental.odometerStart }} <span translate>km</span><br /></div>
     <br />
 
     <div ng-if="rental.isActive">
-        Mileage as of {{ vehicleState.timestamp | date:'medium' }}:<br />
-        {{ vehicleState.odometer }} km<span ng-if="rental.odometerStart != null">, driven so far: {{ vehicleState.odometer - rental.odometerStart }} km</span>
+        <span translate>Mileage as of</span> {{ vehicleState.timestamp | date: dateTimeFormat }}:<br />
+        {{ vehicleState.odometer }} <span translate>km</span><span ng-if="rental.odometerStart != null">, <span translate>driven so far</span>: {{ vehicleState.odometer - rental.odometerStart }} <span translate>km</span></span>
         <br /><br />
     </div>
 
-    Rental End: {{ rental.end | date:'medium' }}<br />
+    <span translate>Rental End</span>: {{ rental.end | date: dateTimeFormat }}<br />
     <div ng-if="rental.odometerEnd != null">
-        Mileage: {{ rental.odometerEnd }} km<br /><br />
-        Distance driven: {{ rental.odometerEnd - rental.odometerStart }} km<br /><br />
+        <span translate>Mileage</span>: {{ rental.odometerEnd }} <span translate>km</span><br /><br />
+        <span translate>Distance driven</span>: {{ rental.odometerEnd - rental.odometerStart }} <span translate>km</span><br /><br />
     </div>
 
     <div ng-if="debugMode">
@@ -22,24 +22,24 @@
     (not yet available through API)<br />
     </div>
 
-    <span ng-if="!rental.isActive"><br />Info and controls are only available when the rental is active.</span>
+    <span ng-if="!rental.isActive"><br /><span translate>Info and controls are only available when the rental is active.</span></span>
 </div>
 
 <div ng-if="rental.isActive">
     <div class="charging">
         <div ng-if="vehicleState.state == 'asleep'">
-            <h2>Asleep</h2>
+            <h2 translate>Asleep</h2>
             <div vehicle-actions vehicle-state="vehicleState"></div>
             <br />
         </div>
         <div ng-if="vehicleState.state != 'asleep' && chargeState.chargingState == 'Disconnected'">
             <div ng-if="driveState.shiftState && driveState.shiftState != 'P'">
-                <h2>Driving</h2>
-                {{ driveState.speed }} km/h
+                <h2 translate>Driving</h2>
+                {{ driveState.speed }} <span translate>km/h</span>
                 <br />
             </div>
             <div ng-if="!driveState.shiftState || driveState.shiftState == 'P'">
-                <h2>Parked</h2>
+                <h2 translate>Parked</h2>
                 <div vehicle-lock-state vehicle-state="vehicleState"></div>
                 <br />
             </div>
@@ -47,44 +47,44 @@
             <br />
         </div>
         <div ng-if="vehicleState.state != 'asleep' && chargeState.chargingState != 'Disconnected'">
-            <h2 ng-if="chargeState.chargingState == 'Complete'">Charging Complete</h2>
-            <h2 ng-if="chargeState.chargingState != 'Complete'">{{ chargeState.chargingState }}</h2>
+            <h2 ng-if="chargeState.chargingState == 'Complete'" translate>Charging Complete</h2>
+            <h2 ng-if="chargeState.chargingState != 'Complete'">{{ chargeState.chargingState | translate }}</h2>
             <div vehicle-lock-state vehicle-state="vehicleState"></div>
             <div vehicle-actions vehicle-state="vehicleState"></div>
             <br /><br />
-            <h3 ng-if="chargeState.chargingState == 'Charging'">{{ chargeState.timeToFullChargeHours }} hr {{ chargeState.timeToFullChargeMins | number:0 }} min remaining</h3>
-            Charging speed: {{ chargeState.chargeRate }} km/h, {{ chargeState.chargerPower }} kW<br />
+            <h3 ng-if="chargeState.chargingState == 'Charging'" translate>{{ chargeState.timeToFullChargeHours }} hr {{ chargeState.timeToFullChargeMins | number:0 }} min remaining</h3>
+            <span translate>Charging speed: {{ chargeState.chargeRate }} km/h, {{ chargeState.chargerPower }} kW</span><br />
         </div>
 
-        <div style="margin-bottom: 5px">
+        <div style="margin-bottom: 5px" translate>
             Range: {{ chargeState.batteryRange | number:0 }} km, {{ chargeState.batteryLevel }}%
         </div>
         <div class="battery">
             <div class="level" ng-style="{width: chargeState.batteryLevel + '%'}"></div>
             <div ng-class="{plugged: chargeState.chargingState == 'Charging'}"></div>
         </div>
-        <a href="javascript:void(0)" ng-if="!nearbyChargingVisible" ng-click="showNearByChargingStations()" style="font-size: smaller;">Show nearby<br />charging stations</a>
-        <a href="javascript:void(0)" ng-if="nearbyChargingVisible" ng-click="hideNearByChargingStations()" style="font-size: smaller;">Hide nearby<br />charging stations</a>
+        <a href="javascript:void(0)" ng-if="!nearbyChargingVisible" ng-click="showNearByChargingStations()" style="font-size: smaller;" translate>Show nearby<br />charging stations</a>
+        <a href="javascript:void(0)" ng-if="nearbyChargingVisible" ng-click="hideNearByChargingStations()" style="font-size: smaller;" translate>Hide nearby<br />charging stations</a>
         <br />
         <div ng-if="nearbyChargingVisible">
-            <h3>Nearby Superchargers</h3>
+            <h3 translate>Nearby Superchargers</h3>
             <div class="charger" ng-repeat="charger in nearbyChargers.superchargers"nearby-charger charger="charger" navigation-request-callback="getNavigationRequest()"></div>
-            <h3>Nearby Destination Charging</h3>
+            <h3 translate>Nearby Destination Charging</h3>
             <div class="charger" ng-repeat="charger in nearbyChargers.destination_charging" nearby-charger charger="charger" navigation-request-callback="getNavigationRequest()"></div>
         </div>
     </div>
 
     <div class="hvac">
-        <h2>HVAC</h2>
+        <h2 translate>HVAC</h2>
         <div class="divTemperatureInOut">
-            <span>Inside: {{ climateState.insideTemp }} °C</span><br />
-            <span>Outside: {{ climateState.outsideTemp }} °C</span><br />
+            <span translate>Inside: {{ climateState.insideTemp }} °C</span><br />
+            <span translate>Outside: {{ climateState.outsideTemp }} °C</span><br />
         </div>
         <br />
 
         <div class="divTemperature">
             <button class="btnTemperature" ng-click="hvacSetTemperatureDecrease()">&lt;</button>
-            <span class="temperature">{{ climateState.driverTempSetting | number:1 }} °C</span>
+            <span class="temperature">{{ climateState.driverTempSetting | number:1 }} <span translate>°C</span></span>
             <button class="btnTemperature" ng-click="hvacSetTemperatureIncrease()">&gt;</button>
         </div>
 
@@ -93,24 +93,26 @@
 
         <!--<md-switch ng-model="climateState.autoConditioningOn" ng-change="hvacStartStop()">HVAC</md-switch>-->
         <div style="position: relative">
-            <button ng-click="hvacStartStop()" ng-if="climateState.autoConditioningOn">TURN OFF</button>
-            <button ng-click="hvacStartStop()" ng-if="!climateState.autoConditioningOn">TURN ON</button>
+            <button ng-click="hvacStartStop()" ng-if="climateState.autoConditioningOn" translate>TURN OFF</button>
+            <button ng-click="hvacStartStop()" ng-if="!climateState.autoConditioningOn" translate>TURN ON</button>
             <img ng-if="hvacLoading" class="imgLoader" src="/static/loader.gif" />
             <img ng-if="hvacError" class="imgLoader imgLoaderError" src="/static/loader.gif" />
         </div>
     </div>
 
     <div class="gps">
-        <h2>Current position</h2>
+        <h2 translate>Current position</h2>
 
         <div>
             GPS: {{ driveState.longitude }}, {{ driveState.latitude }}<br />
-            (as of: {{ driveState.gpsAsOf | date:'medium' }})<br />
+            (<span translate>as of</span>: {{ driveState.gpsAsOf | date: dateTimeFormat }})<br />
         </div>
 
         <br />
-        <a class="btn" href="https://www.google.com/maps/place/{{ driveState.latitude }},{{ driveState.longitude }}">Open in Google Maps</a>
+        <a class="btn" href="https://www.google.com/maps/place/{{ driveState.latitude }},{{ driveState.longitude }}" translate>Open in Google Maps</a>
     </div>
+
+    <br /><span style="font-size: smaller" translate>*Frunk: Front trunk</span>
 </div>
 
 <div ng-if="debugMode">

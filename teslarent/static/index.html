@@ -2,35 +2,44 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Tesla Rent</title>
+    <title translate>Tesla Rent</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!--<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.1/angular-material.min.css" />-->
     <link rel="stylesheet" href="/static/app.css" />
 </head>
 <body ng-app="myApp" ng-controller="navController">
+    <div class="div-lang-selector">
+        <a ng-click="switchLanguage('en')" ng-class="{'inactive-lang': lang != 'en'}">EN</a>
+        <a ng-click="switchLanguage('de')" ng-class="{'inactive-lang': lang != 'de'}">DE</a>
+        <a ng-click="switchLanguage('fr')" ng-class="{'inactive-lang': lang != 'fr'}">FR</a>
+    </div>
 
     <div layout="column" class="column" ng-cloak>
-        <img class="logo" src="/static/logo.png" />
+        <div class="divLogo">
+            <img class="imgLogo" src="/static/logo.png" />
+        </div>
 
-        <h2 style="margin-top: 0;">Rental</h2>
+        <h2 style="margin-top: 0;" translate>Rental</h2>
         <img class="car" src="/static/model3.jpg" />
 
         <ng-view></ng-view>
 
         <br /><br />
-        <span style="font-size: small"><a href="https://github.com/flarno11/teslarent">Tesla Rent project on Github</a>. This application is not affiliated with Tesla Inc. in any way.</span>
+        <span style="font-size: small"><a href="https://github.com/flarno11/teslarent" translate>Tesla Rent project on Github</a>. <span translate>This application is not affiliated with Tesla Inc. in any way.</span></span>
         <br /><br />
     </div>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-animate.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-aria.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-messages.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular-route.js"></script>
-    <!--<script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.1/angular-material.min.js"></script>-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular-messages.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular-route.js"></script>
+    <script src="/static/angular-gettext.min.js"></script>
+    <script src="/static/translations.js"></script>
+    <script src="/rental/config.js"></script>
     <script src="/static/app.js"></script>
+
 </body>
 </html>

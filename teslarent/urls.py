@@ -7,6 +7,7 @@ admin.autodiscover()
 
 
 urlpatterns = [
+    path('config.js', views.config),
     path('api/<uuid:uuid>', views.info),
     path('api/<uuid:uuid>/hvacStart', views.hvac_start),
     path('api/<uuid:uuid>/hvacStop', views.hvac_stop),

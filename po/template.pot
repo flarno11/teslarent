@@ -1,0 +1,219 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: \n"
+
+#: teslarent/static/vehicle_lock_state.html:6
+msgctxt "Door open"
+msgid "open"
+msgstr ""
+
+#: teslarent/static/rental.html:116
+msgid "*Frunk: Front trunk"
+msgstr ""
+
+#: teslarent/static/rental.html:31
+msgid "Asleep"
+msgstr ""
+
+#: teslarent/static/vehicle_actions.html:7
+msgid "Can't lock vehicle because doors or trunks are open."
+msgstr ""
+
+#: teslarent/static/rental.html:50
+msgid "Charging Complete"
+msgstr ""
+
+#: teslarent/static/rental.html:56
+msgid "Charging speed: {{ chargeState.chargeRate }} km/h, {{ chargeState.chargerPower }} kW"
+msgstr ""
+
+#: teslarent/static/codeInput.html:3
+msgid "Code:"
+msgstr ""
+
+#: teslarent/static/rental.html:104
+msgid "Current position"
+msgstr ""
+
+#: teslarent/static/rental.html:16
+msgid "Distance driven"
+msgstr ""
+
+#: teslarent/static/vehicle_lock_state.html:13
+msgid "Door front left"
+msgstr ""
+
+#: teslarent/static/vehicle_lock_state.html:14
+msgid "Door front right"
+msgstr ""
+
+#: teslarent/static/vehicle_lock_state.html:15
+msgid "Door rear left"
+msgstr ""
+
+#: teslarent/static/vehicle_lock_state.html:16
+msgid "Door rear right"
+msgstr ""
+
+#: teslarent/static/rental.html:37
+msgid "Driving"
+msgstr ""
+
+#: teslarent/static/nearby_charger.html:9
+msgid "Error sending navigation request."
+msgstr ""
+
+#: teslarent/static/vehicle_lock_state.html:11
+msgid "Frunk"
+msgstr ""
+
+#: teslarent/static/rental.html:78
+msgid "HVAC"
+msgstr ""
+
+#: teslarent/static/rental.html:67
+msgid "Hide nearby<br>charging stations"
+msgstr ""
+
+#: teslarent/static/rental.html:25
+msgid "Info and controls are only available when the rental is active."
+msgstr ""
+
+#: teslarent/static/rental.html:80
+msgid "Inside: {{ climateState.insideTemp }} °C"
+msgstr ""
+
+#: teslarent/static/vehicle_actions.html:6
+msgid "Lock vehicle"
+msgstr ""
+
+#: teslarent/static/rental.html:15
+#: teslarent/static/rental.html:4
+msgid "Mileage"
+msgstr ""
+
+#: teslarent/static/rental.html:8
+msgid "Mileage as of"
+msgstr ""
+
+#: teslarent/static/nearby_charger.html:8
+msgid "Navigation request sent."
+msgstr ""
+
+#: teslarent/static/rental.html:72
+msgid "Nearby Destination Charging"
+msgstr ""
+
+#: teslarent/static/rental.html:70
+msgid "Nearby Superchargers"
+msgstr ""
+
+#: teslarent/static/vehicle_actions.html:1
+msgid "Open Frunk"
+msgstr ""
+
+#: teslarent/static/rental.html:112
+msgid "Open in Google Maps"
+msgstr ""
+
+#: teslarent/static/rental.html:81
+msgid "Outside: {{ climateState.outsideTemp }} °C"
+msgstr ""
+
+#: teslarent/static/rental.html:42
+msgid "Parked"
+msgstr ""
+
+#: teslarent/static/rental.html:59
+msgid "Range: {{ chargeState.batteryRange | number:0 }} km, {{ chargeState.batteryLevel }}%"
+msgstr ""
+
+#: teslarent/static/index.html:22
+msgid "Rental"
+msgstr ""
+
+#: teslarent/static/rental.html:13
+msgid "Rental End"
+msgstr ""
+
+#: teslarent/static/rental.html:3
+msgid "Rental Start"
+msgstr ""
+
+#: teslarent/static/rental.html:66
+msgid "Show nearby<br>charging stations"
+msgstr ""
+
+#: teslarent/static/nearby_charger.html:4
+msgid "Site closed"
+msgstr ""
+
+#: teslarent/static/codeInput.html:7
+msgid "Submit"
+msgstr ""
+
+#: teslarent/static/rental.html:96
+msgid "TURN OFF"
+msgstr ""
+
+#: teslarent/static/rental.html:97
+msgid "TURN ON"
+msgstr ""
+
+#: teslarent/static/index.html:5
+msgid "Tesla Rent"
+msgstr ""
+
+#: teslarent/static/index.html:28
+msgid "Tesla Rent project on Github"
+msgstr ""
+
+#: teslarent/static/index.html:28
+msgid "This application is not affiliated with Tesla Inc. in any way."
+msgstr ""
+
+#: teslarent/static/vehicle_lock_state.html:12
+msgid "Trunk"
+msgstr ""
+
+#: teslarent/static/vehicle_lock_state.html:1
+msgid "Vehicle locked"
+msgstr ""
+
+#: teslarent/static/vehicle_lock_state.html:3
+msgid "Vehicle unlocked"
+msgstr ""
+
+#: teslarent/static/rental.html:108
+msgid "as of"
+msgstr ""
+
+#: teslarent/static/nearby_charger.html:2
+msgid "available"
+msgstr ""
+
+#: teslarent/static/rental.html:9
+msgid "driven so far"
+msgstr ""
+
+#: teslarent/static/nearby_charger.html:3
+#: teslarent/static/rental.html:15
+#: teslarent/static/rental.html:16
+#: teslarent/static/rental.html:4
+#: teslarent/static/rental.html:9
+msgid "km"
+msgstr ""
+
+#: teslarent/static/rental.html:38
+msgid "km/h"
+msgstr ""
+
+#: teslarent/static/rental.html:55
+msgid "{{ chargeState.timeToFullChargeHours }} hr {{ chargeState.timeToFullChargeMins | number:0 }} min remaining"
+msgstr ""
+
+#: teslarent/static/rental.html:87
+msgid "°C"
+msgstr ""

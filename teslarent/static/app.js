@@ -1,4 +1,4 @@
-angular.module("myApp", ['ngRoute', ]) //'ngMaterial',
+angular.module("myApp", ['ngRoute', 'gettext', ])
 
 /*.config(function($mdThemingProvider) {
   $mdThemingProvider.theme('default')
@@ -58,22 +58,45 @@ angular.module("myApp", ['ngRoute', ]) //'ngMaterial',
             navigationRequestCallback: '&'
         },
         link: function($scope, $elem, $attr) {
-            $scope.responseMessage = "";
+            $scope.responseResult = "";
 
             $scope.navigationRequest = function(charger) {
                 var url = $scope.navigationRequestCallback({});
                 $http.post(url, charger.location).then(function successCallback(response) {
-                    $scope.responseMessage = "Navigation request sent.";
+                    $scope.responseResult = 'success';
                   }, function errorCallback(response) {
                     $log.error(response);
-                    $scope.responseMessage = "Error sending navigation request";
+                    $scope.responseResult = 'error';
                 });
             };
         },
     }
 })
 
-.controller('navController', function($scope, $location, $log) {
+.controller('navController', function($scope, $location, $log, gettextCatalog) {
+    $scope.defaultLang = 'de';
+    $scope.dateTimeFormats = {
+        'en': 'MMM d, y HH:mm',
+        'de': 'd. MMM, y HH:mm',
+        'fr': 'd. MMM, y HH:mm',
+    };
+
+    $scope.lang = $scope.defaultLang;
+    $scope.dateTimeFormat = $scope.dateTimeFormats[$scope.lang];
+
+    $scope.switchLanguage = function(lang) {
+        $scope.lang = lang;
+        $scope.dateTimeFormat = $scope.dateTimeFormats[$scope.lang];
+        gettextCatalog.setCurrentLanguage(lang);
+    };
+    var supportedLanguages = {'de': true, 'en': true, 'fr': true};
+    var userLanguages = config['userAgentLanguages'].filter(function(l) { return l in supportedLanguages; })
+    $log.info("Auto-detected language userAgentLanguages=", config['userAgentLanguages'], ", userLanguages=", userLanguages);
+    if (userLanguages.length > 0) {
+        $scope.switchLanguage(userLanguages[0]);
+    } else {
+        $scope.switchLanguage($scope.defaultLang);
+    }
 })
 
 .controller('codeInputController', function($scope, $q, $log, $location) {

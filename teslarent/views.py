@@ -1,6 +1,8 @@
 import json
 import logging
 import datetime
+from collections import OrderedDict
+from json import JSONEncoder
 
 from django.core.management import call_command
 from django.http.response import Http404, HttpResponse, JsonResponse
@@ -61,6 +63,23 @@ def get_climate_state(vehicle_data):
         'driverTempSetting': vehicle_data.climate_state__driver_temp_setting,
         'autoConditioningOn': vehicle_data.climate_state__is_climate_on,
     }
+
+
+def parse_user_accept_languages(header):
+    if header:
+        return list(OrderedDict.fromkeys(map(lambda h: h.split(';')[0].split('-')[0], header.split(','))))
+    else:
+        return []
+
+
+@json_view
+def config(request):
+    s = "var config = " + JSONEncoder().encode(
+        {
+            'userAgentLanguages': parse_user_accept_languages(request.META.get('HTTP_ACCEPT_LANGUAGE')),
+         }
+    ) + ";\n"
+    return HttpResponse(s, content_type='application/javascript')
 
 
 @json_view
@@ -133,7 +152,6 @@ def fetch_and_save_vehicle_state(vehicle):
 
 
 @json_view
-@ensure_csrf_cookie
 def vehicle_open_frunk(request, uuid):
     if request.method != "POST":
         raise Http404
@@ -147,7 +165,6 @@ def vehicle_open_frunk(request, uuid):
 
 
 @json_view
-@ensure_csrf_cookie
 def vehicle_lock(request, uuid):
     if request.method != "POST":
         raise Http404
@@ -161,7 +178,6 @@ def vehicle_lock(request, uuid):
 
 
 @json_view
-@ensure_csrf_cookie
 def hvac_start(request, uuid):
     if request.method != "POST":
         raise Http404
@@ -175,7 +191,6 @@ def hvac_start(request, uuid):
 
 
 @json_view
-@ensure_csrf_cookie
 def hvac_stop(request, uuid):
     if request.method != "POST":
         raise Http404
@@ -189,7 +204,6 @@ def hvac_stop(request, uuid):
 
 
 @json_view
-@ensure_csrf_cookie
 def hvac_set_temperature(request, uuid, temperature):
     if request.method != "POST":
         raise Http404
@@ -203,7 +217,6 @@ def hvac_set_temperature(request, uuid, temperature):
 
 
 @json_view
-@ensure_csrf_cookie
 def nearby_charging(request, uuid):
     rental = get_rental(uuid, validate_active=True)
     ensure_vehicle_is_awake(rental.vehicle)
@@ -211,7 +224,6 @@ def nearby_charging(request, uuid):
 
 
 @json_view
-@ensure_csrf_cookie
 def navigation_request(request, uuid):
     if request.method != "POST":
         raise Http404
