@@ -18,7 +18,8 @@ angular.module("myApp", ['ngRoute', 'gettext', ])
     $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
 })
 
-.config(function($routeProvider) {
+.config(function($routeProvider, $locationProvider) {
+    $locationProvider.hashPrefix('');
     $routeProvider
     .when("/", {
         templateUrl : "/static/codeInput.html",

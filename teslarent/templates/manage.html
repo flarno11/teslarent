@@ -77,7 +77,7 @@
 <h2>Active Rentals</h2>
 {% for rental in active_rentals %}
     {{ rental.start }} - {{ rental.end }}<br />
-    Rental-code: <a href="/#!/rental/{{ rental.code }}">{{ rental.code }}</a><br />
+    Rental-code: <a href="/#/rental/{{ rental.code }}">{{ rental.code }}</a><br />
     {{ rental.description }}{% if rental.description %}<br />{% endif %}
     {{ rental.vehicle }}<br />
     <a href="./editRental/{{ rental.id }}">Edit</a>
@@ -92,7 +92,7 @@
 <h2>Upcoming Rentals</h2>
 {% for rental in upcoming_rentals %}
     {{ rental.start }} - {{ rental.end }}<br />
-    Rental-code: <a href="/#!/rental/{{ rental.code }}">{{ rental.code }}</a><br />
+    Rental-code: <a href="/#/rental/{{ rental.code }}">{{ rental.code }}</a><br />
     {{ rental.description }}{% if rental.description %}<br />{% endif %}
     {{ rental.vehicle }}<br />
     <a href="./editRental/{{ rental.id }}">Edit</a>
@@ -107,7 +107,7 @@
 <h2>Past rentals</h2>
 {% for rental in past_rentals %}
     {{ rental.start }} - {{ rental.end }}<br />
-    Rental-code: <a href="/#!/rental/{{ rental.code }}">{{ rental.code }}</a><br />
+    Rental-code: <a href="/#/rental/{{ rental.code }}">{{ rental.code }}</a><br />
     {{ rental.description }}{% if rental.description %}<br />{% endif %}
     {{ rental.vehicle }}<br />
     <a href="./editRental/{{ rental.id }}">Edit</a>
