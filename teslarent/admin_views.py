@@ -100,8 +100,8 @@ def index(request):
         'distance_driven': sum_non_null(lambda r: r.distance_driven, rentals),
         'price_brutto': sum_non_null(lambda r: r.price_brutto, rentals),
         'price_netto': sum_non_null(lambda r: r.price_netto, rentals),
-        'price_charging': sum_non_null(lambda r: r.price_charging, rentals),
-        'earnings_per_km': sum_non_null(lambda r: r.price_netto, rentals) / sum_non_null(lambda r: r.distance_driven, rentals),
+        'price_charging': round(sum_non_null(lambda r: r.price_charging, rentals), 2),
+        'earnings_per_km': round(sum_non_null(lambda r: r.price_netto, rentals) / sum_non_null(lambda r: r.distance_driven, rentals), 2),
     }
 
     vehicles = Vehicle.objects.all()
