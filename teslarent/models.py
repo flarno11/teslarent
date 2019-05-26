@@ -72,6 +72,9 @@ class Rental(models.Model):
     odometer_start_updated_at = models.DateTimeField(default=None, blank=True, null=True)
     odometer_end = models.IntegerField(default=None, blank=True, null=True)
     odometer_end_updated_at = models.DateTimeField(default=None, blank=True, null=True)
+    price_brutto = models.IntegerField(default=None, blank=True, null=True)
+    price_netto = models.IntegerField(default=None, blank=True, null=True)
+    price_charging = models.IntegerField(default=None, blank=True, null=True)
 
     @property
     def is_active(self):
@@ -83,6 +86,12 @@ class Rental(models.Model):
             return self.odometer_end - self.odometer_start
         else:
             return None
+
+    @property
+    def earnings_per_km(self):
+        if self.price_netto and self.distance_driven:
+            return round(self.price_netto / self.distance_driven, 3)
+        return None
 
     @staticmethod
     def get_next_rental_start_or_end_time(date):

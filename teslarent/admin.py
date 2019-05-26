@@ -48,7 +48,7 @@ class VehicleAdmin(admin.ModelAdmin):
 
 @admin.register(Rental)
 class RentalAdmin(admin.ModelAdmin):
-    list_display = ('vehicle', 'start', 'end', 'code', 'odometer_start', 'odometer_end', 'created_at', 'updated_at', )
+    list_display = ('vehicle', 'start', 'end', 'description', 'odometer_start', 'odometer_end', 'created_at', 'updated_at', )
     list_filter = ('start',)
     #readonly_fields = ('odometer_start', 'odometer_end', )
     ordering = ('start', 'end',)

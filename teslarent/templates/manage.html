@@ -17,6 +17,10 @@
     .dashboard #content {
         width: 1000px;
     }
+
+    #rental-table td {
+        white-space: nowrap;
+    }
 </style>
 
 
@@ -89,37 +93,44 @@
 
 <hr />
 
-<h2>Upcoming Rentals</h2>
-{% for rental in upcoming_rentals %}
-    {{ rental.start }} - {{ rental.end }}<br />
-    Rental-code: <a href="/#/rental/{{ rental.code }}">{{ rental.code }}</a><br />
-    {{ rental.description }}{% if rental.description %}<br />{% endif %}
-    {{ rental.vehicle }}<br />
-    <a href="./editRental/{{ rental.id }}">Edit</a>
-    <form style="display: inline" action="./deleteRental/{{ rental.id }}" method="post">{% csrf_token %}<button>Delete</button></form>
-    <br /><br />
+<h2>All Rentals</h2>
+<table id="rental-table">
+    <tr>
+        <th>From</th>
+        <th>To</th>
+        <th>Description</th>
+        <th>Distance</th>
+        <th>Price brutto</th>
+        <th>Price netto</th>
+        <th>Price charging</th>
+        <th>Earning / km</th>
+        <th>Vehicle</th>
+        <th>Actions</th>
+    </tr>
+{% for rental in rentals %}
+<tr>
+    <td>{{ rental.start }}</td>
+    <td>{{ rental.end }}</td>
+    <td>{{ rental.description }}</td>
+    <td>{{ rental.distance_driven }}</td>
+    <td>{{ rental.price_brutto }}</td>
+    <td>{{ rental.price_netto }}</td>
+    <td>{{ rental.price_charging }}</td>
+    <td>{{ rental.earnings_per_km }}</td>
+    <td>{{ rental.vehicle }}</td>
+    <td>
+        <a href="/#/rental/{{ rental.code }}">App</a>,
+        <a href="/admin/teslarent/rental/{{ rental.id }}/change/">Edit</a>
+        <form style="display: inline" action="./deleteRental/{{ rental.id }}" method="post">{% csrf_token %}<button>Delete</button></form>
+    </td>
+</tr>
 {% empty %}
-    No upcoming rental.
+    <tr><td>No rental yet.</td></tr>
 {% endfor %}
+</table>
 
 <hr />
 
-<h2>Past rentals</h2>
-{% for rental in past_rentals %}
-    {{ rental.start }} - {{ rental.end }}<br />
-    Rental-code: <a href="/#/rental/{{ rental.code }}">{{ rental.code }}</a><br />
-    {{ rental.description }}{% if rental.description %}<br />{% endif %}
-    {{ rental.vehicle }}<br />
-    <a href="./editRental/{{ rental.id }}">Edit</a>
-    <br />
-    Distance driven: {% if rental.distance_driven %}{{ rental.distance_driven }} km {% else %}unknown{% endif %}<br />
-    <br />
-{% empty %}
-    No past rentals.
-{% endfor %}
-
-
-<br /><hr />
 <small>
 {% if debug %}
     Running in DEBUG mode

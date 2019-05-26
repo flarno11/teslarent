@@ -87,6 +87,8 @@ def metrics(request):
 @staff_member_required
 def index(request):
     now = timezone.now()
+    one_day_ago = now - datetime.timedelta(days=1)
+    one_day_from_now = now + datetime.timedelta(days=1)
 
     vehicles = Vehicle.objects.all()
     for vehicle in vehicles:
@@ -97,9 +99,8 @@ def index(request):
     context = dict(
         each_context(request, title="Manage Rentals"),
         debug=bool(settings.DEBUG),
-        active_rentals=Rental.objects.filter(start__lte=now, end__gte=now).order_by('start'),
-        upcoming_rentals=Rental.objects.filter(start__gt=now).order_by('start'),
-        past_rentals=Rental.objects.filter(end__lt=now).order_by('-start'),
+        active_rentals=Rental.objects.filter(start__lt=one_day_from_now, end__gt=one_day_ago).order_by('start'),
+        rentals=Rental.objects.all().order_by('start'),
         credentials=Credentials.objects.all(),
         vehicles=vehicles,
         has_any_vehicle=len(vehicles) > 0,
