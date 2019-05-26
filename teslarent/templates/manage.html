@@ -100,10 +100,10 @@
         <th>To</th>
         <th>Description</th>
         <th>Distance</th>
-        <th>Price brutto</th>
-        <th>Price netto</th>
-        <th>Price charging</th>
-        <th>Earning / km</th>
+        <th>Price brutto CHF</th>
+        <th>Price netto CHF</th>
+        <th>Price charging CHF</th>
+        <th>Earning CHF / km</th>
         <th>Vehicle</th>
         <th>Actions</th>
     </tr>
@@ -127,6 +127,18 @@
 {% empty %}
     <tr><td>No rental yet.</td></tr>
 {% endfor %}
+    <tr>
+        <th>Total</th>
+        <th></th>
+        <th></th>
+        <th>{{ totals.distance_driven }}</th>
+        <th>{{ totals.price_brutto }}</th>
+        <th>{{ totals.price_netto }}</th>
+        <th>{{ totals.price_charging }}</th>
+        <th>{{ totals.earnings_per_km }}</th>
+        <th></th>
+        <th></th>
+    </tr>
 </table>
 
 <hr />

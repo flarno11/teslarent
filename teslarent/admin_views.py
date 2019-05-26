@@ -2,6 +2,7 @@ import base64
 import logging
 import uuid
 import datetime
+from functools import reduce
 
 from django.conf import settings
 from django.contrib import admin
@@ -84,11 +85,24 @@ def metrics(request):
     return HttpResponse("\n".join(content), content_type='text/plain')
 
 
+def sum_non_null(func, iterable):
+    return sum(filter(None, map(func, iterable)))
+
+
 @staff_member_required
 def index(request):
     now = timezone.now()
     one_day_ago = now - datetime.timedelta(days=1)
     one_day_from_now = now + datetime.timedelta(days=1)
+
+    rentals = Rental.objects.all().order_by('start')
+    totals = {
+        'distance_driven': sum_non_null(lambda r: r.distance_driven, rentals),
+        'price_brutto': sum_non_null(lambda r: r.price_brutto, rentals),
+        'price_netto': sum_non_null(lambda r: r.price_netto, rentals),
+        'price_charging': sum_non_null(lambda r: r.price_charging, rentals),
+        'earnings_per_km': sum_non_null(lambda r: r.price_netto, rentals) / sum_non_null(lambda r: r.distance_driven, rentals),
+    }
 
     vehicles = Vehicle.objects.all()
     for vehicle in vehicles:
@@ -100,7 +114,8 @@ def index(request):
         each_context(request, title="Manage Rentals"),
         debug=bool(settings.DEBUG),
         active_rentals=Rental.objects.filter(start__lt=one_day_from_now, end__gt=one_day_ago).order_by('start'),
-        rentals=Rental.objects.all().order_by('start'),
+        rentals=rentals,
+        totals=totals,
         credentials=Credentials.objects.all(),
         vehicles=vehicles,
         has_any_vehicle=len(vehicles) > 0,
