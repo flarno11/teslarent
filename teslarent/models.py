@@ -74,7 +74,7 @@ class Rental(models.Model):
     odometer_end_updated_at = models.DateTimeField(default=None, blank=True, null=True)
     price_brutto = models.IntegerField(default=None, blank=True, null=True)
     price_netto = models.IntegerField(default=None, blank=True, null=True)
-    price_charging = models.IntegerField(default=None, blank=True, null=True)
+    price_charging = models.FloatField(default=None, blank=True, null=True)
 
     @property
     def is_active(self):
