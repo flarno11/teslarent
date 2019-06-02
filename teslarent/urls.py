@@ -14,4 +14,6 @@ urlpatterns = [
     path('api/<uuid:uuid>/hvac/temperature/<int:temperature>', views.hvac_set_temperature),
     path('api/<uuid:uuid>/nearbyCharging', views.nearby_charging),
     path('api/<uuid:uuid>/navigationRequest', views.navigation_request),
+    path('api/<uuid:uuid>/vehicleLock', views.vehicle_lock),
+    path('api/<uuid:uuid>/vehicleOpenFrunk', views.vehicle_open_frunk),
 ]

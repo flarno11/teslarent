@@ -47,6 +47,16 @@ angular.module("myApp", ['ngRoute', 'gettext', ])
         templateUrl: '/static/vehicle_actions.html',
         scope: {
             vehicleState: '=',
+            vehicleLockCallback: '&',
+            vehicleOpenFrunkCallback: '&',
+        },
+        link: function($scope, $elem, $attr) {
+            $scope.vehicleLock = function() {
+                $scope.vehicleLockCallback({});
+            };
+            $scope.vehicleOpenFrunk = function() {
+                $scope.vehicleOpenFrunkCallback({});
+            };
         },
     }
 })

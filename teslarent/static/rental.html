@@ -29,7 +29,7 @@
     <div class="charging">
         <div ng-if="vehicleState.state == 'asleep'">
             <h2 translate>Asleep</h2>
-            <div vehicle-actions vehicle-state="vehicleState"></div>
+            <div vehicle-actions vehicle-state="vehicleState" vehicle-lock-callback="vehicleLock()" vehicle-open-frunk-callback="vehicleOpenFrunk()"></div>
             <br />
         </div>
         <div ng-if="vehicleState.state != 'asleep' && chargeState.chargingState == 'Disconnected'">
@@ -43,14 +43,14 @@
                 <div vehicle-lock-state vehicle-state="vehicleState"></div>
                 <br />
             </div>
-            <div vehicle-actions vehicle-state="vehicleState"></div>
+            <div vehicle-actions vehicle-state="vehicleState" vehicle-lock-callback="vehicleLock()" vehicle-open-frunk-callback="vehicleOpenFrunk()"></div>
             <br />
         </div>
         <div ng-if="vehicleState.state != 'asleep' && chargeState.chargingState != 'Disconnected'">
             <h2 ng-if="chargeState.chargingState == 'Complete'" translate>Charging Complete</h2>
             <h2 ng-if="chargeState.chargingState != 'Complete'">{{ chargeState.chargingState | translate }}</h2>
             <div vehicle-lock-state vehicle-state="vehicleState"></div>
-            <div vehicle-actions vehicle-state="vehicleState"></div>
+            <div vehicle-actions vehicle-state="vehicleState" vehicle-lock-callback="vehicleLock()" vehicle-open-frunk-callback="vehicleOpenFrunk()"></div>
             <br /><br />
             <h3 ng-if="chargeState.chargingState == 'Charging'" translate>{{ chargeState.timeToFullChargeHours }} hr {{ chargeState.timeToFullChargeMins | number:0 }} min remaining</h3>
             <span translate>Charging speed: {{ chargeState.chargeRate }} km/h, {{ chargeState.chargerPower }} kW</span><br />
