@@ -59,15 +59,18 @@ def metrics(request):
     content = []
 
     for vehicle in Vehicle.objects.all():
-        latest_vehicle_data_any = VehicleData.objects.filter(vehicle=vehicle).order_by('-created_at')[0]
-        latest_vehicle_data_online = VehicleData.objects.filter(vehicle=vehicle).filter(data__state='online').order_by('-created_at')[0]
+        latest_vehicle_data_any = VehicleData.objects.filter(vehicle=vehicle).order_by('-created_at').first()
+        if not latest_vehicle_data_any:
+            continue
+
+        latest_vehicle_data_online = VehicleData.objects.filter(vehicle=vehicle).filter(data__state='online').order_by('-created_at').first()
 
         content.append('vehicle_updated_at{vehicle="' + str(vehicle.id) + '"} ' + str(latest_vehicle_data_any.created_at.timestamp()))
         content.append('vehicle_offline{vehicle="' + str(vehicle.id) + '"} ' + ('1' if latest_vehicle_data_any.is_offline else '0'))
         content.append('vehicle_last_online_at{vehicle="' + str(vehicle.id) + '"} ' + str(latest_vehicle_data_online.created_at.timestamp()))
 
-        latest_vehicle_data_locked = VehicleData.objects.filter(vehicle=vehicle).filter(data__vehicle_state__locked=True).order_by('-created_at')[0]
-        latest_vehicle_data_unlocked = VehicleData.objects.filter(vehicle=vehicle).filter(data__vehicle_state__locked=False).order_by('-created_at')[0]
+        latest_vehicle_data_locked = VehicleData.objects.filter(vehicle=vehicle).filter(data__vehicle_state__locked=True).order_by('-created_at').first()
+        latest_vehicle_data_unlocked = VehicleData.objects.filter(vehicle=vehicle).filter(data__vehicle_state__locked=False).order_by('-created_at').first()
 
         if latest_vehicle_data_unlocked.created_at > latest_vehicle_data_locked.created_at:
             content.append('vehicle_locked{vehicle="' + str(vehicle.id) + '"} ' + str(latest_vehicle_data_locked.created_at.timestamp()))
