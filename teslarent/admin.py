@@ -9,7 +9,7 @@ from django.utils.safestring import mark_safe
 
 from teslarent.models import Credentials, Rental, Vehicle, VehicleData
 
-logger = logging.getLogger(__name__)
+log = logging.getLogger('manage')
 
 
 class PrettyJSONWidget(widgets.Textarea):
@@ -22,7 +22,7 @@ class PrettyJSONWidget(widgets.Textarea):
             self.attrs['cols'] = min(max(max(row_lengths) + 2, 40), 120)
             return value
         except Exception as e:
-            logger.warning("Error while formatting JSON: {}".format(e))
+            log.warning("Error while formatting JSON: {}".format(e))
             return super(PrettyJSONWidget, self).format_value(value)
 
 

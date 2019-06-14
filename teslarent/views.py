@@ -14,7 +14,7 @@ from teslarent.models import Rental, VehicleData
 from teslarent.teslaapi import teslaapi
 from teslarent.teslaapi.teslaapi import get_vehicle_data, ApiException
 
-log = logging.getLogger('backgroundTask')
+log = logging.getLogger('manage')
 
 
 @ensure_csrf_cookie
