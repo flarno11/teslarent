@@ -108,7 +108,7 @@ class Command(BaseCommand):
         for rental in rentals_start:
             if not rental.odometer_start and 'latest_vehicle_data' in vehicles[rental.vehicle.id]:
                 latest_vehicle_data = vehicles[rental.vehicle.id]['latest_vehicle_data']
-                rental.odometer_start = latest_vehicle_data.vehicle_state__odometer
+                rental.odometer_start = int(round(latest_vehicle_data.vehicle_state__odometer, 0))
                 rental.odometer_start_updated_at = date
                 log.info('update rentals for rental %d start=%s' % (rental.id, str(rental.start)))
                 rental.save()
@@ -116,7 +116,7 @@ class Command(BaseCommand):
         for rental in rentals_end:
             if not rental.odometer_end and 'latest_vehicle_data' in vehicles[rental.vehicle.id]:
                 latest_vehicle_data = vehicles[rental.vehicle.id]['latest_vehicle_data']
-                rental.odometer_end = latest_vehicle_data.vehicle_state__odometer
+                rental.odometer_end = int(round(latest_vehicle_data.vehicle_state__odometer, 0))
                 rental.odometer_end_updated_at = date
                 log.info('update rentals for rental %d end=%s' % (rental.id, str(rental.end)))
                 rental.save()
