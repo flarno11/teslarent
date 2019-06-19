@@ -119,9 +119,11 @@
     <td>{{ rental.earnings_per_km }}</td>
     <td>{{ rental.vehicle }}</td>
     <td>
+        <span>
         <a href="/#/rental/{{ rental.code }}">App</a>,
         <a href="/admin/teslarent/rental/{{ rental.id }}/change/">Edit</a>
-        <form style="display: inline" action="./deleteRental/{{ rental.id }}" method="post">{% csrf_token %}<button>Delete</button></form>
+        <form style="display: inline" action="./deleteRental/{{ rental.id }}" method="post">{% csrf_token %}<button>Delete</button></form
+        </span>
     </td>
 </tr>
 {% empty %}
