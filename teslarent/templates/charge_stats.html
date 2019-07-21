@@ -78,7 +78,7 @@
     });
   }
 
-  $.getJSON( "../dailyStatsData/{{ vehicle_id }}/0/1000", function( data ) {
+  $.getJSON( "../dailyStatsData/{{ vehicle_id }}/0/5000", function( data ) {
     $.each(data.items, function(key, val) {
         console.log(val);
         $('#dailyStats').append("<tr><td>" + val.date + "</td><td>" + val.startOdo + "</td><td>" + val.endOdo + "</td><td>" + val.distance + "</td><td>" + val.usedKWh + "</td><td>" + val.chargedKWh + "</td><td>" + (val.efficiency != null ? val.efficiency : '') + "</td></tr>");
