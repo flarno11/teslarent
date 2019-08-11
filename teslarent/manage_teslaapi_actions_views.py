@@ -6,7 +6,8 @@ from django.shortcuts import redirect
 
 from teslarent.models import *
 from teslarent.teslaapi import teslaapi
-from teslarent.views import ensure_vehicle_is_awake, fetch_and_save_vehicle_state
+from teslarent.teslaapi.teslaapi import fetch_and_save_vehicle_state
+from teslarent.views import ensure_vehicle_is_awake
 
 log = logging.getLogger('manage')
 

@@ -12,7 +12,7 @@ from jsonview.decorators import json_view
 
 from teslarent.models import Rental, VehicleData
 from teslarent.teslaapi import teslaapi
-from teslarent.teslaapi.teslaapi import get_vehicle_data, ApiException
+from teslarent.teslaapi.teslaapi import get_vehicle_data, ApiException, fetch_and_save_vehicle_state
 
 log = logging.getLogger('manage')
 
@@ -141,14 +141,6 @@ def ensure_vehicle_is_awake(vehicle):
     if len(latest_vehicle_datas) == 0 or not latest_vehicle_datas[0].is_online:
         log.info('vehicle not online, trying to wakeup vehicle_id %s' % (str(vehicle.id)))
         call_command('fetch_vehicles_data', wakeup=True, vehicle_id=vehicle.id)
-
-
-def fetch_and_save_vehicle_state(vehicle):
-    vehicle_data = VehicleData()
-    vehicle_data.vehicle = vehicle
-    vehicle_data.data = get_vehicle_data(vehicle.id, vehicle.credentials)
-    vehicle_data.save()
-    return vehicle_data
 
 
 @json_view

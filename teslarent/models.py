@@ -43,10 +43,12 @@ class Vehicle(models.Model):
     vehicle_id = models.BigIntegerField()  # didn't change so far
     credentials = models.ForeignKey(Credentials, on_delete=models.SET_NULL, default=None, blank=True, null=True,)
     display_name = models.CharField(max_length=200)
+    model = models.CharField(max_length=200)
     color = models.CharField(max_length=200)
     vin = models.CharField(max_length=17)
     state = models.CharField(max_length=200)
     mobile_enabled = models.BooleanField(null=True)
+    option_codes = models.CharField(max_length=500, blank=True, null=True)
 
     @property
     def is_active(self):
@@ -275,3 +277,10 @@ class VehicleData(models.Model):
     @property
     def climate_state__is_auto_conditioning_on(self):
         return self.data['climate_state']['is_auto_conditioning_on'] if 'climate_state' in self.data else None
+
+    @property
+    def vehicle_config__car_type(self):
+        return self.data['vehicle_config']['car_type'] if 'vehicle_config' in self.data else None
+    @property
+    def vehicle_config__exterior_color(self):
+        return self.data['vehicle_config']['exterior_color'] if 'vehicle_config' in self.data else None

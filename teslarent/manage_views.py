@@ -13,7 +13,6 @@ from django.shortcuts import redirect, render
 from jsonview.decorators import json_view
 
 
-from teslarent.views import ensure_vehicle_is_awake, fetch_and_save_vehicle_state
 from teslarent.forms import CredentialsForm, RentalForm
 from teslarent.management.commands.rental_start_end import BackgroundTask
 from teslarent.models import *

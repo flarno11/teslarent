@@ -1,3 +1,5 @@
+import time
+
 import requests
 import logging
 import json
@@ -5,7 +7,7 @@ import json
 from django.conf import settings
 from django.utils import timezone
 
-from teslarent.models import Credentials, Vehicle
+from teslarent.models import Credentials, Vehicle, VehicleData
 from teslarent.utils.crypt import decrypt
 
 PRODUCTION_HOST = 'https://owner-api.teslamotors.com'
@@ -130,6 +132,18 @@ def is_mobile_enabled(vehicle_id, credentials):
 
 def get_vehicle_data(vehicle_id, credentials):
     return req('/api/1/vehicles/' + str(vehicle_id) + '/vehicle_data', credentials)
+
+
+def fetch_and_save_vehicle_state(vehicle):
+    """
+    :param Vehicle vehicle
+    :return: VehicleData
+    """
+    vehicle_data = VehicleData()
+    vehicle_data.vehicle = vehicle
+    vehicle_data.data = get_vehicle_data(vehicle.id, vehicle.credentials)
+    vehicle_data.save()
+    return vehicle_data
 
 
 def get_nearby_charging_sites(vehicle):
@@ -341,15 +355,24 @@ def load_vehicles(credentials):
         v_model.linked = True
         v_model.vehicle_id = v['vehicle_id']
         v_model.display_name = v['display_name'] if v['display_name'] else ''
-        v_model.color = v['color'] if v['color'] else ''
+        #v_model.color = v['color'] if v['color'] else ''  # color always seems empty
         v_model.vin = v['vin']
+        v_model.option_codes = v['option_codes']
+        v_model.save()
 
         vehicle_state = v['state']
         if vehicle_state != 'online':
             vehicle_state = wake_up(v_model.id, credentials)
+            time.sleep(10)
 
         if vehicle_state == 'online':  # returns 408 otherwise
-            v_model.mobile_enabled = is_mobile_enabled(v_model.id, credentials)
+            vehicle_data = fetch_and_save_vehicle_state(v_model)
+            #v_model.mobile_enabled = is_mobile_enabled(v_model.id, credentials)
+            if vehicle_data:
+                v_model.color = vehicle_data.vehicle_config__exterior_color
+                v_model.model = vehicle_data.vehicle_config__car_type
+        else:
+            log.warning("vehicle still not online %d", id)
 
         v_model.state = vehicle_state
         v_model.save()
