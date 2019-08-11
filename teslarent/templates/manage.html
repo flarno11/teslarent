@@ -122,7 +122,7 @@
     <td>
         <span>
         <a href="/#/rental/{{ rental.code }}">App</a>,
-        <a href="/admin/teslarent/rental/{{ rental.id }}/change/">Edit</a>
+        <a href="/admin/teslarent/rental/{{ rental.id }}/change/" target="_blank">Edit</a>
         <form style="display: inline" action="./deleteRental/{{ rental.id }}" method="post">{% csrf_token %}<button>Delete</button></form
         </span>
     </td>
