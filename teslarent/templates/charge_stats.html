@@ -49,7 +49,7 @@
   google.charts.setOnLoadCallback(drawChart);
 
   function drawChart() {
-    $.getJSON( "../chargeStatsData/{{ vehicle_id }}/0/1000", function( chargeData ) {
+    $.getJSON( "{% url 'manage:vehicle-charge-stats-data' vehicle_id 0 1000 %}", function( chargeData ) {
         var data = new google.visualization.DataTable();
         data.addColumn('date', 'Date');
         data.addColumn('number', 'Battery level [%]');
@@ -78,7 +78,7 @@
     });
   }
 
-  $.getJSON( "../dailyStatsData/{{ vehicle_id }}/0/5000", function( data ) {
+  $.getJSON( "{% url 'manage:vehicle-daily-stats-data' vehicle_id 0 5000 %}", function( data ) {
     $.each(data.items, function(key, val) {
         console.log(val);
         $('#dailyStats').append("<tr><td>" + val.date + "</td><td>" + val.startOdo + "</td><td>" + val.endOdo + "</td><td>" + val.distance + "</td><td>" + val.usedKWh + "</td><td>" + val.chargedKWh + "</td><td>" + (val.efficiency != null ? val.efficiency : '') + "</td></tr>");
@@ -88,5 +88,3 @@
 
 
 {% endblock %}
-
-

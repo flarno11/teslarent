@@ -56,9 +56,10 @@
             {{ v.d.vehicle_state__odometer|floatformat:"0" }}{{ v.d.distance_unit }},
             Battery: {{ v.d.charge_state__usable_battery_level }}% / {{ v.d.charge_state__battery_range|floatformat:"0" }} {{ v.d.distance_unit }}
             (as of {{ v.d.created_at }},
-            <a href="./chargeStats/{{ v.id }}">Charge Stats</a>,
-            <form style="display: inline;" action="./lockVehicle/{{ v.id }}" method="post">{% csrf_token %}<button type="submit">Lock vehicle</button></form>,
-            <form style="display: inline;" action="./unlockVehicle/{{ v.id }}" method="post">{% csrf_token %}<button type="submit">Unlock vehicle</button></form>
+
+            <a href="{% url 'manage:vehicle-charge-stats' v.id %}">Charge Stats</a>,
+            <form style="display: inline;" action="{% url 'manage:vehicle-lock' v.id %}" method="post">{% csrf_token %}<button type="submit">Lock vehicle</button></form>,
+            <form style="display: inline;" action="{% url 'manage:vehicle-unlock' v.id %}" method="post">{% csrf_token %}<button type="submit">Unlock vehicle</button></form>
             )<br />
         {% endif %}
     {% endfor %}
@@ -68,7 +69,7 @@
     {% if not has_active_vehicle %}
         There is no online vehicle or mobile access is disabled. Ensure that vehicle is online and mobile access is enabled. Wait 10 seconds and try again.<br />
     {% endif %}
-    <form action="./updateVehicles" method="post">{% csrf_token %}
+    <form action="{% url 'manage:vehicles-load' %}" method="post">{% csrf_token %}
         <button type="submit">Update vehicle list</button>
     </form>
 {% endif %}
