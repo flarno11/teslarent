@@ -3,5 +3,7 @@
 <button ng-click="vehicleOpenTrunk()" ng-if="!vehicleState.trunksOpen.rear">Open Trunk</button>
 <button ng-click="vehicleCloseTrunk()" ng-if="vehicleState.trunksOpen.rear">Close Trunk</button>
 //-->
-<button ng-click="vehicleLock()" ng-disabled="vehicleState.openDoorsOrTrunks.length > 0" translate>Lock vehicle</button>
+<!-- ng-disabled="vehicleState.openDoorsOrTrunks.length > 0"
+ don't disable vehicleLock button to still allow to lock if vehicle state isn't up-to-date -->
+<button ng-click="vehicleLock()" translate>Lock vehicle</button>
 <span ng-if="vehicleState.openDoorsOrTrunks.length > 0" style="font-size: smaller;"><br /><span translate>Can't lock vehicle because doors or trunks are open.</span></span>
