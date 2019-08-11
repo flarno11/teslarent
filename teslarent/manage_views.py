@@ -101,10 +101,15 @@ def index(request):
     rentals = Rental.objects.all().order_by('start')
 
     earnings_total_price_netto = 0
+    earnings_total_price_charging = 0
     earnings_total_distance_driven = 0
     for r in rentals:
-        if r.price_netto and r.distance_driven:  # only sum up distance_driven if a price is set
+        if r.price_netto and r.distance_driven:  # only sum up if a price and distance is set
             earnings_total_price_netto += r.price_netto
+            if r.price_charging:
+                earnings_total_price_netto -= r.price_charging
+                earnings_total_price_charging += r.price_charging
+
             earnings_total_distance_driven += r.distance_driven
 
     totals = {
@@ -112,7 +117,8 @@ def index(request):
         'distance_driven_paid': earnings_total_distance_driven,
         'price_brutto': sum_non_null(lambda r: r.price_brutto, rentals),
         'price_netto': sum_non_null(lambda r: r.price_netto, rentals),
-        'price_charging': round(sum_non_null(lambda r: r.price_charging, rentals), 2),
+        'price_charging_all': round(sum_non_null(lambda r: r.price_charging, rentals), 2),
+        'price_charging_paid': round(earnings_total_price_charging, 2),
         'earnings_per_km': round(earnings_total_price_netto/earnings_total_distance_driven, 2),
     }
 
