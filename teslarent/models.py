@@ -39,8 +39,8 @@ class Vehicle(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     linked = models.BooleanField('False if the credentials were removed or the vehicle is not listed anymore')
-    id = models.BigIntegerField(primary_key=True)
-    vehicle_id = models.BigIntegerField()
+    id = models.BigIntegerField(primary_key=True)  # changed after a firmware update
+    vehicle_id = models.BigIntegerField()  # didn't change so far
     credentials = models.ForeignKey(Credentials, on_delete=models.SET_NULL, default=None, blank=True, null=True,)
     display_name = models.CharField(max_length=200)
     color = models.CharField(max_length=200)
@@ -72,8 +72,8 @@ class Rental(models.Model):
     odometer_start_updated_at = models.DateTimeField(default=None, blank=True, null=True)
     odometer_end = models.IntegerField(default=None, blank=True, null=True)
     odometer_end_updated_at = models.DateTimeField(default=None, blank=True, null=True)
-    price_brutto = models.IntegerField(default=None, blank=True, null=True)
-    price_netto = models.IntegerField(default=None, blank=True, null=True)
+    price_brutto = models.FloatField(default=None, blank=True, null=True)
+    price_netto = models.FloatField(default=None, blank=True, null=True)
     price_charging = models.FloatField(default=None, blank=True, null=True)
 
     @property
