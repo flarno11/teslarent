@@ -103,12 +103,13 @@ def index(request):
     earnings_total_price_netto = 0
     earnings_total_distance_driven = 0
     for r in rentals:
-        if r.price_netto:  # only sum up distance_driven if a price is set
+        if r.price_netto and r.distance_driven:  # only sum up distance_driven if a price is set
             earnings_total_price_netto += r.price_netto
             earnings_total_distance_driven += r.distance_driven
 
     totals = {
-        'distance_driven': sum_non_null(lambda r: r.distance_driven, rentals),
+        'distance_driven_all': sum_non_null(lambda r: r.distance_driven, rentals),
+        'distance_driven_paid': earnings_total_distance_driven,
         'price_brutto': sum_non_null(lambda r: r.price_brutto, rentals),
         'price_netto': sum_non_null(lambda r: r.price_netto, rentals),
         'price_charging': round(sum_non_null(lambda r: r.price_charging, rentals), 2),
