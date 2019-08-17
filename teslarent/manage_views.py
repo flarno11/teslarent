@@ -65,7 +65,9 @@ def metrics(request):
 
         content.append('vehicle_updated_at{vehicle="' + str(vehicle.vehicle_id) + '"} ' + str(latest_vehicle_data_any.created_at.timestamp()))
         content.append('vehicle_offline{vehicle="' + str(vehicle.vehicle_id) + '"} ' + ('1' if latest_vehicle_data_any.is_offline else '0'))
-        content.append('vehicle_last_online_at{vehicle="' + str(vehicle.vehicle_id) + '"} ' + str(latest_vehicle_data_online.created_at.timestamp()))
+
+        if latest_vehicle_data_online:
+            content.append('vehicle_last_online_at{vehicle="' + str(vehicle.vehicle_id) + '"} ' + str(latest_vehicle_data_online.created_at.timestamp()))
 
         latest_vehicle_data_locked = VehicleData.objects.filter(vehicle=vehicle).filter(data__vehicle_state__locked=True).order_by('-created_at').first()
         latest_vehicle_data_unlocked = VehicleData.objects.filter(vehicle=vehicle).filter(data__vehicle_state__locked=False).order_by('-created_at').first()
