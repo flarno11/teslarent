@@ -20,6 +20,8 @@
 
     #rental-table td {
         white-space: nowrap;
+        max-width: 200px;
+        overflow: hidden;
     }
 </style>
 
@@ -112,13 +114,13 @@
 <tr>
     <td>{{ rental.start }}</td>
     <td>{{ rental.end }}</td>
-    <td>{{ rental.description }}</td>
+    <td title="{{ rental.description }}">{{ rental.description }}</td>
     <td>{{ rental.distance_driven }}</td>
     <td>{{ rental.price_brutto }}</td>
     <td>{{ rental.price_netto }}</td>
     <td>{{ rental.price_charging }}</td>
     <td>{{ rental.earnings_per_km }}</td>
-    <td>{{ rental.vehicle }}</td>
+    <td title="{{ rental.vehicle }}">{{ rental.vehicle }}</td>
     <td>
         <span>
         <a href="/#/rental/{{ rental.code }}">App</a>,
