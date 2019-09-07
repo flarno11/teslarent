@@ -33,7 +33,7 @@ class Command(BaseCommand):
                 continue
 
             log.debug("vehicle.tesla_id={} vehicle={}".format(vehicle.tesla_id, vehicle))
-            fifteen_minutes_ago = timezone.now() - datetime.timedelta(minutes=60)  # vehicle sleeps after 10-15min of inactivity
+            fifteen_minutes_ago = timezone.now() - datetime.timedelta(minutes=15)  # vehicle sleeps after 10-15min of inactivity
             recent_vehicle_data = VehicleData.objects\
                 .filter(vehicle=vehicle)\
                 .filter(created_at__gte=fifteen_minutes_ago)\
