@@ -389,7 +389,7 @@ def update_all_vehicles(wake_up_vehicle):
         load_vehicles(c, wake_up_vehicle=wake_up_vehicle)
 
     for unlinked_vehicle in Vehicle.objects.filter(credentials=None):
-        if not unlinked_vehicle.linked:
+        if unlinked_vehicle.linked:
             log.info("unlinking global vehicle %d", unlinked_vehicle.id)
             unlinked_vehicle.linked = False
             unlinked_vehicle.save()
