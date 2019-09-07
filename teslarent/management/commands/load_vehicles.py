@@ -11,4 +11,4 @@ class Command(BaseCommand):
         pass
 
     def handle(self, *args, **options):
-        update_all_vehicles()
+        update_all_vehicles(wake_up_vehicle=False)

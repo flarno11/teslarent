@@ -39,7 +39,7 @@ class Vehicle(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     linked = models.BooleanField('False if the credentials were removed or the vehicle is not listed anymore')
-    id = models.BigIntegerField(primary_key=True)  # changed after a firmware update
+    tesla_id = models.BigIntegerField(default=None, blank=True, null=True)  # changes frequently
     vehicle_id = models.BigIntegerField()  # didn't change so far
     credentials = models.ForeignKey(Credentials, on_delete=models.SET_NULL, default=None, blank=True, null=True,)
     display_name = models.CharField(max_length=200)

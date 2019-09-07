@@ -5,6 +5,6 @@ node_modules/
 .DS_Store
 project/staticfiles
 settings_prod.py
-db
+db*
 deploy.sh
 
