@@ -57,7 +57,7 @@ def metrics(request):
     content = []
 
     for vehicle in Vehicle.objects.all():
-        content.append('vehicle{{id="{}", vehicle_id="{}", state="{}", mobile_enabled="{}"}} 1'.format(vehicle.id, vehicle.vehicle_id, vehicle.state, int(vehicle.mobile_enabled is True)))
+        content.append('vehicle{{id="{}", vehicle_id="{}", mobile_enabled="{}"}} 1'.format(vehicle.tesla_id, vehicle.vehicle_id, int(vehicle.mobile_enabled is True)))
 
         latest_vehicle_data_any = VehicleData.objects.filter(vehicle=vehicle).order_by('-created_at').first()
         if not latest_vehicle_data_any:
