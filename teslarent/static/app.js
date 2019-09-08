@@ -1,4 +1,4 @@
-angular.module("myApp", ['ngRoute', ]) //'ngMaterial',
+angular.module("myApp", ['ngRoute', 'gettext', ])
 
 /*.config(function($mdThemingProvider) {
   $mdThemingProvider.theme('default')
@@ -18,7 +18,8 @@ angular.module("myApp", ['ngRoute', ]) //'ngMaterial',
     $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
 })
 
-.config(function($routeProvider) {
+.config(function($routeProvider, $locationProvider) {
+    $locationProvider.hashPrefix('');
     $routeProvider
     .when("/", {
         templateUrl : "/static/codeInput.html",
@@ -40,8 +41,74 @@ angular.module("myApp", ['ngRoute', ]) //'ngMaterial',
         },
     }
 })
+.directive('vehicleActions', function($q, $log, $http) {
+    return {
+        restrict : "A",
+        templateUrl: '/static/vehicle_actions.html',
+        scope: {
+            vehicleState: '=',
+            vehicleLockCallback: '&',
+            vehicleOpenFrunkCallback: '&',
+        },
+        link: function($scope, $elem, $attr) {
+            $scope.vehicleLock = function() {
+                $scope.vehicleLockCallback({});
+            };
+            $scope.vehicleOpenFrunk = function() {
+                $scope.vehicleOpenFrunkCallback({});
+            };
+        },
+    }
+})
+.directive('nearbyCharger', function($q, $log, $http) {
+    return {
+        restrict : "A",
+        templateUrl: '/static/nearby_charger.html',
+        scope: {
+            charger: '=',
+            navigationRequestCallback: '&'
+        },
+        link: function($scope, $elem, $attr) {
+            $scope.responseResult = "";
 
-.controller('navController', function($scope, $location, $log) {
+            $scope.navigationRequest = function(charger) {
+                var url = $scope.navigationRequestCallback({});
+                $http.post(url, charger.location).then(function successCallback(response) {
+                    $scope.responseResult = 'success';
+                  }, function errorCallback(response) {
+                    $log.error(response);
+                    $scope.responseResult = 'error';
+                });
+            };
+        },
+    }
+})
+
+.controller('navController', function($scope, $location, $log, gettextCatalog) {
+    $scope.defaultLang = 'de';
+    $scope.userAgentLanguages = config['userAgentLanguages'];
+    $scope.dateTimeFormats = {
+        'en': 'MMM d, y HH:mm',
+        'de': 'd. MMM, y HH:mm',
+        'fr': 'd. MMM, y HH:mm',
+    };
+
+    $scope.lang = $scope.defaultLang;
+    $scope.dateTimeFormat = $scope.dateTimeFormats[$scope.lang];
+
+    $scope.switchLanguage = function(lang) {
+        $scope.lang = lang;
+        $scope.dateTimeFormat = $scope.dateTimeFormats[$scope.lang];
+        gettextCatalog.setCurrentLanguage(lang);
+    };
+    var supportedLanguages = {'de': true, 'en': true, 'fr': true, 'el': true};
+    var userLanguages = config['userAgentLanguages'].filter(function(l) { return l in supportedLanguages; })
+    $log.info("Auto-detected language userAgentLanguages=", config['userAgentLanguages'], ", userLanguages=", userLanguages);
+    if (userLanguages.length > 0) {
+        $scope.switchLanguage(userLanguages[0]);
+    } else {
+        $scope.switchLanguage($scope.defaultLang);
+    }
 })
 
 .controller('codeInputController', function($scope, $q, $log, $location) {
@@ -70,10 +137,7 @@ angular.module("myApp", ['ngRoute', ]) //'ngMaterial',
             $scope.rental = rental;
 
             if ($scope.rental.isActive) {
-                var vehicleState = response.data.vehicleState;
-                vehicleState.timestamp = moment(vehicleState.timestamp).toDate();
-                vehicleState.openDoorsOrTrunks = getOpenDoorsOrTrunks(vehicleState);
-                $scope.vehicleState = vehicleState;
+                setVehicleState(response.data.vehicleState);
 
                 var chargeState = response.data.chargeState;
                 chargeState.timeToFullChargeHours = Math.floor(chargeState.timeToFullCharge);
@@ -115,9 +179,36 @@ angular.module("myApp", ['ngRoute', ]) //'ngMaterial',
         return items;
     }
 
+    function setVehicleState(vehicleState) {
+        vehicleState.timestamp = moment(vehicleState.timestamp).toDate();
+        vehicleState.openDoorsOrTrunks = getOpenDoorsOrTrunks(vehicleState);
+        $scope.vehicleState = vehicleState;
+    }
+
     function setClimateState(climateState) {
         climateState.driverTempSetting = Math.round(climateState.driverTempSetting*2)/2;
         $scope.climateState = climateState;
+    }
+
+    $scope.vehicleOpenFrunk = function() {
+        $scope.hvacLoading = true;
+        $http.post('/rental/api/' + code + '/vehicleOpenFrunk').then(function successCallback(response) {
+            setVehicleState(response.data.vehicleState);
+            $scope.hvacLoading = false;
+          }, function errorCallback(response) {
+            $log.error(response);
+            $scope.hvacLoading = false;
+        });
+    }
+    $scope.vehicleLock = function() {
+        $scope.hvacLoading = true;
+        $http.post('/rental/api/' + code + '/vehicleLock').then(function successCallback(response) {
+            setVehicleState(response.data.vehicleState);
+            $scope.hvacLoading = false;
+          }, function errorCallback(response) {
+            $log.error(response);
+            $scope.hvacLoading = false;
+        });
     }
 
     $scope.hvacSetTemperatureDecrease = function() {
@@ -155,6 +246,21 @@ angular.module("myApp", ['ngRoute', ]) //'ngMaterial',
             $scope.hvacLoading = false;
             $scope.hvacError = true;
         });
+    };
+
+    $scope.showNearByChargingStations = function() {
+        $scope.nearbyChargingVisible = true;
+        $http.get('/rental/api/' + code + '/nearbyCharging').then(function successCallback(response) {
+            $scope.nearbyChargers = response.data;
+          }, function errorCallback(response) {
+            $log.error(response);
+        });
+    };
+    $scope.hideNearByChargingStations = function() {
+        $scope.nearbyChargingVisible = false;
+    };
+    $scope.getNavigationRequest = function() {
+        return '/rental/api/' + code + '/navigationRequest';
     };
 
     function startUpdate() {

@@ -6,9 +6,9 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from teslarent.models import Vehicle, VehicleData, Credentials
-from teslarent.teslaapi.teslaapi import get_vehicle_data, ApiException, wake_up, print_vehicles, list_vehicles
+from teslarent.teslaapi.teslaapi import get_vehicle_data, ApiException, wake_up, list_vehicles
 
-log = logging.getLogger('backgroundTask')
+log = logging.getLogger('manage')
 
 
 class Command(BaseCommand):
@@ -26,12 +26,13 @@ class Command(BaseCommand):
                             help='Only update selected vehicle')
 
     def handle(self, *args, **options):
-        list_vehicles_result = None
+        list_vehicles_result = {}
         vehicles = Vehicle.objects.filter(linked=True)
         for vehicle in vehicles:
             if 'vehicle_id' in options and options['vehicle_id'] and vehicle.id != options['vehicle_id']:
                 continue
 
+            log.debug("vehicle.tesla_id={} vehicle={}".format(vehicle.tesla_id, vehicle))
             fifteen_minutes_ago = timezone.now() - datetime.timedelta(minutes=15)  # vehicle sleeps after 10-15min of inactivity
             recent_vehicle_data = VehicleData.objects\
                 .filter(vehicle=vehicle)\
@@ -42,31 +43,32 @@ class Command(BaseCommand):
                 all_locked = all([d.vehicle_state__locked == True for d in recent_vehicle_data])
                 all_online = all([d.is_online for d in recent_vehicle_data])
                 all_disconnected_or_finished_charging = all([d.charge_state__charging_state != 'Charging' for d in recent_vehicle_data])
-                log.debug("len={} all_stopped={} all_locked={} all_online={} all_disconnected_or_finished_charging={}"\
-                          .format(len(recent_vehicle_data), all_stopped, all_locked, all_online, all_disconnected_or_finished_charging))
-                if all_stopped and all_locked and all_online and all_disconnected_or_finished_charging:
+                log.debug("vehicle.tesla_id={} len={} all_stopped={} all_locked={} all_online={} all_disconnected_or_finished_charging={}"\
+                          .format(vehicle.tesla_id, len(recent_vehicle_data), all_stopped, all_locked, all_online, all_disconnected_or_finished_charging))
+                if all_stopped and all_online and all_disconnected_or_finished_charging:
+                    log.debug("vehicle='{}' vehicle.tesla_id={} skip".format(vehicle, vehicle.tesla_id))
                     continue
 
             vehicle_data = VehicleData()
             vehicle_data.vehicle = vehicle
 
             try:
-                vehicle_data.data = get_vehicle_data(vehicle.id, vehicle.credentials)
+                vehicle_data.data = get_vehicle_data(vehicle.tesla_id, vehicle.credentials)
                 vehicle_data.save()
             except ApiException as e:
-                print(str(e))
+                log.debug("vehicle.tesla_id={} exception={}".format(vehicle.tesla_id, str(e)))
                 if options['wakeup']:
                     try:
-                        wake_up(vehicle.id, vehicle.credentials)
+                        wake_up(vehicle.tesla_id, vehicle.credentials)
                         time.sleep(10)
 
-                        vehicle_data.data = get_vehicle_data(vehicle.id, vehicle.credentials)
+                        vehicle_data.data = get_vehicle_data(vehicle.tesla_id, vehicle.credentials)
                         vehicle_data.save()
                     except ApiException as e:
-                        print(str(e))
+                        log.debug("vehicle.tesla_id={} exception={}".format(vehicle.tesla_id, str(e)))
                 else:
-                    if not list_vehicles_result:
-                        list_vehicles_result = list_vehicles(vehicle.credentials)  # this call shouldn't keep the vehicle awake
-                    d = list(filter(lambda x: x['id'] == vehicle.id, list_vehicles_result))
+                    if not vehicle.credentials.email in list_vehicles_result:
+                        list_vehicles_result[vehicle.credentials.email] = list_vehicles(vehicle.credentials)  # this call shouldn't keep the vehicle awake
+                    d = list(filter(lambda x: x['id'] == vehicle.tesla_id, list_vehicles_result[vehicle.credentials.email]))
                     vehicle_data.data = d[0]
                     vehicle_data.save()

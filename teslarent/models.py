@@ -39,14 +39,16 @@ class Vehicle(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     linked = models.BooleanField('False if the credentials were removed or the vehicle is not listed anymore')
-    id = models.BigIntegerField(primary_key=True)
-    vehicle_id = models.BigIntegerField()
+    tesla_id = models.BigIntegerField(default=None, blank=True, null=True)  # changes frequently
+    vehicle_id = models.BigIntegerField()  # didn't change so far
     credentials = models.ForeignKey(Credentials, on_delete=models.SET_NULL, default=None, blank=True, null=True,)
     display_name = models.CharField(max_length=200)
+    model = models.CharField(max_length=200)
     color = models.CharField(max_length=200)
     vin = models.CharField(max_length=17)
     state = models.CharField(max_length=200)
     mobile_enabled = models.BooleanField(null=True)
+    option_codes = models.CharField(max_length=500, blank=True, null=True)
 
     @property
     def is_active(self):
@@ -72,6 +74,9 @@ class Rental(models.Model):
     odometer_start_updated_at = models.DateTimeField(default=None, blank=True, null=True)
     odometer_end = models.IntegerField(default=None, blank=True, null=True)
     odometer_end_updated_at = models.DateTimeField(default=None, blank=True, null=True)
+    price_brutto = models.FloatField(default=None, blank=True, null=True)
+    price_netto = models.FloatField(default=None, blank=True, null=True)
+    price_charging = models.FloatField(default=None, blank=True, null=True)
 
     @property
     def is_active(self):
@@ -83,6 +88,12 @@ class Rental(models.Model):
             return self.odometer_end - self.odometer_start
         else:
             return None
+
+    @property
+    def earnings_per_km(self):
+        if self.price_netto and self.distance_driven:
+            return round(self.price_netto / self.distance_driven, 3)
+        return None
 
     @staticmethod
     def get_next_rental_start_or_end_time(date):
@@ -266,3 +277,10 @@ class VehicleData(models.Model):
     @property
     def climate_state__is_auto_conditioning_on(self):
         return self.data['climate_state']['is_auto_conditioning_on'] if 'climate_state' in self.data else None
+
+    @property
+    def vehicle_config__car_type(self):
+        return self.data['vehicle_config']['car_type'] if 'vehicle_config' in self.data else None
+    @property
+    def vehicle_config__exterior_color(self):
+        return self.data['vehicle_config']['exterior_color'] if 'vehicle_config' in self.data else None

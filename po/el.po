@@ -1,0 +1,238 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: el\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.2.1\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: teslarent/static/vehicle_lock_state.html:6
+msgctxt "Door open"
+msgid "open"
+msgstr "ανοιχτή"
+
+#: teslarent/static/rental.html:115
+msgid "*Frunk: Front trunk"
+msgstr "*Frunk: Μπροστινό πορτ-μπαγκάζ"
+
+#: teslarent/static/rental.html:31
+msgid "Asleep"
+msgstr "Σε λειτουργία ύπνου"
+
+#: teslarent/static/vehicle_actions.html:9
+msgid "Can't lock vehicle because doors or trunks are open."
+msgstr ""
+"Το όχημα δεν μπορεί να κλειδωθεί επειδή είναι ανοιχτή κάποια πόρτα ή πορτ-"
+"μπαγκάζ."
+
+#: teslarent/static/rental.html:50
+msgid "Charging Complete"
+msgstr "Φόρτιση ολοκληρώθηκε"
+
+#: teslarent/static/rental.html:56
+msgid ""
+"Charging speed: {{ chargeState.chargeRate }} km/h, {{ chargeState."
+"chargerPower }} kW"
+msgstr ""
+"Ταχύτητα φόρτισης: {{ chargeState.chargeRate }} km/h, {{ chargeState."
+"chargerPower }} kW"
+
+#: teslarent/static/codeInput.html:3
+msgid "Code:"
+msgstr "Κωδικός:"
+
+#: teslarent/static/rental.html:104
+msgid "Current position"
+msgstr "Τρέχουσα θέση"
+
+#: teslarent/static/rental.html:16
+msgid "Distance driven"
+msgstr "Διανυθείσα απόσταση"
+
+#: teslarent/static/vehicle_lock_state.html:13
+msgid "Door front left"
+msgstr "Μπροστά αριστερή πόρτα"
+
+#: teslarent/static/vehicle_lock_state.html:14
+msgid "Door front right"
+msgstr "Μπροστά δεξιά πόρτα"
+
+#: teslarent/static/vehicle_lock_state.html:15
+msgid "Door rear left"
+msgstr "Πίσω αριστερή πόρτα"
+
+#: teslarent/static/vehicle_lock_state.html:16
+msgid "Door rear right"
+msgstr "Πίσω δεξιά πόρτα"
+
+#: teslarent/static/rental.html:37
+msgid "Driving"
+msgstr "Οδήγηση"
+
+#: teslarent/static/nearby_charger.html:9
+msgid "Error sending navigation request."
+msgstr "Σφάλμα αποστολής εντολής πλοήγησης."
+
+#: teslarent/static/vehicle_lock_state.html:11
+msgid "Frunk"
+msgstr "Frunk"
+
+#: teslarent/static/rental.html:78
+msgid "HVAC"
+msgstr "Κλιματισμός"
+
+#: teslarent/static/rental.html:67
+msgid "Hide nearby<br>charging stations"
+msgstr "Απόκρυψη κοντινών<br>σταθμών φόρτισης"
+
+#: teslarent/static/rental.html:25
+msgid "Info and controls are only available when the rental is active."
+msgstr "Πληροφορίες και έλεγχος ενεργά μόνο κατά τη διάρκεια της ενοικίασης."
+
+#: teslarent/static/rental.html:80
+msgid "Inside: {{ climateState.insideTemp }} °C"
+msgstr "Εσωτερική: {{ climateState.insideTemp }} ℃"
+
+#: teslarent/static/vehicle_actions.html:8
+msgid "Lock vehicle"
+msgstr "Κλείδωμα οχήματος"
+
+#: teslarent/static/rental.html:15 teslarent/static/rental.html:4
+msgid "Mileage"
+msgstr "Χιλιομέτρηση"
+
+#: teslarent/static/rental.html:8
+msgid "Mileage as of"
+msgstr "Χιλιομέτρηση την"
+
+#: teslarent/static/nearby_charger.html:8
+msgid "Navigation request sent."
+msgstr "Εντολή πλοήγησης απεστάλη."
+
+#: teslarent/static/rental.html:72
+msgid "Nearby Destination Charging"
+msgstr "Πέριξ φορτιστές προορισμού"
+
+#: teslarent/static/rental.html:70
+msgid "Nearby Superchargers"
+msgstr "Πέριξ υπερφορτιστές"
+
+#: teslarent/static/vehicle_actions.html:1
+msgid "Open Frunk"
+msgstr "Άνοιγμα Frunk"
+
+#: teslarent/static/rental.html:112
+msgid "Open in Google Maps"
+msgstr "Άνοιγμα σε χάρτες Google"
+
+#: teslarent/static/rental.html:81
+msgid "Outside: {{ climateState.outsideTemp }} °C"
+msgstr "Εξωτερική: {{ climateState.insideTemp }} ℃"
+
+#: teslarent/static/rental.html:42
+msgid "Parked"
+msgstr "Παρκαρισμένο"
+
+#: teslarent/static/rental.html:59
+msgid ""
+"Range: {{ chargeState.batteryRange | number:0 }} km, {{ chargeState."
+"batteryLevel }}%"
+msgstr ""
+"Εμβέλεια: {{ chargeState.batteryRange | number:0 }} km, {{ chargeState."
+"batteryLevel }}%"
+
+#: teslarent/static/index.html:22
+msgid "Rental"
+msgstr "Ενοικίαση"
+
+#: teslarent/static/rental.html:13
+msgid "Rental End"
+msgstr "Λήξη ενοικίασης"
+
+#: teslarent/static/rental.html:3
+msgid "Rental Start"
+msgstr "Έναρξη ενοικίασης"
+
+#: teslarent/static/rental.html:66
+msgid "Show nearby<br>charging stations"
+msgstr "Εμφάνιση κοντινών<br>σταθμών φόρτισης"
+
+#: teslarent/static/nearby_charger.html:4
+msgid "Site closed"
+msgstr "Τοποθεσία εκτός λειτουργίας"
+
+#: teslarent/static/codeInput.html:7
+msgid "Submit"
+msgstr "Υποβολή"
+
+#: teslarent/static/rental.html:96
+msgid "TURN OFF"
+msgstr "ΣΒΗΣΙΜΟ"
+
+#: teslarent/static/rental.html:97
+msgid "TURN ON"
+msgstr "ΕΝΑΡΞΗ"
+
+#: teslarent/static/index.html:5
+msgid "Tesla Rent"
+msgstr "Ενοικίαση Tesla"
+
+#: teslarent/static/index.html:28
+msgid "Tesla Rent project on Github"
+msgstr "Εφαρμογή ενοικίασης Tesla στο Github"
+
+#: teslarent/static/index.html:28
+msgid "This application is not affiliated with Tesla Inc. in any way."
+msgstr "Αυτή η εφαρμογή δεν έχει καμία απολύτως σχέση με την Tesla Inc."
+
+#: teslarent/static/vehicle_lock_state.html:12
+msgid "Trunk"
+msgstr "Πορτ-μπαγκάζ"
+
+#: teslarent/static/vehicle_lock_state.html:1
+msgid "Vehicle locked"
+msgstr "Όχημα κλειδωμένο"
+
+#: teslarent/static/vehicle_lock_state.html:3
+msgid "Vehicle unlocked"
+msgstr "Όχημα ξεκλείδωτο"
+
+#: teslarent/static/rental.html:108
+msgid "as of"
+msgstr "κατά την"
+
+#: teslarent/static/nearby_charger.html:2
+msgid "available"
+msgstr "διαθέσιμο"
+
+#: teslarent/static/rental.html:9
+msgid "driven so far"
+msgstr "έχουν οδηγηθεί μέχρι τώρα"
+
+#: teslarent/static/nearby_charger.html:3 teslarent/static/rental.html:15
+#: teslarent/static/rental.html:16 teslarent/static/rental.html:4
+#: teslarent/static/rental.html:9
+msgid "km"
+msgstr "km"
+
+#: teslarent/static/rental.html:38
+msgid "km/h"
+msgstr "km/h"
+
+#: teslarent/static/rental.html:55
+msgid ""
+"{{ chargeState.timeToFullChargeHours }} hr {{ chargeState."
+"timeToFullChargeMins | number:0 }} min remaining"
+msgstr ""
+"{{ chargeState.timeToFullChargeHours }} ώρες {{ chargeState."
+"timeToFullChargeMins | number:0 }} λεπτά απομένουν"
+
+#: teslarent/static/rental.html:87
+msgid "°C"
+msgstr "℃"

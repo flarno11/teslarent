@@ -3,8 +3,7 @@ import json
 from django.test import TestCase
 
 from teslarent.models import *
-from teslarent.tests.tests_rental_update_start_end import RentalStartEndTestCase
-from teslarent.tests.tests_teslaapi import CURRENT_VEHICLE_ID, VEHICLE_DATA_RESPONSE
+from teslarent.tests.tests_teslaapi import CURRENT_VEHICLE_ID, VEHICLE_DATA_RESPONSE, TeslaApiTestCase
 
 
 class VehicleDataTestCase(TestCase):
@@ -26,8 +25,8 @@ class VehicleDataTestCase(TestCase):
         return v
 
     def test_query(self):
-        RentalStartEndTestCase.create_credentials()
-        vehicle = RentalStartEndTestCase.create_vehicle()
+        TeslaApiTestCase.create_credentials()
+        vehicle = TeslaApiTestCase.create_vehicle_default()
 
         self.create_vehicle_data(vehicle, battery_level=64)
         self.create_vehicle_data(vehicle, battery_level=65)

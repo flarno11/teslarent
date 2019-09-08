@@ -1,9 +1,10 @@
 __pycache__
 venv/
+node_modules/
 .idea
 .DS_Store
 project/staticfiles
 settings_prod.py
-db
+db*
 deploy.sh
 

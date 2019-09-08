@@ -1,8 +1,17 @@
-<span ng-if="vehicleState.locked">Vehicle locked</span>
+<span ng-if="vehicleState.locked" translate>Vehicle locked</span>
 <span ng-if="!vehicleState.locked">
-    Vehicle unlocked
+    <span translate>Vehicle unlocked</span>
     <span ng-if="vehicleState.openDoorsOrTrunks.length > 0">
         <br />
-        (<span ng-repeat="item in vehicleState.openDoorsOrTrunks">{{ item }} open{{$last ? '' : ', '}}</span>)
+        (<span ng-repeat="item in vehicleState.openDoorsOrTrunks">{{ item | translate }} <span translate-context="Door open" translate>open</span>{{$last ? '' : ', '}}</span>)
     </span>
 </span>
+
+<div style="display: none">
+    <span translate>Frunk</span>
+    <span translate>Trunk</span>
+    <span translate>Door front left</span>
+    <span translate>Door front right</span>
+    <span translate>Door rear left</span>
+    <span translate>Door rear right</span>
+</div>
