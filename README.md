@@ -13,7 +13,7 @@
 https://angular-gettext.rocketeer.be/dev-guide/translate/
 
 ### Compile translations
-    PATH=$PAT
+    PATH=$PATH:./node_modules/.bin grunt nggettext_compile
 
 # Setup
 

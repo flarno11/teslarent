@@ -1,16 +1,16 @@
 msgid ""
 msgstr ""
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: \n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: \n"
-"Language-Team: \n"
-"MIME-Version: 1.0\n"
-"X-Generator: Poedit 2.2.3\n"
 "Last-Translator: \n"
+"Language-Team: \n"
+"Language: el\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.2.1\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Language: el_GR\n"
 
 #: teslarent/static/vehicle_lock_state.html:6
 msgctxt "Door open"
@@ -25,11 +25,11 @@ msgstr "*Frunk: Μπροστινό πορτ-μπαγκάζ"
 msgid "Asleep"
 msgstr "Σε λειτουργία ύπνου"
 
-#: teslarent/static/vehicle_actions.html:7
+#: teslarent/static/vehicle_actions.html:9
 msgid "Can't lock vehicle because doors or trunks are open."
 msgstr ""
-"Το όχημα δεν μπορεί να κλειδωθεί επειδή είναι ανοιχτή κάποια πόρτα ή "
-"πορτ-μπαγκάζ."
+"Το όχημα δεν μπορεί να κλειδωθεί επειδή είναι ανοιχτή κάποια πόρτα ή πορτ-"
+"μπαγκάζ."
 
 #: teslarent/static/rental.html:50
 msgid "Charging Complete"
@@ -93,14 +93,13 @@ msgstr "Απόκρυψη κοντινών<br>σταθμών φόρτισης"
 
 #: teslarent/static/rental.html:25
 msgid "Info and controls are only available when the rental is active."
-msgstr ""
-"Πληροφορίες και έλεγχος ενεργά μόνο κατά τη διάρκεια της ενοικίασης."
+msgstr "Πληροφορίες και έλεγχος ενεργά μόνο κατά τη διάρκεια της ενοικίασης."
 
 #: teslarent/static/rental.html:80
 msgid "Inside: {{ climateState.insideTemp }} °C"
 msgstr "Εσωτερική: {{ climateState.insideTemp }} ℃"
 
-#: teslarent/static/vehicle_actions.html:6
+#: teslarent/static/vehicle_actions.html:8
 msgid "Lock vehicle"
 msgstr "Κλείδωμα οχήματος"
 

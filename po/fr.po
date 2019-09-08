@@ -17,7 +17,7 @@ msgctxt "Door open"
 msgid "open"
 msgstr "ouvert"
 
-#: teslarent/static/rental.html:116
+#: teslarent/static/rental.html:115
 msgid "*Frunk: Front trunk"
 msgstr "*Frunk: Coffre avant (Front trunk)"
 
@@ -25,11 +25,11 @@ msgstr "*Frunk: Coffre avant (Front trunk)"
 msgid "Asleep"
 msgstr "Endormi"
 
-#: teslarent/static/vehicle_actions.html:7
+#: teslarent/static/vehicle_actions.html:9
 msgid "Can't lock vehicle because doors or trunks are open."
 msgstr ""
-"Impossible de verrouiller le véhicule parce que les portes ou le coffre "
-"sont ouverts."
+"Impossible de verrouiller le véhicule parce que les portes ou le coffre sont "
+"ouverts."
 
 #: teslarent/static/rental.html:50
 msgid "Charging Complete"
@@ -101,7 +101,7 @@ msgstr ""
 msgid "Inside: {{ climateState.insideTemp }} °C"
 msgstr "Intérieur: {{ climateState.insideTemp }} °C"
 
-#: teslarent/static/vehicle_actions.html:6
+#: teslarent/static/vehicle_actions.html:8
 msgid "Lock vehicle"
 msgstr "Verrouiller le véhicule"
 

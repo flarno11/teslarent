@@ -86,6 +86,7 @@ angular.module("myApp", ['ngRoute', 'gettext', ])
 
 .controller('navController', function($scope, $location, $log, gettextCatalog) {
     $scope.defaultLang = 'de';
+    $scope.userAgentLanguages = config['userAgentLanguages'];
     $scope.dateTimeFormats = {
         'en': 'MMM d, y HH:mm',
         'de': 'd. MMM, y HH:mm',
@@ -100,7 +101,7 @@ angular.module("myApp", ['ngRoute', 'gettext', ])
         $scope.dateTimeFormat = $scope.dateTimeFormats[$scope.lang];
         gettextCatalog.setCurrentLanguage(lang);
     };
-    var supportedLanguages = {'de': true, 'en': true, 'fr': true};
+    var supportedLanguages = {'de': true, 'en': true, 'fr': true, 'el': true};
     var userLanguages = config['userAgentLanguages'].filter(function(l) { return l in supportedLanguages; })
     $log.info("Auto-detected language userAgentLanguages=", config['userAgentLanguages'], ", userLanguages=", userLanguages);
     if (userLanguages.length > 0) {

@@ -17,7 +17,7 @@ msgctxt "Door open"
 msgid "open"
 msgstr "offen"
 
-#: teslarent/static/rental.html:116
+#: teslarent/static/rental.html:115
 msgid "*Frunk: Front trunk"
 msgstr "*Frunk: Vorderer Kofferraum (Front trunk)"
 
@@ -25,7 +25,7 @@ msgstr "*Frunk: Vorderer Kofferraum (Front trunk)"
 msgid "Asleep"
 msgstr "Im Tiefschlaf"
 
-#: teslarent/static/vehicle_actions.html:7
+#: teslarent/static/vehicle_actions.html:9
 msgid "Can't lock vehicle because doors or trunks are open."
 msgstr ""
 "Das Auto kann nicht abgeschlossen werden da noch Türen oder vordere oder "
@@ -99,7 +99,7 @@ msgstr "Info und Kontrolle sind nur verfügbar wenn die Miete aktiv ist."
 msgid "Inside: {{ climateState.insideTemp }} °C"
 msgstr "Innen: {{ climateState.insideTemp }} °C"
 
-#: teslarent/static/vehicle_actions.html:6
+#: teslarent/static/vehicle_actions.html:8
 msgid "Lock vehicle"
 msgstr "Auto abschliessen"
 

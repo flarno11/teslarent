@@ -9,7 +9,7 @@ msgctxt "Door open"
 msgid "open"
 msgstr ""
 
-#: teslarent/static/rental.html:116
+#: teslarent/static/rental.html:115
 msgid "*Frunk: Front trunk"
 msgstr ""
 
@@ -17,7 +17,7 @@ msgstr ""
 msgid "Asleep"
 msgstr ""
 
-#: teslarent/static/vehicle_actions.html:7
+#: teslarent/static/vehicle_actions.html:9
 msgid "Can't lock vehicle because doors or trunks are open."
 msgstr ""
 
@@ -85,7 +85,7 @@ msgstr ""
 msgid "Inside: {{ climateState.insideTemp }} °C"
 msgstr ""
 
-#: teslarent/static/vehicle_actions.html:6
+#: teslarent/static/vehicle_actions.html:8
 msgid "Lock vehicle"
 msgstr ""
 
