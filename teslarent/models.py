@@ -91,8 +91,13 @@ class Rental(models.Model):
 
     @property
     def earnings_per_km(self):
+        if self.price_charging:
+            price_charging = self.price_charging
+        else:
+            price_charging = 0
+
         if self.price_netto and self.distance_driven:
-            return round(self.price_netto / self.distance_driven, 3)
+            return round((self.price_netto - price_charging) / self.distance_driven, 3)
         return None
 
     @staticmethod
