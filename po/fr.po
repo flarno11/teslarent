@@ -19,7 +19,7 @@ msgstr "ouvert"
 
 #: teslarent/static/rental.html:115
 msgid "*Frunk: Front trunk"
-msgstr "*Frunk: Coffre avant (Front trunk)"
+msgstr "*Frunk : Coffre avant (Front trunk)"
 
 #: teslarent/static/rental.html:31
 msgid "Asleep"
@@ -45,7 +45,7 @@ msgstr ""
 
 #: teslarent/static/codeInput.html:3
 msgid "Code:"
-msgstr "Code:"
+msgstr "Code :"
 
 #: teslarent/static/rental.html:104
 msgid "Current position"
@@ -99,9 +99,9 @@ msgstr ""
 
 #: teslarent/static/rental.html:80
 msgid "Inside: {{ climateState.insideTemp }} °C"
-msgstr "Intérieur: {{ climateState.insideTemp }} °C"
+msgstr "Intérieur : {{ climateState.insideTemp }} °C"
 
-#: teslarent/static/vehicle_actions.html:8
+#: teslarent/static/vehicle_actions.html:6
 msgid "Lock vehicle"
 msgstr "Verrouiller le véhicule"
 
@@ -135,7 +135,7 @@ msgstr "Ouvrir dans Google Maps"
 
 #: teslarent/static/rental.html:81
 msgid "Outside: {{ climateState.outsideTemp }} °C"
-msgstr "Extérieur: {{ climateState.outsideTemp }} °C"
+msgstr "Extérieur : {{ climateState.outsideTemp }} °C"
 
 #: teslarent/static/rental.html:42
 msgid "Parked"
