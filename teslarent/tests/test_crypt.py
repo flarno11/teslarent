@@ -16,4 +16,4 @@ class CryptCase(TestCase):
         message = "The answer is yes"
         ciphertext = encrypt(message, settings.SECRET_KEY, salt, iv)
         orig_message = decrypt(ciphertext, settings.SECRET_KEY, salt, iv)
-        self.assertEquals(message, orig_message)
+        self.assertEqual(message, orig_message)

@@ -33,15 +33,15 @@ class RentalStartEndTestCase(TestCase):
 
             rental_start_end.Command().update_rentals(start)
             r = Rental.objects.all()[0]
-            self.assertEquals(25000, r.odometer_start)
-            self.assertEquals(start, r.odometer_start_updated_at)
+            self.assertEqual(25000, r.odometer_start)
+            self.assertEqual(start, r.odometer_start_updated_at)
             self.assertIsNone(r.odometer_end)
             self.assertIsNone(r.odometer_end_updated_at)
 
             rental_start_end.Command().update_rentals(end)
             r = Rental.objects.all()[0]
-            self.assertEquals(25000, r.odometer_start)
-            self.assertEquals(25000, r.odometer_end)
-            self.assertEquals(start, r.odometer_start_updated_at)
-            self.assertEquals(end, r.odometer_end_updated_at)
-            self.assertEquals(0, r.distance_driven)
+            self.assertEqual(25000, r.odometer_start)
+            self.assertEqual(25000, r.odometer_end)
+            self.assertEqual(start, r.odometer_start_updated_at)
+            self.assertEqual(end, r.odometer_end_updated_at)
+            self.assertEqual(0, r.distance_driven)

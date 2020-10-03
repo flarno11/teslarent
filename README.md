@@ -42,7 +42,7 @@ docker run -d -p 444:443 --link teslarent-postgres:postgres -e DJANGO_ALLOWED_HO
 #### Requirements
 - Python (tested with version 3.7, others should be fine too)
  - virtualenv, e.g. python3-venv
-- Postgres database (MySQL doesn't support JSONField for Vehicle Data)
+- Postgres/MySQL database (only newer MySQL that supports JSONField for Vehicle Data)
 - Https Web Server with wsgi support, e.g. Apache with mod_wsgi
   (https://docs.djangoproject.com/en/2.1/howto/deployment/wsgi/modwsgi/),
   see [apache2_wsgi_sample.conf](https://github.com/flarno11/teslarent/blob/master/apache2_wsgi_sample.conf), adjust python_app_dir and ssl certificates
