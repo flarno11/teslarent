@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.2.1\n"
+"X-Generator: Poedit 2.2.4\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: teslarent/static/vehicle_lock_state.html:6
@@ -19,7 +19,7 @@ msgstr "ouvert"
 
 #: teslarent/static/rental.html:115
 msgid "*Frunk: Front trunk"
-msgstr "*Frunk: Coffre avant (Front trunk)"
+msgstr "*Frunk : Coffre avant (Front trunk)"
 
 #: teslarent/static/rental.html:31
 msgid "Asleep"
@@ -45,7 +45,7 @@ msgstr ""
 
 #: teslarent/static/codeInput.html:3
 msgid "Code:"
-msgstr "Code:"
+msgstr "Code :"
 
 #: teslarent/static/rental.html:104
 msgid "Current position"
@@ -57,7 +57,7 @@ msgstr "Distance parcourue"
 
 #: teslarent/static/vehicle_lock_state.html:13
 msgid "Door front left"
-msgstr "Porte à l’avant gauche"
+msgstr "Porte avant gauche"
 
 #: teslarent/static/vehicle_lock_state.html:14
 msgid "Door front right"
@@ -95,13 +95,13 @@ msgstr "Masquer les stations<br>de charge à proximité"
 msgid "Info and controls are only available when the rental is active."
 msgstr ""
 "Les informations et les contrôles ne sont disponibles que lorsque la "
-"location est active."
+"location est activée."
 
 #: teslarent/static/rental.html:80
 msgid "Inside: {{ climateState.insideTemp }} °C"
-msgstr "Intérieur: {{ climateState.insideTemp }} °C"
+msgstr "Intérieur : {{ climateState.insideTemp }} °C"
 
-#: teslarent/static/vehicle_actions.html:8
+#: teslarent/static/vehicle_actions.html:6
 msgid "Lock vehicle"
 msgstr "Verrouiller le véhicule"
 
@@ -123,7 +123,7 @@ msgstr "Destination Charging à proximité"
 
 #: teslarent/static/rental.html:70
 msgid "Nearby Superchargers"
-msgstr "Supercharges à proximité"
+msgstr "Superchargeurs à proximité"
 
 #: teslarent/static/vehicle_actions.html:1
 msgid "Open Frunk"
@@ -135,7 +135,7 @@ msgstr "Ouvrir dans Google Maps"
 
 #: teslarent/static/rental.html:81
 msgid "Outside: {{ climateState.outsideTemp }} °C"
-msgstr "Extérieur: {{ climateState.outsideTemp }} °C"
+msgstr "Extérieur : {{ climateState.outsideTemp }} °C"
 
 #: teslarent/static/rental.html:42
 msgid "Parked"
@@ -187,7 +187,7 @@ msgstr "Tesla Location"
 
 #: teslarent/static/index.html:28
 msgid "Tesla Rent project on Github"
-msgstr "Projet Tesla rent sur GitHub"
+msgstr "Projet Tesla Rent sur GitHub"
 
 #: teslarent/static/index.html:28
 msgid "This application is not affiliated with Tesla Inc. in any way."

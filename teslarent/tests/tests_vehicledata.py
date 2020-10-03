@@ -32,10 +32,10 @@ class VehicleDataTestCase(TestCase):
         self.create_vehicle_data(vehicle, battery_level=65)
         data = VehicleData.objects.filter(vehicle=vehicle)
         print(data[0].data)
-        self.assertEquals(2, len(list(data)))
+        self.assertEqual(2, len(list(data)))
 
-        self.assertEquals(2, len(list(VehicleData.objects.filter(data__state='online'))))
+        self.assertEqual(2, len(list(VehicleData.objects.filter(data__state='online'))))
 
-        self.assertEquals(2, len(list(VehicleData.objects.filter(data__charge_state__battery_level__gte=64))))
-        self.assertEquals(1, len(list(VehicleData.objects.filter(data__charge_state__battery_level__gte=65))))
-        self.assertEquals(0, len(list(VehicleData.objects.filter(data__charge_state__battery_level__gte=66))))
+        self.assertEqual(2, len(list(VehicleData.objects.filter(data__charge_state__battery_level__gte=64))))
+        self.assertEqual(1, len(list(VehicleData.objects.filter(data__charge_state__battery_level__gte=65))))
+        self.assertEqual(0, len(list(VehicleData.objects.filter(data__charge_state__battery_level__gte=66))))

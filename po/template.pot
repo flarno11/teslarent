@@ -130,7 +130,7 @@ msgstr ""
 msgid "Range: {{ chargeState.batteryRange | number:0 }} km, {{ chargeState.batteryLevel }}%"
 msgstr ""
 
-#: teslarent/static/index.html:22
+#: teslarent/static/index.html:36
 msgid "Rental"
 msgstr ""
 
@@ -166,11 +166,11 @@ msgstr ""
 msgid "Tesla Rent"
 msgstr ""
 
-#: teslarent/static/index.html:28
+#: teslarent/static/index.html:42
 msgid "Tesla Rent project on Github"
 msgstr ""
 
-#: teslarent/static/index.html:28
+#: teslarent/static/index.html:42
 msgid "This application is not affiliated with Tesla Inc. in any way."
 msgstr ""
 

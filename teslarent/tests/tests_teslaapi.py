@@ -93,7 +93,7 @@ class TeslaApiTestCase(TestCase):
     def test_update_vehicle_initial(self):
         self.create_credentials()
 
-        self.assertEquals(0, len(list(Vehicle.objects.all())))
+        self.assertEqual(0, len(list(Vehicle.objects.all())))
 
         with requests_mock.mock() as m:
             m.post('/oauth/token', text=LOGIN_RESPONSE)
@@ -102,14 +102,14 @@ class TeslaApiTestCase(TestCase):
             m.get('/api/1/vehicles/' + str(CURRENT_VEHICLE_ID) + '/vehicle_data', text=VEHICLE_DATA_RESPONSE)
             update_all_vehicles(wake_up_vehicle=True)
 
-        self.assertEquals(1, len(list(Vehicle.objects.all())))
+        self.assertEqual(1, len(list(Vehicle.objects.all())))
 
     def test_update_vehicle_remove(self):
         c = self.create_credentials()
 
-        self.assertEquals(0, len(list(Vehicle.objects.all())))
+        self.assertEqual(0, len(list(Vehicle.objects.all())))
         self.create_vehicle(vehicle_id=OLD_VEHICLE_ID, display_name="old", credentials=c)
-        self.assertEquals(1, len(list(Vehicle.objects.all())))
+        self.assertEqual(1, len(list(Vehicle.objects.all())))
 
         with requests_mock.mock() as m:
             m.post('/oauth/token', text=LOGIN_RESPONSE)
@@ -118,7 +118,7 @@ class TeslaApiTestCase(TestCase):
             m.get('/api/1/vehicles/' + str(CURRENT_VEHICLE_ID) + '/vehicle_data', text=VEHICLE_DATA_RESPONSE)
             update_all_vehicles(wake_up_vehicle=True)
 
-        self.assertEquals(2, len(list(Vehicle.objects.all())))
+        self.assertEqual(2, len(list(Vehicle.objects.all())))
 
         self.assertFalse(Vehicle.objects.get(display_name="old").linked)
         self.assertTrue(Vehicle.objects.get(color="White").linked)
@@ -126,11 +126,11 @@ class TeslaApiTestCase(TestCase):
     def test_update_vehicle_update(self):
         c = self.create_credentials()
 
-        self.assertEquals(0, len(list(Vehicle.objects.all())))
+        self.assertEqual(0, len(list(Vehicle.objects.all())))
         self.create_vehicle(vehicle_id=CURRENT_VEHICLE_ID, display_name="old", credentials=c)
 
         vehicles = list(Vehicle.objects.all())
-        self.assertEquals(1, len(vehicles))
+        self.assertEqual(1, len(vehicles))
 
         created_at = vehicles[0].created_at
 
@@ -143,5 +143,5 @@ class TeslaApiTestCase(TestCase):
             update_all_vehicles(wake_up_vehicle=True)
 
         vehicles = list(Vehicle.objects.all())
-        self.assertEquals(1, len(vehicles))
-        self.assertEquals(created_at, vehicles[0].created_at)
+        self.assertEqual(1, len(vehicles))
+        self.assertEqual(created_at, vehicles[0].created_at)
