@@ -61,6 +61,10 @@ class Vehicle(models.Model):
     def get_all_active_vehicles():
         return Vehicle.objects.filter(linked=True, credentials__isnull=False)
 
+    @staticmethod
+    def get_all_vehicles():
+        return Vehicle.objects.all()
+
 
 class Rental(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)

@@ -5,8 +5,8 @@ import logging
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from teslarent.models import Vehicle, VehicleData, Credentials
-from teslarent.teslaapi.teslaapi import get_vehicle_data, ApiException, wake_up, list_vehicles
+from teslarent.models import Vehicle, VehicleData
+from teslarent.teslaapi.teslaapi import ApiException, wake_up, list_vehicles, fetch_and_save_vehicle_state
 
 log = logging.getLogger('manage')
 
@@ -27,7 +27,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         list_vehicles_result = {}
-        vehicles = Vehicle.objects.filter(linked=True)
+        vehicles = Vehicle.get_all_active_vehicles()
         for vehicle in vehicles:
             if 'vehicle_id' in options and options['vehicle_id'] and vehicle.id != options['vehicle_id']:
                 continue
@@ -49,12 +49,8 @@ class Command(BaseCommand):
                     log.debug("vehicle='{}' vehicle.tesla_id={} skip".format(vehicle, vehicle.tesla_id))
                     continue
 
-            vehicle_data = VehicleData()
-            vehicle_data.vehicle = vehicle
-
             try:
-                vehicle_data.data = get_vehicle_data(vehicle.tesla_id, vehicle.credentials)
-                vehicle_data.save()
+                fetch_and_save_vehicle_state(vehicle)
             except ApiException as e:
                 log.debug("vehicle.tesla_id={} exception={}".format(vehicle.tesla_id, str(e)))
                 if options['wakeup']:
@@ -62,13 +58,15 @@ class Command(BaseCommand):
                         wake_up(vehicle.tesla_id, vehicle.credentials)
                         time.sleep(10)
 
-                        vehicle_data.data = get_vehicle_data(vehicle.tesla_id, vehicle.credentials)
-                        vehicle_data.save()
+                        fetch_and_save_vehicle_state(vehicle)
                     except ApiException as e:
                         log.debug("vehicle.tesla_id={} exception={}".format(vehicle.tesla_id, str(e)))
                 else:
                     if not vehicle.credentials.email in list_vehicles_result:
                         list_vehicles_result[vehicle.credentials.email] = list_vehicles(vehicle.credentials)  # this call shouldn't keep the vehicle awake
                     d = list(filter(lambda x: x['id'] == vehicle.tesla_id, list_vehicles_result[vehicle.credentials.email]))
+
+                    vehicle_data = VehicleData()
+                    vehicle_data.vehicle = vehicle
                     vehicle_data.data = d[0]
                     vehicle_data.save()
