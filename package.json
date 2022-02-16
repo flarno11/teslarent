@@ -1,9 +1,5 @@
 {
-  "name": "teslarent",
-  "version": "0.1.0",
   "devDependencies": {
-    "grunt": "^1.0.4",
-    "grunt-angular-gettext": "^2.4.1"
-  },
-  "dependencies": {}
+    "grunt-angular-gettext": "^2.5.3"
+  }
 }
