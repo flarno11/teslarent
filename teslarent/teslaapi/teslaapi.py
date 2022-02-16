@@ -7,8 +7,6 @@ import requests
 import logging
 import json
 
-from bs4 import BeautifulSoup
-
 from django.conf import settings
 from django.utils import timezone
 
