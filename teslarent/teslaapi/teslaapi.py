@@ -432,7 +432,7 @@ def load_vehicles(credentials, wake_up_vehicle):
         vehicle_state = v['state']
         if vehicle_state != 'online' and wake_up_vehicle:
             vehicle_state = wake_up(v_model.tesla_id, credentials)
-            time.sleep(10)
+            time.sleep(15)
 
         if vehicle_state == 'online':  # returns 408 otherwise
             v_model.mobile_enabled = is_mobile_enabled(v_model.tesla_id, credentials)  # doesn't seem to be available in vehicle_data
