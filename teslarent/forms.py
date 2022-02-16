@@ -1,13 +1,16 @@
 from django import forms
 
 from teslarent.models import Rental
-from .models import Credentials
 
 
-# no ModelForm since we allow existing email address to be entered again
 class CredentialsForm(forms.Form):
     email = forms.EmailField()
-    password = forms.CharField(widget=forms.PasswordInput)
+
+
+class TeslaAuthForm(forms.Form):
+    email = forms.EmailField(widget=forms.HiddenInput())
+    code_verifier = forms.CharField(widget=forms.HiddenInput())
+    auth_code = forms.CharField()
 
 
 class RentalForm(forms.ModelForm):

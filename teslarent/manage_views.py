@@ -1,22 +1,22 @@
 import base64
 import logging
 import uuid
-import datetime
 from json import encoder
 
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponse, HttpResponseForbidden
-from django.http.response import Http404, JsonResponse
+from django.http.response import JsonResponse
 from django.shortcuts import redirect, render
 from jsonview.decorators import json_view
 
 
-from teslarent.forms import CredentialsForm, RentalForm
+from teslarent.forms import CredentialsForm, RentalForm, TeslaAuthForm
 from teslarent.management.commands.rental_start_end import BackgroundTask
 from teslarent.models import *
 from teslarent.teslaapi import teslaapi
+from teslarent.teslaapi.teslaapi import get_auth_url, generate_code_verifier, generate_oauth_state, get_code_challenge
 
 encoder.FLOAT_REPR = lambda o: format(o, '.2f')  # monkey patching https://stackoverflow.com/questions/1447287/format-floats-with-standard-json-module
 
@@ -146,20 +146,12 @@ def index(request):
 
 
 @staff_member_required
-def add_credentials(request):
+def add_credentials_step1(request):
     if request.method == "POST":
         form = CredentialsForm(request.POST)
         if form.is_valid():
             email = form.cleaned_data['email']
-            c = Credentials.objects.filter(email=email).first()
-            if not c:
-                c = Credentials(email=email)
-
-            teslaapi.login_and_save_credentials(c, form.cleaned_data['password'])
-            del form.cleaned_data['password']
-
-            teslaapi.load_vehicles(c)
-            return redirect('./')
+            return redirect('manage:add-credentials-step2', email=email)
     else:
         form = CredentialsForm()
 
@@ -167,7 +159,37 @@ def add_credentials(request):
         each_context(request, title="Add Credentials"),
         form=form,
     )
-    return render(request, 'add_credentials.html', context)
+    return render(request, 'add_credentials_step1.html', context)
+
+
+@staff_member_required
+def add_credentials_step2(request, email):
+    if request.method == "POST":
+        form = TeslaAuthForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            c = Credentials.objects.filter(email=email).first()
+            if not c:
+                c = Credentials(email=email)
+
+            auth_code = form.cleaned_data['auth_code']
+            code_verifier = form.cleaned_data['code_verifier']
+            teslaapi.login_and_save_credentials(c, auth_code, code_verifier)
+
+            teslaapi.load_vehicles(c, wake_up_vehicle=True)
+            return redirect('manage:index')
+        tesla_auth_url = ''
+    else:
+        code_verifier = generate_code_verifier()
+        tesla_auth_url = get_auth_url(get_code_challenge(code_verifier), generate_oauth_state(), email)
+        form = TeslaAuthForm(initial={'email': email, 'code_verifier': code_verifier})
+
+    context = dict(
+        each_context(request, title="Add Credentials"),
+        form=form,
+        tesla_auth_url=tesla_auth_url,
+    )
+    return render(request, 'add_credentials_step2.html', context)
 
 
 @staff_member_required

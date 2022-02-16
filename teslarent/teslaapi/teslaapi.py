@@ -1,16 +1,22 @@
+import base64
+import hashlib
 import time
+from urllib.parse import urlencode
 
 import requests
 import logging
 import json
 
+from bs4 import BeautifulSoup
+
 from django.conf import settings
 from django.utils import timezone
 
 from teslarent.models import Credentials, Vehicle, VehicleData
-from teslarent.utils.crypt import decrypt
+from teslarent.utils.crypt import decrypt, random_string
 
-PRODUCTION_HOST = 'https://owner-api.teslamotors.com'
+AUTH_HOST = 'https://auth.tesla.com'
+OWNERAPI_HOST = 'https://owner-api.teslamotors.com'
 
 log = logging.getLogger('teslaapi')
 
@@ -19,8 +25,12 @@ class ApiException(Exception):
     pass
 
 
+def get_auth_host():
+    return AUTH_HOST
+
+
 def get_host():
-    return PRODUCTION_HOST
+    return OWNERAPI_HOST
 
 
 def get_headers(credentials):
@@ -29,30 +39,73 @@ def get_headers(credentials):
     }
 
 
-def login_and_save_credentials(credentials, password):
+def generate_code_verifier():
+    return random_string(86)
+
+
+def get_code_challenge(code_verifier):
+    return base64.urlsafe_b64encode(hashlib.sha256(code_verifier.encode()).digest()).rstrip(b'=').decode('utf-8')
+
+
+def generate_oauth_state():
+    return random_string(10)
+
+
+def get_auth_url(code_challenge, oauth_state, login_hint=''):
+    return get_auth_host()\
+           + '/oauth2/v3/authorize?' \
+             'client_id=ownerapi&' \
+             'code_challenge={}&'  \
+             'code_challenge_method=S256&'  \
+             '{}&'  \
+             'response_type=code&'  \
+             'scope=openid email offline_access&'  \
+             'state={}&'  \
+             'login_hint={}'.format(code_challenge, urlencode({'redirect_uri': 'https://auth.tesla.com/void/callback'}),
+                                    oauth_state, login_hint)
+
+
+def login_and_save_credentials(credentials, auth_code, code_verifier):
     """
     @type credentials: Credentials
     """
 
+    # Step 3: Exchange authorization code for bearer token
     body = {
-        "grant_type": "password",
-        "client_id": settings.TESLA_CLIENT_ID,
-        "client_secret": settings.TESLA_CLIENT_SECRET,
-        "email": credentials.email,
-        "password": password
+        'grant_type': 'authorization_code',
+        'client_id': 'ownerapi',
+        'code': auth_code,
+        'code_verifier': code_verifier,
+        'redirect_uri': "https://auth.tesla.com/void/callback",
+    }
+
+    log.debug('login on ' + get_auth_host())
+    r3 = requests\
+        .post(get_auth_host() + '/oauth2/v3/token', json=body)\
+        .json()
+
+    if 'access_token' not in r3 or 'refresh_token' not in r3:
+        log.error("login not possible, response=" + str(r3))
+        raise ApiException("login not possible, response=" + str(r3))
+
+    # Step 4: Exchange bearer token for access token
+    body = {
+        'grant_type': "urn:ietf:params:oauth:grant-type:jwt-bearer",
+        'client_id': settings.TESLA_CLIENT_ID,
+        'client_secret': settings.TESLA_CLIENT_SECRET,
     }
 
     log.debug('login on ' + get_host())
-    r = requests\
-        .post(get_host() + '/oauth/token?grant_type=password', json=body)\
+    r4 = requests\
+        .post(get_host() + '/oauth/token', json=body, headers={'Authorization': 'Bearer ' + r3['access_token']})\
         .json()
 
-    if 'access_token' in r and 'refresh_token' in r and 'expires_in' in r:
-        credentials.update_token(r['access_token'], r['refresh_token'], r['expires_in'])
+    if 'access_token' in r4 and 'expires_in' in r4:
+        credentials.update_token(r4['access_token'], r3['refresh_token'], r4['expires_in'])
         credentials.save()
     else:
-        log.error("login not possible, response=" + str(r))
-        raise ApiException("login not possible, response=" + str(r))
+        log.error("login not possible, response=" + str(r4))
+        raise ApiException("login not possible, response=" + str(r4))
 
 
 def refresh_token(credentials):
@@ -67,22 +120,38 @@ def refresh_token(credentials):
     """
 
     body = {
-        "grant_type": "refresh_token",
-        "client_id": settings.TESLA_CLIENT_ID,
-        "client_secret": settings.TESLA_CLIENT_SECRET,
-        "refresh_token": decrypt(credentials.refresh_token, settings.SECRET_KEY, credentials.salt, credentials.iv),
+        'grant_type': 'refresh_token',
+        'client_id': 'ownerapi',
+        'refresh_token': decrypt(credentials.refresh_token, settings.SECRET_KEY, credentials.salt, credentials.iv),
+        'scope': 'openid email offline_access',
     }
 
-    r = requests\
-        .post(get_host() + '/oauth/token?grant_type=refresh_token', json=body)\
+    r3 = requests\
+        .post(get_auth_host() + '/oauth2/v3/token', json=body)\
         .json()
 
-    if 'access_token' in r and 'refresh_token' in r and 'expires_in' in r:
-        credentials.update_token(r['access_token'], r['refresh_token'], r['expires_in'])
+    if 'access_token' not in r3 or 'refresh_token' not in r3:
+        log.error("refresh token not possible, response=" + str(r3))
+        raise ApiException("refresh token not possible, response=" + str(r3))
+
+    # Step 4: Exchange bearer token for access token
+    body = {
+        'grant_type': "urn:ietf:params:oauth:grant-type:jwt-bearer",
+        'client_id': settings.TESLA_CLIENT_ID,
+        'client_secret': settings.TESLA_CLIENT_SECRET,
+    }
+
+    log.debug('login on ' + get_host())
+    r4 = requests\
+        .post(get_host() + '/oauth/token', json=body, headers={'Authorization': 'Bearer ' + r3['access_token']})\
+        .json()
+
+    if 'access_token' in r4 and 'expires_in' in r4:
+        credentials.update_token(r4['access_token'], r3['refresh_token'], r4['expires_in'])
         credentials.save()
     else:
-        log.error("refresh token not possible, response=" + str(r))
-        raise ApiException("refresh token not possible, response=" + str(r))
+        log.error("refresh token not possible, response=" + str(r4))
+        raise ApiException("login not possible, response=" + str(r4))
 
 
 def get_json(text):

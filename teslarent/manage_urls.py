@@ -5,7 +5,8 @@ from teslarent import manage_views, manage_teslaapi_actions_views, manage_stats_
 
 urlpatterns = [
     path('', manage_views.index, name='index'),
-    path('addCredentials', manage_views.add_credentials),
+    path('addCredentials', manage_views.add_credentials_step1, name='add-credentials-step1'),
+    path('addCredentialsStep2/<str:email>', manage_views.add_credentials_step2, name='add-credentials-step2'),
     path('deleteCredentials/<int:credentials_id>', manage_views.delete_credentials),
     path('refreshCredentials/<int:credentials_id>', manage_teslaapi_actions_views.refresh_credentials),
 

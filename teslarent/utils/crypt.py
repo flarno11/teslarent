@@ -1,3 +1,6 @@
+import random
+import string
+
 from Crypto.Cipher import AES
 from Crypto.Protocol.KDF import PBKDF2
 
@@ -19,3 +22,8 @@ def decrypt(ciphertext, password, salt, iv):
     return unpad(
         cipher.decrypt(bytes.fromhex(ciphertext))
     ).decode('utf-8')
+
+
+def random_string(length):
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for i in range(length))
