@@ -11,7 +11,7 @@ class CryptCase(TestCase):
         pass
 
     def test_crypt(self):
-        salt = os.urandom(8).hex()  # 64-bit salt
+        salt = os.urandom(16).hex()  # 128-bit salt
         iv = os.urandom(16).hex()  # 128-bit IV
         message = "The answer is yes"
         ciphertext = encrypt(message, settings.SECRET_KEY, salt, iv)

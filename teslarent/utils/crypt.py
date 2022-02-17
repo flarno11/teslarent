@@ -1,8 +1,9 @@
-import random
 import string
+import random
 
-from Crypto.Cipher import AES
-from Crypto.Protocol.KDF import PBKDF2
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
 
 BS = 16
@@ -10,18 +11,31 @@ pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS)
 unpad = lambda s: s[0:-s[-1]]
 
 
+def get_kdf(salt):
+    return PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=bytes.fromhex(salt),
+        iterations=390000,
+    )
+
+
 def encrypt(secret, password, salt, iv):
-    key = PBKDF2(password, bytes.fromhex(salt), dkLen=32)  # 256-bit key
-    cipher = AES.new(key, AES.MODE_CBC, bytes.fromhex(iv))
-    return cipher.encrypt(pad(secret)).hex()
+    key = get_kdf(salt).derive(bytes(password, 'utf-8'))
+    iv = bytes.fromhex(iv)
+    cipher = Cipher(algorithms.AES(key), modes.CBC(iv))
+    encryptor = cipher.encryptor()
+    ct = encryptor.update(bytes(pad(secret), 'utf-8')) + encryptor.finalize()
+    return ct.hex()
 
 
 def decrypt(ciphertext, password, salt, iv):
-    key = PBKDF2(password, bytes.fromhex(salt), dkLen=32)  # 256-bit key
-    cipher = AES.new(key, AES.MODE_CBC, bytes.fromhex(iv))
-    return unpad(
-        cipher.decrypt(bytes.fromhex(ciphertext))
-    ).decode('utf-8')
+    key = get_kdf(salt).derive(bytes(password, 'utf-8'))
+    iv = bytes.fromhex(iv)
+    cipher = Cipher(algorithms.AES(key), modes.CBC(iv))
+    decryptor = cipher.decryptor()
+    d = decryptor.update(bytes.fromhex(ciphertext)) + decryptor.finalize()
+    return unpad(d).decode('utf-8')
 
 
 def random_string(length):

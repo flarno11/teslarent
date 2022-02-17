@@ -432,7 +432,7 @@ def load_vehicles(credentials, wake_up_vehicle):
         if vehicle_state != 'online' and wake_up_vehicle:
             vehicle_state = wake_up(v_model.tesla_id, credentials)
             if vehicle_state != 'online':
-                time.sleep(10)
+                time.sleep(15)
                 vehicle_state = wake_up(v_model.tesla_id, credentials)
 
         if vehicle_state == 'online':  # returns 408 otherwise

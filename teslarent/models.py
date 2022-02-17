@@ -15,7 +15,7 @@ class Credentials(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     email = models.EmailField(max_length=200, unique=True)
-    salt = models.CharField(max_length=16, verbose_name="Salt for KDF from secret to encryption key")
+    salt = models.CharField(max_length=32, verbose_name="Salt for KDF from secret to encryption key")
     iv = models.CharField(max_length=32, verbose_name="Initialization Vector for token encryption")
     current_token = models.CharField(max_length=512)  # currently the tokens seem to be 160 hex bytes (encrypted) long
     refresh_token = models.CharField(max_length=2048)  # currently the tokens seem to be 1800 hex bytes (encrypted) long
@@ -28,7 +28,7 @@ class Credentials(models.Model):
         return self.email
 
     def update_token(self, access_token, refresh_token, expires_in):
-        self.salt = os.urandom(8).hex()  # 64-bit salt
+        self.salt = os.urandom(16).hex()  # 64-bit salt
         self.iv = os.urandom(16).hex()   # 128-bit IV
         self.current_token = encrypt(access_token, settings.SECRET_KEY, self.salt, self.iv)
         self.refresh_token = encrypt(refresh_token, settings.SECRET_KEY, self.salt, self.iv)

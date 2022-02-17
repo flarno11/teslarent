@@ -30,7 +30,7 @@ class TeslaApiTestCase(TestCase):
         v = Vehicle()
         v.tesla_id = CURRENT_VEHICLE_ID
         v.vehicle_id = CURRENT_VEHICLE_ID * 10
-        v.display_name = ""
+        v.display_name = "display_name"
         v.credentials = Credentials.objects.all()[0]
         v.linked = True
         v.mobile_enabled = True
@@ -84,8 +84,9 @@ class TeslaApiTestCase(TestCase):
         c = Credentials(email="test@test.com")
 
         with requests_mock.mock() as m:
+            m.post('/oauth2/v3/token', text=LOGIN_RESPONSE)
             m.post('/oauth/token', text=LOGIN_RESPONSE)
-            login_and_save_credentials(c, password="test")
+            login_and_save_credentials(c, auth_code="test", code_verifier="code_verifier")
 
         self.assertGreater(c.token_expires_at, timezone.now() + datetime.timedelta(days=89))
         self.assertLess(c.token_expires_at, timezone.now() + datetime.timedelta(days=91))
@@ -96,7 +97,6 @@ class TeslaApiTestCase(TestCase):
         self.assertEqual(0, len(list(Vehicle.objects.all())))
 
         with requests_mock.mock() as m:
-            m.post('/oauth/token', text=LOGIN_RESPONSE)
             m.get('/api/1/vehicles', text=LIST_VEHICLES_RESPONSE)
             m.get('/api/1/vehicles/' + str(CURRENT_VEHICLE_ID) + '/mobile_enabled', text=MOBILE_ENABLED_RESPONSE)
             m.get('/api/1/vehicles/' + str(CURRENT_VEHICLE_ID) + '/vehicle_data', text=VEHICLE_DATA_RESPONSE)
@@ -112,7 +112,6 @@ class TeslaApiTestCase(TestCase):
         self.assertEqual(1, len(list(Vehicle.objects.all())))
 
         with requests_mock.mock() as m:
-            m.post('/oauth/token', text=LOGIN_RESPONSE)
             m.get('/api/1/vehicles', text=LIST_VEHICLES_RESPONSE)
             m.get('/api/1/vehicles/' + str(CURRENT_VEHICLE_ID) + '/mobile_enabled', text=MOBILE_ENABLED_RESPONSE)
             m.get('/api/1/vehicles/' + str(CURRENT_VEHICLE_ID) + '/vehicle_data', text=VEHICLE_DATA_RESPONSE)
@@ -135,11 +134,9 @@ class TeslaApiTestCase(TestCase):
         created_at = vehicles[0].created_at
 
         with requests_mock.mock() as m:
-            m.post('/oauth/token', text=LOGIN_RESPONSE)
             m.get('/api/1/vehicles', text=LIST_VEHICLES_RESPONSE)
             m.get('/api/1/vehicles/' + str(CURRENT_VEHICLE_ID) + '/mobile_enabled', text=MOBILE_ENABLED_RESPONSE)
             m.get('/api/1/vehicles/' + str(CURRENT_VEHICLE_ID) + '/vehicle_data', text=VEHICLE_DATA_RESPONSE)
-            login_and_save_credentials(c, password="test")
             update_all_vehicles(wake_up_vehicle=True)
 
         vehicles = list(Vehicle.objects.all())
