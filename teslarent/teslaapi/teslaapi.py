@@ -401,9 +401,10 @@ def load_vehicles(credentials, wake_up_vehicle):
     log.debug("removed_vehicles=%s for %s", removed_vehicles, credentials)
 
     for id in removed_vehicles:
-        log.info("unlinking vehicle %d", id)
-        existing_vehicles[id].linked = False
-        existing_vehicles[id].save()
+        if existing_vehicles[id].linked:
+            log.info("unlinking vehicle %d", id)
+            existing_vehicles[id].linked = False
+            existing_vehicles[id].save()
 
     for id, v in new_vehicles.items():
         if id in existing_vehicles:
@@ -430,15 +431,19 @@ def load_vehicles(credentials, wake_up_vehicle):
         vehicle_state = v['state']
         if vehicle_state != 'online' and wake_up_vehicle:
             vehicle_state = wake_up(v_model.tesla_id, credentials)
-            time.sleep(15)
+            if vehicle_state != 'online':
+                time.sleep(10)
+                vehicle_state = wake_up(v_model.tesla_id, credentials)
 
         if vehicle_state == 'online':  # returns 408 otherwise
-            v_model.mobile_enabled = is_mobile_enabled(v_model.tesla_id, credentials)  # doesn't seem to be available in vehicle_data
-
-            vehicle_data = fetch_and_save_vehicle_state(v_model)
-            if vehicle_data:
-                v_model.color = vehicle_data.vehicle_config__exterior_color
-                v_model.model = vehicle_data.vehicle_config__car_type
+            try:
+                v_model.mobile_enabled = is_mobile_enabled(v_model.tesla_id, credentials)  # doesn't seem to be available in vehicle_data
+                vehicle_data = fetch_and_save_vehicle_state(v_model)
+                if vehicle_data:
+                    v_model.color = vehicle_data.vehicle_config__exterior_color
+                    v_model.model = vehicle_data.vehicle_config__car_type
+            except ApiException as e:
+                log.error('fetch vehicle data failed with error={}'.format(str(e)))
         elif wake_up_vehicle:
             log.warning("vehicle still not online %d", id)
 
