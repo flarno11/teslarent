@@ -16,7 +16,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         now = timezone.now()
-        two_hours_from_now = now + datetime.timedelta(hours=2)
+        two_hours_from_now = now + datetime.timedelta(hours=2, minutes=5)
         for c in Credentials.objects.all():
             if c.token_expires_at <= two_hours_from_now:
                 refresh_credentials_do(c)
