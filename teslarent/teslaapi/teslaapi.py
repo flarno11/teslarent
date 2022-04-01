@@ -132,24 +132,27 @@ def refresh_token(credentials):
         log.error("refresh token not possible, response=" + str(r3))
         raise ApiException("refresh token not possible, response=" + str(r3))
 
-    # Step 4: Exchange bearer token for access token
-    body = {
-        'grant_type': "urn:ietf:params:oauth:grant-type:jwt-bearer",
-        'client_id': settings.TESLA_CLIENT_ID,
-        'client_secret': settings.TESLA_CLIENT_SECRET,
-    }
+    credentials.update_token(r3['access_token'], r3['refresh_token'], r3['expires_in'])
+    credentials.save()
 
-    log.debug('login on ' + get_host())
-    r4 = requests\
-        .post(get_host() + '/oauth/token', json=body, headers={'Authorization': 'Bearer ' + r3['access_token']})\
-        .json()
-
-    if 'access_token' in r4 and 'expires_in' in r4:
-        credentials.update_token(r4['access_token'], r3['refresh_token'], r4['expires_in'])
-        credentials.save()
-    else:
-        log.error("refresh token not possible, response=" + str(r4))
-        raise ApiException("login not possible, response=" + str(r4))
+    # # Step 4: Exchange bearer token for access token
+    # body = {
+    #     'grant_type': "urn:ietf:params:oauth:grant-type:jwt-bearer",
+    #     'client_id': settings.TESLA_CLIENT_ID,
+    #     'client_secret': settings.TESLA_CLIENT_SECRET,
+    # }
+    #
+    # log.debug('login on ' + get_host())
+    # r4 = requests\
+    #     .post(get_host() + '/oauth/token', json=body, headers={'Authorization': 'Bearer ' + r3['access_token']})\
+    #     .json()
+    #
+    # if 'access_token' in r4 and 'expires_in' in r4:
+    #     credentials.update_token(r4['access_token'], r3['refresh_token'], r4['expires_in'])
+    #     credentials.save()
+    # else:
+    #     log.error("refresh token not possible, response=" + str(r4))
+    #     raise ApiException("login not possible, response=" + str(r4))
 
 
 def get_json(text):
