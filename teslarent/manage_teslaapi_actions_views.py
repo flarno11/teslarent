@@ -15,10 +15,12 @@ log = logging.getLogger('manage')
 @staff_member_required
 def refresh_credentials(request, credentials_id):
     if request.method == "POST":
-        c = Credentials.objects.get(id=credentials_id)
-        teslaapi.refresh_token(c)
-
+        refresh_credentials_do(Credentials.objects.get(id=credentials_id))
     return redirect('manage:index')
+
+
+def refresh_credentials_do(c):
+    teslaapi.refresh_token(c)
 
 
 @staff_member_required
