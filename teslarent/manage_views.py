@@ -200,7 +200,7 @@ def delete_credentials(request, credentials_id):
         return redirect('/manage/')
     context = dict(
         each_context(request, title="Delete Credentials"),
-        credentials=c,
+        credential=c,
     )
     return render(request, 'delete_credentials.html', context)
 
