@@ -40,7 +40,7 @@ docker run -d -p 444:443 --link teslarent-postgres:postgres -e DJANGO_ALLOWED_HO
 ### Generic Setup
 
 #### Requirements
-- Python (tested with version 3.7, others should be fine too)
+- Python (tested with version 3.10, others should be fine too)
  - virtualenv, e.g. python3-venv
 - Postgres/MySQL database (only newer MySQL that supports JSONField for Vehicle Data)
 - Https Web Server with wsgi support, e.g. Apache with mod_wsgi
