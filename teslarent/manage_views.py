@@ -115,6 +115,8 @@ def index(request):
 
             earnings_total_distance_driven += r.distance_driven
 
+    earnings_per_km = round(earnings_total_price_netto/earnings_total_distance_driven, 2) if earnings_total_distance_driven != 0 else 0
+
     totals = {
         'distance_driven_all': sum_non_null(lambda r: r.distance_driven, rentals),
         'distance_driven_paid': earnings_total_distance_driven,
@@ -122,7 +124,7 @@ def index(request):
         'price_netto': sum_non_null(lambda r: r.price_netto, rentals),
         'price_charging_all': round(sum_non_null(lambda r: r.price_charging, rentals), 2),
         'price_charging_paid': round(earnings_total_price_charging, 2),
-        'earnings_per_km': round(earnings_total_price_netto/earnings_total_distance_driven, 2),
+        'earnings_per_km': earnings_per_km,
     }
 
     vehicles = Vehicle.objects.all()
