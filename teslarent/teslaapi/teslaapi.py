@@ -121,11 +121,12 @@ def refresh_token(credentials):
 
 
 def get_json(text):
-    def strip_comment(s):
-        return s.split('//')[0]
-
-    d = [strip_comment(s) for s in text.split('\n')]
-    return json.loads(''.join(d))
+    #def strip_comment(s):
+    #    return s.split('//')[0]
+    #
+    #d = [strip_comment(s) for s in text.split('\n')]
+    #return json.loads(''.join(d))
+    return json.loads(text)
 
 
 def req(path, credentials, method='get', data=None):
@@ -143,7 +144,7 @@ def req(path, credentials, method='get', data=None):
 
 
 def list_vehicles(credentials):
-    return req('/api/1/vehicles', credentials)
+    return req('/api/1/products', credentials)
 
 
 def wake_up(vehicle_id, credentials):
