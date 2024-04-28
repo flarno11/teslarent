@@ -1,4 +1,5 @@
 import base64
+import copy
 import logging
 import uuid
 from json import encoder
@@ -138,13 +139,13 @@ def index(request):
         'price_charging': 0,
         'earnings_per_km': 0,
     }
-    summary_current = summary_init
+    summary_current = copy.deepcopy(summary_init)
     previous_rental_idx = -1
     for rental_idx, rental in enumerate(rentals):
         rentals[rental_idx].last_of_the_year = False
         if summary_current['year'] and summary_current['year'] != rental.start.year:
             rentals[previous_rental_idx].last_of_the_year = summary_current
-            summary_current = summary_init
+            summary_current = copy.deepcopy(summary_init)
 
         summary_current['distance_driven'] += (rental.distance_driven if rental.distance_driven else 0)
         summary_current['price_brutto'] += rental.price_brutto if rental.price_brutto else 0
