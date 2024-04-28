@@ -95,7 +95,7 @@ class Rental(models.Model):
 
     @property
     def earnings_per_km(self):
-        if self.price_charging:
+        if self.price_charging and self.start.year < 2023:  # charging costs were included only until ~2022
             price_charging = self.price_charging
         else:
             price_charging = 0

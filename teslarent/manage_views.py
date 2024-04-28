@@ -110,7 +110,8 @@ def index(request):
         if r.price_netto and r.distance_driven:  # only sum up if a price and distance is set
             earnings_total_price_netto += r.price_netto
             if r.price_charging:
-                earnings_total_price_netto -= r.price_charging
+                if r.start.year < 2023:  # charging costs were included only until ~2022
+                    earnings_total_price_netto -= r.price_charging
                 earnings_total_price_charging += r.price_charging
 
             earnings_total_distance_driven += r.distance_driven
