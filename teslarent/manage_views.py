@@ -101,7 +101,7 @@ def index(request):
     one_day_ago = now - datetime.timedelta(days=1)
     one_day_from_now = now + datetime.timedelta(days=1)
 
-    rentals = Rental.objects.all().order_by('start')
+    rentals = list(Rental.objects.all().order_by('start'))
 
     earnings_total_price_netto = 0
     earnings_total_price_charging = 0
@@ -128,6 +128,36 @@ def index(request):
         'earnings_per_km': earnings_per_km,
     }
 
+    summaries = {}
+    summary_init = {
+        'year': None,
+        'nof_rentals': 0,
+        'distance_driven': 0,
+        'price_brutto': 0,
+        'price_netto': 0,
+        'price_charging': 0,
+        'earnings_per_km': 0,
+    }
+    summary_current = summary_init
+    previous_rental_idx = -1
+    for rental_idx, rental in enumerate(rentals):
+        rentals[rental_idx].last_of_the_year = False
+        if summary_current['year'] and summary_current['year'] != rental.start.year:
+            rentals[previous_rental_idx].last_of_the_year = summary_current
+            summary_current = summary_init
+
+        summary_current['distance_driven'] += (rental.distance_driven if rental.distance_driven else 0)
+        summary_current['price_brutto'] += rental.price_brutto if rental.price_brutto else 0
+        summary_current['price_netto'] += rental.price_netto if rental.price_netto else 0
+        summary_current['price_charging'] += rental.price_charging if rental.price_charging else 0
+        if rental.earnings_per_km:
+            summary_current['earnings_per_km'] = round((rental.earnings_per_km + summary_current['nof_rentals'] * summary_current['earnings_per_km']) / (summary_current['nof_rentals'] + 1), 2)
+        summary_current['nof_rentals'] += 1
+        summary_current['year'] = rental.start.year
+        previous_rental_idx = rental_idx
+    if previous_rental_idx != -1 and summary_current['year']:
+        rentals[previous_rental_idx].last_of_the_year = summary_current
+
     vehicles = Vehicle.objects.all()
     for vehicle in vehicles:
         vehicle.d = VehicleData.objects.filter(vehicle=vehicle)\
@@ -139,6 +169,7 @@ def index(request):
         debug=bool(settings.DEBUG),
         active_rentals=Rental.objects.filter(start__lt=one_day_from_now, end__gt=one_day_ago).order_by('start'),
         rentals=rentals,
+        summaries=summaries,
         totals=totals,
         credentials=Credentials.objects.all(),
         vehicles=vehicles,
