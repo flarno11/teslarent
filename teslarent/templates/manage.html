@@ -134,11 +134,11 @@
         <th>Total {{ rental.last_of_the_year.year }}</th>
         <th></th>
         <th>Rentals: {{ rental.last_of_the_year.nof_rentals }}</th>
-        <th>{{ rental.last_of_the_year.distance_driven }}</th>
-        <th>{{ rental.last_of_the_year.price_brutto }}</th>
-        <th>{{ rental.last_of_the_year.price_netto }}</th>
-        <th>{{ rental.last_of_the_year.price_charging }}</th>
-        <th>{{ rental.last_of_the_year.earnings_per_km }}</th>
+        <th>{{ rental.last_of_the_year.distance_driven|floatformat }}</th>
+        <th>{{ rental.last_of_the_year.price_brutto|floatformat }}</th>
+        <th>{{ rental.last_of_the_year.price_netto|floatformat }}</th>
+        <th>{{ rental.last_of_the_year.price_charging|floatformat }}</th>
+        <th>{{ rental.last_of_the_year.earnings_per_km|floatformat }}</th>
     </tr>
     {% endif %}
 {% empty %}
