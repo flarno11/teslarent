@@ -8,4 +8,3 @@ requests==2.32.2
 requests-mock==1.9.3
 # static files (6.0.0 isn't compatible with python3.6)
 whitenoise==5.3.0
-
