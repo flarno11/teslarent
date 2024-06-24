@@ -214,13 +214,13 @@ class VehicleData(models.Model):
         return datetime.datetime.utcfromtimestamp(self.data['drive_state']['gps_as_of']).replace(tzinfo=timezone.utc) if 'drive_state' in self.data and 'gps_as_of' in self.data['drive_state'] else None
     @property
     def drive_state__latitude(self):
-        return self.data['drive_state']['latitude'] if 'drive_state' in self.data else None
+        return self.data['drive_state']['latitude'] if 'drive_state' in self.data and 'latitude' in self.data['drive_state'] else None
     @property
     def drive_state__longitude(self):
-        return self.data['drive_state']['longitude'] if 'drive_state' in self.data else None
+        return self.data['drive_state']['longitude'] if 'drive_state' in self.data and 'longitude' in self.data['drive_state'] else None
     @property
     def drive_state__heading(self):
-        return self.data['drive_state']['heading'] if 'drive_state' in self.data else None
+        return self.data['drive_state']['heading'] if 'drive_state' in self.data and 'heading' in self.data['drive_state'] else None
 
     @property
     def charge_state__battery_level(self):
