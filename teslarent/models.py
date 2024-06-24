@@ -208,10 +208,10 @@ class VehicleData(models.Model):
         return self.data['drive_state']['shift_state'] if 'drive_state' in self.data else None
     @property
     def drive_state__gps_as_of(self):
-        return self.data['drive_state']['gps_as_of'] if 'drive_state' in self.data else None
+        return self.data['drive_state']['gps_as_of'] if 'drive_state' in self.data and 'gps_as_of' in self.data['drive_state'] else None
     @property
     def drive_state__gps_as_of_fmt(self):
-        return datetime.datetime.utcfromtimestamp(self.data['drive_state']['gps_as_of']).replace(tzinfo=timezone.utc) if 'drive_state' in self.data else None
+        return datetime.datetime.utcfromtimestamp(self.data['drive_state']['gps_as_of']).replace(tzinfo=timezone.utc) if 'drive_state' in self.data and 'gps_as_of' in self.data['drive_state'] else None
     @property
     def drive_state__latitude(self):
         return self.data['drive_state']['latitude'] if 'drive_state' in self.data else None
